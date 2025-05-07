@@ -32,3 +32,5 @@ auth.json
 .badita.yaml
 /build
 /skeleton
+.idea
+

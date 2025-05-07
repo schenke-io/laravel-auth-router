@@ -29,6 +29,7 @@
         "archtechx/enums": "^v1.0",
         "spatie/laravel-data": "*",
         "auth0/auth0-php": "^8.13",
+        "php-http/multipart-stream-builder": "^1.4",
         "revolution/socialite-amazon": "^1.2",
         "socialiteproviders/paypal": "^4.3",
         "socialiteproviders/stripe": "^4.1",
