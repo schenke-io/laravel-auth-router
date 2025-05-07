@@ -1,0 +1,17 @@
+analyse: true
+coverage: true
+markdown: true
+pint: true
+test: pest
+menu: false
+check:
+	- pint
+	- test
+	- markdown
+
+release:
+	- pint
+	- analyse
+	- coverage
+	- markdown
+

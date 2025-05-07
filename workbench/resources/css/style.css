@@ -1,0 +1,319 @@
+/* ==== CSS Variablen für Theming ==== */
+:root {
+    --page-bg: #f8f9fa;
+    --text-color: #212529;
+    --button-border-light: #ced4da;
+    --back-btn-text: #6c757d;
+    --back-btn-border: #adb5bd;
+    --back-btn-hover-bg: #e9ecef;
+    --back-btn-hover-text: #495057;
+
+    --accent-bg: #007bff; /* Beispiel Akzentfarbe (Blau) */
+    --accent-text: #FFFFFF;
+    --accent-focus-ring: rgba(0, 123, 255, 0.3);
+
+    /* Service Light Themes */
+    --google-bg: #FFFFFF;
+    --google-text: #1F1F1F;
+    --google-border: #747775;
+    --microsoft-bg: #FFFFFF;
+    --microsoft-text: #5E5E5E;
+    --microsoft-border: #8C8C8C;
+    --apple-bg: #000000; /* Black button for light background */
+    --apple-text: #FFFFFF;
+    --apple-icon-fill: #FFFFFF;
+    --amazon-bg: #FF9900; /* Amazon Orange */
+    --amazon-text: #111111;
+    --paypal-bg: #eeeeee; /* grey    PayPal Blue #0070BA; */
+    --paypal-text: #000000; /* #FFFFFF; */
+    --paypal-icon-fill: #FFFFFF;
+    --paypal-border: #dddddd;
+
+    --linkedin-bg: #0078d4;
+    --linkedin-text: #ffffff;
+    --linkedin-border: #5E5E5E;
+
+    --stripe-bg: #eeeeee; /* grey    */
+    --stripe-text: #000000; /* #FFFFFF; */
+
+
+}
+
+html.dark {
+    --page-bg: #121212;
+    --text-color: #e0e0e0;
+    --button-border-light: #444444;
+    --back-btn-text: #adb5bd;
+    --back-btn-border: #6c757d;
+    --back-btn-hover-bg: #343a40;
+    --back-btn-hover-text: #f8f9fa;
+
+
+
+    --accent-bg: #0d6efd; /* Etwas helleres Blau für Dark Mode */
+    --accent-text: #FFFFFF;
+    --accent-focus-ring: rgba(13, 110, 253, 0.4);
+
+    /* Service Dark Themes */
+    --google-bg: #131314; /* Google Dark */
+    --google-text: #E3E3E3;
+    --google-border: #8E918F;
+    --microsoft-bg: #2B2B2B; /* Microsoft Dark (Approximation) */
+    --microsoft-text: #FFFFFF;
+    --microsoft-border: #5E5E5E;
+    --apple-bg: #FFFFFF; /* White button for dark background */
+    --apple-text: #000000;
+    --apple-icon-fill: #000000;
+    --amazon-bg: #FFA724; /* Slightly adjusted Amazon Orange for dark */
+    --amazon-text: #111111;
+    --paypal-bg: #ededed; /* grey #141414;  PayPal Black */
+    --paypal-text: #000000;  /* #FFFFFF; */
+    --paypal-icon-fill: #FFFFFF;
+    --paypal-border: #5E5E5E;
+
+    --linkedin-bg: #2B2B2B; /* Microsoft Dark (Approximation) */
+    --linkedin-text: #FFFFFF;
+    --linkedin-border: #5E5E5E;
+
+    --stripe-bg: #eeeeee; /* grey    */
+    --stripe-text: #000000; /* #FFFFFF; */
+}
+
+/* ==== Basis Layout & Reset ==== */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--page-bg);
+    color: var(--text-color);
+    overflow: hidden; /* Verhindert Scrollen auf Mobilgeräten */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* Buttons füllen die Breite */
+    width: 100%;
+    max-width: 380px; /* Maximale Breite */
+}
+
+/* ==== Allgemeine Button Stile ==== */
+.social-button,.back-button,.email-login-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 7vh; /* Responsive Höhe */
+    min-height: 44px; /* Mindesthöhe für Touch-Interaktion */
+    max-height: 60px; /* Maximale Höhe, um Übergröße zu vermeiden */
+    padding: 0 3vw; /* Responsive Padding */
+    margin-bottom: 2.5vh; /* Responsive Abstand */
+    border-radius: 6px; /* Konsistenter Radius */
+    font-size: clamp(14px, 2.2vmin, 17px); /* Responsive Schriftgröße */
+    text-decoration: none;
+    transition: opacity 0.2s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+    font-weight: 500;
+    border: 1px solid transparent; /* Basis für Border */
+    text-align: center;
+    white-space: nowrap; /* Verhindert Umbruch */
+    overflow: hidden; /* Verhindert Überlaufen des Inhalts */
+    text-overflow: ellipsis; /* Fügt "..." hinzu, falls Text zu lang */
+}
+
+.social-button:hover,.back-button:hover {
+    opacity: 0.9;
+}
+
+.social-button svg {
+    flex-shrink: 0; /* Verhindert Schrumpfen des Icons */
+    height: clamp(20px, 3vh, 24px); /* Responsive Icon-Höhe */
+    width: auto;
+    margin-right: 12px;
+}
+
+/* ==== Service-spezifische Stile ==== */
+
+/* Google Button (Light/Dark via CSS Vars) */
+.google-button {
+    background-color: var(--google-bg);
+    color: var(--google-text);
+    border-color: var(--google-border);
+    /* font-family: 'Roboto', sans-serif; */ /* Roboto muss auf System installiert sein */
+}
+/* Google SVG ist immer farbig, kein Fill nötig */
+
+/* Microsoft Button (Light/Dark via CSS Vars) */
+.microsoft-button {
+    background-color: var(--microsoft-bg);
+    color: var(--microsoft-text);
+    border-color: var(--microsoft-border);
+}
+.microsoft-button svg { /* Farben sind im SVG definiert */
+    height: clamp(18px, 2.8vh, 21px); /* Ggf. anpassen an MS Logo */
+    margin-right: 10px;
+}
+
+/* Apple Button (Light/Dark via CSS Vars) */
+.apple-button {
+    background-color: var(--apple-bg);
+    color: var(--apple-text);
+    border-color: var(--apple-bg); /* Keine sichtbare Border bei Schwarz/Weiß */
+    min-height: 30px; /* Apple HIG Minimum */
+    /* border-radius kann angepasst werden, hier Standard 6px */
+}
+.apple-button svg {
+    height: clamp(18px, 2.8vh, 21px); /* Ggf. anpassen an Apple Logo */
+    margin-right: 8px;
+}
+.apple-button svg path {
+    fill: var(--apple-icon-fill); /* Stellt sicher, dass Logo Farbe zum Theme passt */
+}
+
+/* Amazon Button (Light/Dark via CSS Vars) */
+.amazon-button {
+    background-color: var(--amazon-bg);
+    color: var(--amazon-text);
+    border: none; /* Amazon Buttons haben oft keinen Rand */
+}
+/* Amazon SVG Farben ggf. anpassen */
+.amazon-button svg {
+    height: clamp(20px, 3vh, 24px);
+    margin-right: 10px;
+}
+.amazon-button svg path {
+    fill: var(--amazon-text); /* Einfarbiges Logo in Textfarbe (Annahme) */
+}
+
+
+/* PayPal Button (Light/Dark via CSS Vars) */
+.paypal-button {
+    background-color: var(--paypal-bg);
+    color: var(--paypal-text);
+    font-weight: 600;
+    border-color: var(--paypal-border); /* PayPal Buttons haben oft keinen Rand */
+    /* border-radius: 50px; */ /* Für Pill-Shape */
+}
+.paypal-button svg {
+    height: clamp(20px, 3vh, 24px);
+    margin-right: 10px;
+}
+.paypal-button svg path {
+    /*fill: var(--paypal-icon-fill); !* Stellt sicher, dass Logo Farbe zum Theme passt *!*/
+}
+
+
+/* LinkedIn Button from Microsoft */
+.linkedin-button {
+    background-color: var(--linkedin-bg);
+    color: var(--linkedin-text);
+    border-color: var(--linkedin-border);
+}
+.linkedin-button svg { /* Farben sind im SVG definiert */
+    height: clamp(24px, 3vh, 24px); /* Ggf. anpassen an Logo */
+    margin-right: 10px;
+}
+
+.facebook-button {
+    background-color: var(--microsoft-bg);
+    color: var(--microsoft-text);
+    border-color: var(--microsoft-border);
+}
+
+.stripe-button {
+    background-color: var(--microsoft-bg);
+    color: var(--microsoft-text);
+    border-color: var(--microsoft-border);
+}
+
+
+/* ==== Zurück Button ==== */
+.back-button {
+    margin-top: 1vh; /* Kleinerer Abstand oben */
+    margin-bottom: 0; /* Letztes Element */
+    background-color: transparent;
+    color: var(--back-btn-text);
+    border-color: var(--back-btn-border);
+    font-weight: 400;
+}
+.back-button:hover {
+    background-color: var(--back-btn-hover-bg);
+    color: var(--back-btn-hover-text);
+    opacity: 1.0; /* Volle Opazität bei Hover */
+}
+
+.error-message{
+    color: red;
+    background-color: silver;
+    font-size: 12px;
+    text-align: center;
+    border-color: var(--back-btn-border);
+    font-weight: 400;
+}
+
+/* Beispielhafte Stile für E-Mail Login Gruppe */
+.email-login-group {
+    display: flex;
+    margin-bottom: 2.5vh; /* Gleicher Abstand wie Social Buttons */
+    width: 100%;
+    border-radius: 6px; /* Gleiche Radius wie Social Buttons */
+    border: 1px solid var(--accent-bg);
+}
+
+.email-input {
+    flex-grow: 1; /* Nimmt verfügbaren Platz ein */
+    height: 7vh; /* Gleiche Höhe wie Social Buttons */
+    min-height: 44px;
+    max-height: 60px;
+    padding: 0 clamp(10px, 30vw, 50px); /* Gleiches horizontales Padding */
+    font-size: clamp(14px, 2.2vmin, 17px); /* Gleiche Schriftgröße */
+    border: 1px solid var(--button-border-light);
+    border-right: none; /* Nahtloser Übergang zum Button */
+    border-radius: 6px 0 0 6px; /* Abgerundete Ecken nur links */
+    background-color: var(--page-bg); /* Hintergrund wie Seite */
+    color: var(--text-color);
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+.email-input:focus {
+    outline: none;
+    border-color: var(--accent-bg); /* Akzentfarbe bei Fokus */
+    box-shadow: 0 0 0 2px var(--accent-focus-ring); /* Fokusring */
+}
+
+.email-submit-button {
+    height: 7vh; /* Gleiche Höhe */
+    min-height: 44px;
+    max-height: 60px;
+    padding: 0 30px; /* Passendes Padding */
+    font-size: clamp(14px, 2.2vmin, 17px); /* Gleiche Schriftgröße */
+    border: 1px solid var(--accent-bg); /* Rand in Akzentfarbe */
+    border-left: none; /* Nahtloser Übergang zum Input */
+    border-radius: 0 6px 6px 0; /* Abgerundete Ecken nur rechts */
+    background-color: var(--accent-bg); /* Akzentfarbe */
+    color: var(--accent-text);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+    flex-shrink: 0; /* Verhindert Schrumpfen */
+}
+
+.email-submit-button:hover {
+    opacity: 0.9;
+}
+
+.email-submit-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-focus-ring); /* Fokusring */
+}
+

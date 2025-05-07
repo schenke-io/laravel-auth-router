@@ -1,0 +1,100 @@
+{
+    "name": "schenke-io/laravel-auth-router",
+    "description": "Helper kit for AUTH routings in Laravel applications",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "SchenkeIo\\LaravelAuthRouter\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SchenkeIo\\LaravelAuthRouter\\Tests\\": "tests/",
+            "SchenkeIo\\LaravelAuthRouter\\Workbench\\": "workbench/",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    },
+    "require": {
+        "php": "^8.2|^8.3",
+        "illuminate/contracts": "^11.33|^12.0",
+        "illuminate/support": "^11.0|^12.0",
+        "illuminate/validation": "^11.0|^12.0",
+        "illuminate/routing": "^11.0|^12.0",
+        "illuminate/http": "^11.0|^12.0",
+        "schenke-io/packaging-tools": "*",
+        "laravel/socialite": "^5.20",
+        "spatie/laravel-package-tools": "^1.0",
+        "archtechx/enums": "^v1.0",
+        "spatie/laravel-data": "*",
+        "auth0/auth0-php": "^8.13",
+        "revolution/socialite-amazon": "^1.2",
+        "socialiteproviders/paypal": "^4.3",
+        "socialiteproviders/stripe": "^4.1",
+        "socialiteproviders/microsoft": "^4.6"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "pestphp/pest": "^3.8",
+        "laravel/pint": "^1.22",
+        "orchestra/testbench": "^9.0|^10.2"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "SchenkeIo\\LaravelAuthRouter\\AuthRouterServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"vendor/bin/testbench serve\"  \"vendor/bin/testbench pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
+        ],
+        "test": "vendor/bin/pest",
+        "pint": "vendor/bin/pint",
+        "setup": "SchenkeIo\\PackagingTools\\Setup::handle",
+        "low": "composer update --prefer-lowest --prefer-dist",
+        "stable": "composer update --prefer-stable --prefer-dist",
+        "analyse": "vendor/bin/phpstan analyse --ansi",
+        "coverage": "vendor/bin/pest --coverage",
+        "markdown": "vendor/bin/testbench make:markdown",
+        "check": [
+            "@styles",
+            "@pint",
+            "@test"
+        ],
+        "release": [
+            "@styles",
+            "@pint",
+            "@analyse",
+            "@coverage"
+        ],
+        "add": [],
+        "menu": "SchenkeIo\\LaravelAuth\\DeveloperMenu::handle",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve --ansi"
+        ],
+        "styles": [
+            "npm run styles"
+        ],
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
