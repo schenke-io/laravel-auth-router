@@ -32,3 +32,8 @@ workbench:
     - from: storage
       to: workbench/storage
       reverse: true
+  purge:
+    directories:
+      - workbench/bootstrap/cache
+
+
