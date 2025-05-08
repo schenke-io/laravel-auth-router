@@ -32,6 +32,9 @@ class UserData extends Data
         );
     }
 
+    /**
+     * @param  array<string,string>  $data
+     */
     public static function fromAuth0(array $data): self
     {
         return new self(

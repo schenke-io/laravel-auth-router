@@ -1,6 +1,13 @@
 <?php
 
+use Laravel\Socialite\Contracts\Factory;
+use Laravel\Socialite\Facades\Socialite;
 use SchenkeIo\LaravelAuthRouter\AuthRouterServiceProvider;
+use SocialiteProviders\Manager\Config;
+use SocialiteProviders\Manager\Helpers\ConfigRetriever;
+use SocialiteProviders\Manager\SocialiteWasCalled;
+use SocialiteProviders\Microsoft;
+use SocialiteProviders\Stripe;
 use Spatie\LaravelPackageTools\Package;
 use Workbench\App\Models\User;
 
@@ -72,4 +79,29 @@ it('defines some providers', function () {
     $serviceProvider->boot();
     Route::authRouter(['google', 'microsoft'], 'success', 'error');
     $this->assertEquals(7, Route::getRoutes()->count());
+});
+
+it('register providers', function () {
+    $serviceProvider = new AuthRouterServiceProvider($this->app);
+    $serviceProvider->boot();
+
+    // Let's provide mocks for these if we new it up directly.
+    $socialiteFactoryMock = $this->app->make(Factory::class);
+    $configRetrieverMock = Mockery::mock(ConfigRetriever::class);
+    // Allow any necessary calls on configRetriever if extendSocialite's internal closure uses it.
+    $configRetrieverMock->shouldReceive('fromServices')->times(2)->andReturn(
+        new Config(
+            'client_id',
+            'client_secret',
+            'redirect'
+        )
+    );
+
+    Event::dispatch(new SocialiteWasCalled($this->app, $configRetrieverMock));
+    $microsoftDriver = Socialite::driver('microsoft');
+    $this->assertInstanceOf(Microsoft\Provider::class, $microsoftDriver);
+
+    $stripeDriver = Socialite::driver('stripe');
+    $this->assertInstanceOf(Stripe\Provider::class, $stripeDriver);
+
 });

@@ -4,6 +4,7 @@ use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
 use SchenkeIo\LaravelAuthRouter\Auth\Service;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\AmazonProvider;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\Auth0Provider;
+use SchenkeIo\LaravelAuthRouter\LoginProviders\FacebookProvider;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\GoogleProvider;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\LinkedInProvider;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\MicrosoftProvider;
@@ -40,4 +41,11 @@ it('returns the correct provider for each enum case', function () {
     $provider = Service::auth0->provider();
     expect($provider)->toBeInstanceOf(Auth0Provider::class)
         ->and($provider)->toBeInstanceOf(BaseProvider::class);
+
+    // Test Facebook case
+    $provider = Service::facebook->provider();
+    expect($provider)->toBeInstanceOf(FacebookProvider::class)
+        ->and($provider)->toBeInstanceOf(BaseProvider::class);
+
+    // Test Stripe case
 });

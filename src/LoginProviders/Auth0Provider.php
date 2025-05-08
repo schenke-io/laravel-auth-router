@@ -18,6 +18,7 @@ use SchenkeIo\LaravelAuthRouter\Data\UserData;
  * social login with Auth0
  *
  * Go to Auth0 Dashboard, navigate to "Applications," create a new Application, find Client ID and Secret on the "Settings" tab under "Basic Information."
+ *
  * @link https://auth0.com/developers
  */
 class Auth0Provider extends BaseProvider

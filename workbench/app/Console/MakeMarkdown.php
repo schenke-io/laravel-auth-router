@@ -47,7 +47,7 @@ class MakeMarkdown extends Command
         $mda->addMarkdown('providers.md');
 
         // provider overview
-        $table [] = ['ID', 'Detail', 'Link'];
+        $table[] = ['ID', 'Detail', 'Link'];
         foreach (Service::cases() as $case) {
             $providerClass = get_class($case->provider());
             $data = $mda->getClassData($providerClass);
@@ -57,16 +57,15 @@ class MakeMarkdown extends Command
         }
         $mda->addTableFromArray($table);
 
-
         // provider details
         foreach (Service::cases() as $case) {
             $providerClass = get_class($case->provider());
             $data = $mda->getClassData($providerClass);
             $title = $data['summary'] ?? '??';
             $link = $data['link'][0] ?? '??';
-            $description= $data['description']?? '??';
+            $description = $data['description'] ?? '??';
 
-            $mda->addText("\n## " . ucfirst($case->name) . " Provider\n\n");
+            $mda->addText("\n## ".ucfirst($case->name)." Provider\n\n");
             $mda->addText("First go to $link\n$description\n\n");
             $mda->addText("Edit the `.env` file in your Laravel project and add the credentials:\n");
             $env = "```dotenv\n";
@@ -77,7 +76,7 @@ class MakeMarkdown extends Command
             $mda->addText($env);
             $mda->addText("Edit the config/services.php file:\n\n");
             $php = "```php\n";
-            $php .= "    '" . $case->name . "' => [\n";
+            $php .= "    '".$case->name."' => [\n";
             foreach ($case->provider()->env() as $key => $value) {
                 $php .= "        '$key' => env('$value'),\n";
             }

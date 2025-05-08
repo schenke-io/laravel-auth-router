@@ -7,10 +7,8 @@ use Illuminate\Support\Facades\Event;
 use SchenkeIo\LaravelAuthRouter\Auth\AuthRouter;
 use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
-use SocialiteProviders\Amazon;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Microsoft;
-use SocialiteProviders\Paypal;
 use SocialiteProviders\Stripe;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -44,7 +42,6 @@ class AuthRouterServiceProvider extends PackageServiceProvider
             // add the central logout
             $authRouter->addLogout($routeHome);
         });
-        //  self::amazon, self::linkedin, self::microsoft, self::paypal => true,
         Event::listen(function (SocialiteWasCalled $event) {
             $event->extendSocialite('microsoft', Microsoft\Provider::class);
             $event->extendSocialite('stripe', Stripe\Provider::class);

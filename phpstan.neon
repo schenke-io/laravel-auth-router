@@ -8,5 +8,5 @@ parameters:
         - src
     tmpDir: build/phpstan
     ignoreErrors:
-    -
-        message: '#stateless\(\)#'
+#    -
+#        message: '#stateless\(\)#'
