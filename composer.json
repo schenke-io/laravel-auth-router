@@ -37,6 +37,7 @@
         "psr-discovery/all": "^1.2",
         "psr/http-client-implementation": "^1.4",
         "psr/http-message-implementation": "^1.3",
+        "psr/http-factory": "^1.0",
         "http-interop/http-factory-guzzle": "^0.1.0"
     },
     "require-dev": {
@@ -44,6 +45,9 @@
         "pestphp/pest": "^3.8",
         "laravel/pint": "^1.22",
         "orchestra/testbench": "^10.2"
+    },
+    "replace": {
+        "http-interop/http-factory": "*"
     },
     "extra": {
         "laravel": {
