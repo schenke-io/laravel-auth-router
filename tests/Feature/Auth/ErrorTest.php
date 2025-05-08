@@ -1,6 +1,5 @@
 <?php
 
-
 it('redirect an error and has text stored in a session', function () {
     Route::clearResolvedInstances();
     $this->app->config->set('services.google.client_id', 'google_client_id');
@@ -16,7 +15,7 @@ it('redirect an error and has text stored in a session', function () {
 
     $response = $this->get('/callback/google');
     $response->assertRedirect(route('error'));
-    $response->assertSessionHas('error');
-    $response->assertSessionHas('codeError');
+    $response->assertSessionHas('authRouterErrorInfo');
+    $response->assertSessionHas('authRouterErrorMessage');
 
 });
