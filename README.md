@@ -22,17 +22,33 @@ Do not edit manually as it will be overwritten.
 
 
 
-Introduction
+Laravel Auth Router streamlines adding multiple social logins to your Laravel app, saving significant developer effort. Forget complex setups; this package leverages Laravel Socialite to offer a vastly simplified experience.
+
+
+- __One-Liner Route Setup:__ Instead of extensive controller code and numerous route definitions for each provider, a single line in your routes file can manage login, callback, and logout.
+- __Pre-Built Provider Chooser:__ Get an immediate, customizable page on your domain for users to select their login method – no manual UI building required.
+- __Rapid Configuration:__ Minimal setup is needed due to a unified route helper and familiar service configuration.
+- __Developer Conveniences:__ Includes multi-language support (DE/EN), dark mode for the chooser, and session-based error messages for easy integration into your Blade views.
+
+It automatically handles routing, offers flexible customization for redirects and user registration, and prevents route conflicts, letting you focus on core features instead of auth boilerplate.
+
+## Contents
 
 
 
 
 * [Laravel Auth Router](#laravel-auth-router)
+  * [Contents](#contents)
   * [Installation](#installation)
   * [Basic concept](#basic-concept)
+  * [Login and Logout flow](#login-and-logout-flow)
+  * [Name conflicts](#name-conflicts)
+  * [Configuration](#configuration)
+  * [Errors](#errors)
+    * [Setup errors](#setup-errors)
+    * [Runtime errors](#runtime-errors)
   * [Example Google login](#example-google-login)
   * [Advanced Example](#advanced-example)
-  * [Name conflicts](#name-conflicts)
 * [Providers](#providers)
   * [Amazon Provider](#amazon-provider)
   * [Google Provider](#google-provider)
@@ -55,11 +71,10 @@ Install the package with composer:
 
 ## Basic concept
 
-This package is based on Socialite and is configured in a similar way. For each Login
-you configure the keys in `config/services.php`.
+This package includes services and has to be configured in `config/services.php` only.
 
-In the routes/web.php file you add the Route helper `authRouter` to say which providers
-you want to user and how 3 main routes are named in your application.
+In the `routes/web.php` file you add the Route helper `authRouter` to define which providers
+you want to use and your registration policy.
 
 ```php
 Route::authRouter(/* provider/s */, $routeSuccess, $routeError, $routeHome, $canAddUsers);
@@ -73,7 +88,84 @@ Route::authRouter(/* provider/s */, $routeSuccess, $routeError, $routeHome, $can
 | routeHome    | route to a non protected view                                           | 'home'                                |  
 | canAddUsers  | should unknown users be added or rejected                               | `true` or `false`                     |  
 
-Route names can be same. When the homepage can display errors `routeError` and `routeHome` could be the same.
+Route names can be same. If the homepage can display errors `routeError` and `routeHome` could be the same.
+When the service configuration is not complete not all routes will be created.
+
+## Login and Logout flow
+
+In the app just  link to the `login` route.
+It either displays the  selector page, configuration errors or redirect to a single login provider.
+
+For logout just do an empty POST to the `logout` route. Only authenticated users can use the logout.
+
+## Name conflicts
+
+This line:
+```php
+// routes/web.php
+Route::authRouter('google','dashboard','error','home',true);
+``` 
+registers the following routes when the configuration is free of errors:
+- /login
+- /login/google
+- /callback/google
+- /logout
+
+and expects the 3 named routes to be defined: `dashboard`, `error` and `home`.
+
+If this conflicts with other existing routes just prefix it with something:
+```php
+// routes/web.php
+Route::prefix('any')->name('any.')->group(function () {
+    Route::authRouter('google','dashboard','error','home',true);
+});
+``` 
+
+Just use `php artisan route:list` to see which names and routes have been added.
+
+
+
+
+
+## Configuration
+
+There is no special configuration file, all setup is done over `config/services.php`.
+
+
+## Errors
+
+The package handles two types of errors differently:
+
+1) setup errors the developer can handle
+2) runtime errors which influence the user experience
+
+### Setup errors
+
+The setup errors are shown in the `/login` selector page. 
+If you have any errors with your setup, you can fix them in `config/services.php`.
+Its mainly missing keys, or missing provider names in `config/services.php`.
+
+### Runtime errors
+
+The runtime errors are stored in a session and can be handled by the app.
+
+| key                    | value                              | language       |
+|------------------------|------------------------------------|----------------|
+| authRouterErrorInfo    | user message of the error          | localised      |
+| authRouterErrorMessage | exception text of the provider/code | english mainly |
+
+The error page could look like:
+
+```bladehtml
+<h3>
+    {{session('authRouterErrorInfo')}}
+</h3>
+<p>
+    {{session('authRouterErrorMessage')}}
+</p>
+```
+
+
 
 ## Example Google login
 
@@ -114,33 +206,6 @@ If you want a selection of logins you basically just do:
 Route::authRouter(['google','paypal','microsoft'],'dashboard','error','home',true);
 
 ``` 
-
-## Name conflicts
-
-This line:
-```php
-// routes/web.php
-Route::authRouter('google','dashboard','error','home',true);
-``` 
-registers the following routes:
-- /login
-- /login/google
-- /callback/google
-- /logout
-
-and expects the 3 named routes to be defined: `dashboard`, `error` and `home`.
-
-If this conflicts with extisng routes just prefix it with something:
-```php
-// routes/web.php
-Route::prefix('auth')->name('auth.')->group(function () {
-    Route::authRouter('google','dashboard','error','home',true);
-});
-``` 
-
-Just use `php artisan route:list` to see which names and routes are automatically added.
-
-
 
 
 

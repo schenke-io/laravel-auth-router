@@ -43,6 +43,9 @@ class MakeMarkdown extends Command
         $mda->addTableOfContents();
 
         $mda->addMarkdown('installation.md');
+        $mda->addMarkdown('configuration.md');
+        $mda->addMarkdown('errors.md');
+        $mda->addMarkdown('example.md');
 
         $mda->addMarkdown('providers.md');
 

@@ -16,11 +16,11 @@ enum Error
     case Network;
     case InvalidRequest;
 
-    public function redirect(RouterData $routerData, string $codeError = ''): RedirectResponse
+    public function redirect(RouterData $routerData, string $codeErrorMessage = ''): RedirectResponse
     {
         return Redirect::route($routerData->routeError)
-            ->with('error', __('auth-router::errors.'.$this->name))
-            ->with('codeError', $codeError)
+            ->with('authRouterErrorInfo', __('auth-router::errors.'.$this->name))
+            ->with('authRouterErrorMessage', $codeErrorMessage)
             ->withHeaders(['X-Custom-Error-Type' => $this->name]);
     }
 }

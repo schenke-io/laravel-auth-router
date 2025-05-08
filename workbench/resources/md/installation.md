@@ -8,11 +8,10 @@ Install the package with composer:
 
 ## Basic concept
 
-This package is based on Socialite and is configured in a similar way. For each Login
-you configure the keys in `config/services.php`.
+This package includes services and has to be configured in `config/services.php` only.
 
-In the routes/web.php file you add the Route helper `authRouter` to say which providers
-you want to user and how 3 main routes are named in your application.
+In the `routes/web.php` file you add the Route helper `authRouter` to define which providers
+you want to use and your registration policy.
 
 ```php
 Route::authRouter(/* provider/s */, $routeSuccess, $routeError, $routeHome, $canAddUsers);
@@ -26,47 +25,15 @@ Route::authRouter(/* provider/s */, $routeSuccess, $routeError, $routeHome, $can
 | routeHome    | route to a non protected view                                           | 'home'                                |  
 | canAddUsers  | should unknown users be added or rejected                               | `true` or `false`                     |  
 
-Route names can be same. When the homepage can display errors `routeError` and `routeHome` could be the same.
+Route names can be same. If the homepage can display errors `routeError` and `routeHome` could be the same.
+When the service configuration is not complete not all routes will be created.
 
-## Example Google login
+## Login and Logout flow
 
-1) In the `.env` file you have the credentials:
+In the app just  link to the `login` route.
+It either displays the  selector page, configuration errors or redirect to a single login provider.
 
-```dotenv
-GOOGLE_CLIENT_ID=24242343242
-GOOGLE_CLIENT_SECRET=3843430984
-```
-
-2) In `config/services.php` you define the service:
-
-```php
-// config/services.php
-'google' => [
-    'client_id' => env('GOOGLE_CLIENT_ID'),
-    'client_secret' => env('GOOGLE_CLIENT_SECRET')
-]
-
-``` 
-
-3) in the `routes/web.php` you define the route:
-
-```php
-// routes/web.php
-Route::authRouter('google','dashboard','error','home',true);
-
-``` 
-
-## Advanced Example
-
-If you want a selection of logins you basically just do:
-1) fill the secret data into .env
-2) register the services
-3) add the route
-```php
-// routes/web.php
-Route::authRouter(['google','paypal','microsoft'],'dashboard','error','home',true);
-
-``` 
+For logout just do an empty POST to the `logout` route. Only authenticated users can use the logout.
 
 ## Name conflicts
 
@@ -75,7 +42,7 @@ This line:
 // routes/web.php
 Route::authRouter('google','dashboard','error','home',true);
 ``` 
-registers the following routes:
+registers the following routes when the configuration is free of errors:
 - /login
 - /login/google
 - /callback/google
@@ -83,14 +50,14 @@ registers the following routes:
 
 and expects the 3 named routes to be defined: `dashboard`, `error` and `home`.
 
-If this conflicts with extisng routes just prefix it with something:
+If this conflicts with other existing routes just prefix it with something:
 ```php
 // routes/web.php
-Route::prefix('auth')->name('auth.')->group(function () {
+Route::prefix('any')->name('any.')->group(function () {
     Route::authRouter('google','dashboard','error','home',true);
 });
 ``` 
 
-Just use `php artisan route:list` to see which names and routes are automatically added.
+Just use `php artisan route:list` to see which names and routes have been added.
 
 
