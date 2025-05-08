@@ -11,11 +11,6 @@ use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 
 class AuthRouter
 {
-    public function addLoginRedirect(BaseProvider $provider): void
-    {
-        Route::get('login', fn () => redirect()->route($provider->loginRoute))->name('login');
-    }
-
     public function addProvider(BaseProvider $provider, RouterData $routerData): void
     {
         $provider->fillMacro($routerData);
@@ -26,7 +21,6 @@ class AuthRouter
         foreach ($providers as $provider) {
             $this->addProvider($provider, $routerData);
         }
-
     }
 
     public function addLogin(ProviderCollection $providers, RouterData $routerData): void

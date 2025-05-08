@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use SchenkeIo\LaravelAuthRouter\Auth\AuthRouter;
+use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
+use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Tests\Feature\Auth\DummyProvider;
 use Workbench\App\Models\User;
 
@@ -16,7 +18,10 @@ it('adds a login route', function () {
     // Instantiate the class containing the addLogin method
     $authRouter = new AuthRouter;
     // Call the method to register the login route
-    $authRouter->addLoginRedirect($mockProvider);
+    $providers = ProviderCollection::fromProvider($mockProvider);
+    $routerData = new RouterData('home', 'error', 'home');
+    $authRouter->addLogin($providers, $routerData);  // sets the login route
+
     // find the route
     $route = collect(Route::getRoutes()->getIterator())->first(fn ($route) => $route->getName() === 'login');
     $this->assertNotNull($route, 'The "login" route was not found in the route collection.');
@@ -31,7 +36,9 @@ it('allows an authenticated user to log out and redirects to the home route', fu
     Route::get('/', fn () => '')->name('home');
 
     $authRouter = new AuthRouter;
-    $authRouter->addLoginRedirect(new DummyProvider);  // sets the login route
+    $providers = ProviderCollection::fromProvider(new DummyProvider);
+    $routerData = new RouterData('home', 'error', 'home');
+    $authRouter->addLogin($providers, $routerData);  // sets the login route
     $authRouter->addLogout('home');  // sets the logout route
 
     // Make a POST request to the logout route with authenticating
@@ -47,7 +54,9 @@ it('allows an authenticated user to log out and redirects to the home route', fu
 
 it('does not allow a guest to access the logout route', function () {
     $authRouter = new AuthRouter;
-    $authRouter->addLoginRedirect(new DummyProvider);  // sets the login route
+    $providers = ProviderCollection::fromProvider(new DummyProvider);
+    $routerData = new RouterData('home', 'error', 'home');
+    $authRouter->addLogin($providers, $routerData);  // sets the login route
     $authRouter->addLogout('home');  // sets the logout route
 
     // Make a POST request to the logout route without authenticating

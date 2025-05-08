@@ -30,7 +30,7 @@ class MakeMarkdown extends Command
     public function handle()
     {
         $mda = new MarkdownAssembler('workbench/resources/md');
-        $mda->storeTestBadge('run-test.yml', BadgeStyle::Flat);
+        $mda->storeTestBadge('run-tests.yml', BadgeStyle::Flat);
         $mda->storeVersionBadge(BadgeStyle::Flat);
         $mda->storeDownloadBadge(BadgeStyle::Flat);
         $mda->storeLocalBadge('coverage', '.github/coverage.svg');

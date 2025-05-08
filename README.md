@@ -13,7 +13,7 @@ Do not edit manually as it will be overwritten.
 
 
 
-[![Test](https://img.shields.io/github/actions/workflow/status/schenke-io/laravel-auth-router/run-test.yml?style=flat&branch=main&label=tests)](https://github.com/schenke-io/laravel-auth-router/actions/workflows/%3Arun-test.yml%3Amain)
+[![Test](https://img.shields.io/github/actions/workflow/status/schenke-io/laravel-auth-router/run-tests.yml?style=flat&branch=main&label=tests)](https://github.com/schenke-io/laravel-auth-router/actions/workflows/%3Arun-tests.yml%3Amain)
 [![Latest Version](https://img.shields.io/packagist/v/schenke-io/laravel-auth-router?style=flat)](https://packagist.org/packages/schenke-io/laravel-auth-router)
 [![Total Downloads](https://img.shields.io/packagist/dt/schenke-io/laravel-auth-router.svg?style=flat)](https://packagist.org/packages/schenke-io/laravel-auth-router)
 [![coverage](.github/coverage.svg)]()

@@ -26,13 +26,13 @@ class AuthRouterServiceProvider extends PackageServiceProvider
     public function boot(): void
     {
         Router::macro('authRouter', function (
-            string|array $providers,
+            string|array $providerKeys,
             string $routeSuccess,
             string $routeError,
             string $routeHome = 'home',
             bool $canAddUsers = true) {
 
-            $providers = new ProviderCollection($providers);
+            $providers = ProviderCollection::fromTextArray($providerKeys);
             $routerData = new RouterData($routeSuccess, $routeError, $routeHome, $canAddUsers);
             $authRouter = new AuthRouter;
             // add the routes for any provider

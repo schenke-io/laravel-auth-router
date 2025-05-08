@@ -15,12 +15,12 @@ class ProviderCollection extends Collection
     /**
      * @param  string|string[]  $data
      */
-    public function __construct(string|array $data)
+    public static function fromTextArray(string|array $data): ProviderCollection
     {
+        $me = new self([]);
         if (is_string($data)) {
             $data = [$data];
         }
-        parent::__construct();
         foreach ($data as $name) {
             $service = Service::get($name);
             if ($service) {
@@ -30,8 +30,15 @@ class ProviderCollection extends Collection
                 $provider = new UnknownBaseProvider;
                 $provider->addError(__('auth-router::errors.provider_not_found', ['provider' => $name]));
             }
-            $this->push($provider);
+            $me->push($provider);
         }
+
+        return $me;
+    }
+
+    public static function fromProvider(BaseProvider $provider): ProviderCollection
+    {
+        return new self([$provider]);
     }
 
     public function first(?callable $callback = null, $default = null): BaseProvider
