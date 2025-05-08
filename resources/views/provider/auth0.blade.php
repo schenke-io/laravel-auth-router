@@ -1,4 +1,4 @@
-<form class="email-login-group" action="{{$provider->href}}">
+<form class="email-login-group" action="{{route($provider->loginRoute)}}">
     <input name="hint"
            type="email"
            class="email-input"

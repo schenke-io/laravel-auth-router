@@ -47,6 +47,7 @@
     @foreach(\SchenkeIo\LaravelAuthRouter\Auth\Service::cases() as $case)
         @include('auth-router::provider.' . $case->name,['provider' => $case->provider()])
     @endforeach
+    @include('auth-router::provider.error',['provider' => $provider])
     <a href="#" class="back-button">{{__('auth-router::login.back')}}</a>
 </div>
 <div class="floating-buttons-container">

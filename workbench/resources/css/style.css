@@ -250,14 +250,27 @@ body {
     color: var(--back-btn-hover-text);
     opacity: 1.0; /* Volle Opazität bei Hover */
 }
-
-.error-message{
+.error-message {
+    justify-content: left;
+    width: 100%;
+    min-height: 44px; /* Mindesthöhe für Touch-Interaktion */
+    max-height: 90px; /* Maximale Höhe, um Übergröße zu vermeiden */
+    padding: 10px;
+    margin-bottom: 2.5vh; /* Responsive Abstand */
+    border-radius: 6px; /* Konsistenter Radius */
+    font-size: clamp(12px, 2vmin, 14px); /* Responsive Schriftgröße */
+    text-decoration: none;
+    transition: opacity 0.2s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+    border: 1px solid red; /* Basis für Border */
+    text-align: left;
+    white-space: nowrap; /* Verhindert Umbruch */
+    overflow: hidden; /* Verhindert Überlaufen des Inhalts */
+    text-overflow: ellipsis; /* Fügt "..." hinzu, falls Text zu lang */
     color: red;
-    background-color: silver;
-    font-size: 12px;
-    text-align: center;
-    border-color: var(--back-btn-border);
+    background-color: ghostwhite;
     font-weight: 400;
+
 }
 
 /* Beispielhafte Stile für E-Mail Login Gruppe */

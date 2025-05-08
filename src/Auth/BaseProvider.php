@@ -21,8 +21,6 @@ abstract class BaseProvider
 
     public string $blade = '';
 
-    public string $href = '#';
-
     /**
      * @var string[]
      */
@@ -31,26 +29,27 @@ abstract class BaseProvider
     public function __construct()
     {
         $text = explode('Provider', class_basename($this));
-        $this->service = Service::get(strtolower($text[0]));
+        $givenName = strtolower($text[0]);
+        $this->service = Service::get($givenName);
         $this->name = $this->service->name ?? 'unknown';
         $this->loginUri = 'login/'.$this->name;
         $this->loginRoute = 'login.'.$this->name;
         $this->callbackUri = 'callback/'.$this->name;
         $this->callbackRoute = 'callback.'.$this->name;
-
-        $longKey = 'services.'.$this->name;
-        if (is_array(config($longKey, null))) {
-            foreach (array_keys($this->env()) as $key) {
-                $longKey = implode('.', ['services', $this->name, $key]);
-                if (config($longKey) === null) {
-                    $this->errors[] = __('auth-router::errors.config_not_set', ['key' => $longKey]);
+        if ($this->service) {
+            $longKey = 'services.'.$this->name;
+            if (is_array(config($longKey))) {
+                foreach (array_keys($this->env()) as $key) {
+                    $longKey = implode('.', ['services', $this->name, $key]);
+                    if (config($longKey) === null) {
+                        $this->errors[] = Error::ConfigNotSet->trans(['key' => $longKey]);
+                    }
                 }
+            } else {
+                $this->errors[] = Error::ServiceNotSet->trans(['name' => $this->name]);
             }
-        } else {
-            $this->errors[] = __('auth-router::errors.service_not_set', ['name' => $this->name]);
         }
-
-        $this->blade = 'auth-router::provider.'.($this->valid() ? $this->name : 'error');
+        $this->blade = 'auth-router::provider.'.($this->service && $this->valid() ? $this->name : 'error');
     }
 
     /**

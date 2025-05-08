@@ -46,7 +46,7 @@ abstract class SocialiteBaseProvider extends BaseProvider
 
             return UserData::fromUser($socialUser)->authAndRedirect($routerData);
         } catch (\Exception $e) {
-            return Error::Auth->redirect($routerData, $e->getMessage());
+            return Error::LocalAuth->redirect($routerData, $e->getMessage());
         }
     }
 }

@@ -78,7 +78,8 @@
             "@styles",
             "@pint",
             "@analyse",
-            "@coverage"
+            "@coverage",
+            "@markdown"
         ],
         "add": [],
         "menu": "SchenkeIo\\LaravelAuth\\DeveloperMenu::handle",

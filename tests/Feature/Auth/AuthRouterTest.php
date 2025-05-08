@@ -18,7 +18,7 @@ it('adds a login route', function () {
     // Instantiate the class containing the addLogin method
     $authRouter = new AuthRouter;
     // Call the method to register the login route
-    $providers = ProviderCollection::fromProvider($mockProvider);
+    $providers = new ProviderCollection([new DummyProvider]);
     $routerData = new RouterData('home', 'error', 'home');
     $authRouter->addLogin($providers, $routerData);  // sets the login route
 
@@ -36,7 +36,7 @@ it('allows an authenticated user to log out and redirects to the home route', fu
     Route::get('/', fn () => '')->name('home');
 
     $authRouter = new AuthRouter;
-    $providers = ProviderCollection::fromProvider(new DummyProvider);
+    $providers = new ProviderCollection([new DummyProvider]);
     $routerData = new RouterData('home', 'error', 'home');
     $authRouter->addLogin($providers, $routerData);  // sets the login route
     $authRouter->addLogout('home');  // sets the logout route
@@ -54,7 +54,7 @@ it('allows an authenticated user to log out and redirects to the home route', fu
 
 it('does not allow a guest to access the logout route', function () {
     $authRouter = new AuthRouter;
-    $providers = ProviderCollection::fromProvider(new DummyProvider);
+    $providers = new ProviderCollection([new DummyProvider]);
     $routerData = new RouterData('home', 'error', 'home');
     $authRouter->addLogin($providers, $routerData);  // sets the login route
     $authRouter->addLogout('home');  // sets the logout route

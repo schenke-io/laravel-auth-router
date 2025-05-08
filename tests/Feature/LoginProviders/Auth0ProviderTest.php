@@ -62,7 +62,7 @@ it('handles the error code in callback', function () {
 
     $response = (new Auth0Provider)->callback($mockAuth0, $request, $routerData);
     $this->assertEquals('http://localhost/route-error', $response->getTargetUrl());
-    $this->assertEquals('Auth', customErrorType($response));
+    $this->assertEquals('RemoteAuth', customErrorType($response));
 });
 
 it('fails to authenticate', function () {
@@ -74,7 +74,7 @@ it('fails to authenticate', function () {
     $mockAuth0->shouldReceive('getUser')->once()->andReturn(null);
 
     $response = (new Auth0Provider)->callback($mockAuth0, $request, $routerData);
-    $this->assertEquals('Auth', customErrorType($response));
+    $this->assertEquals('LocalAuth', customErrorType($response));
 });
 
 it('can handle a network exception', function () {

@@ -4,6 +4,7 @@ namespace SchenkeIo\LaravelAuthRouter\Data;
 
 use Illuminate\Support\Collection;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
+use SchenkeIo\LaravelAuthRouter\Auth\Error;
 use SchenkeIo\LaravelAuthRouter\Auth\Service;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\UnknownBaseProvider;
 
@@ -22,23 +23,19 @@ class ProviderCollection extends Collection
             $data = [$data];
         }
         foreach ($data as $name) {
+            $configKey = 'services.'.$name;
             $service = Service::get($name);
             if ($service) {
                 $provider = $service->provider();
             } else {
                 // error
                 $provider = new UnknownBaseProvider;
-                $provider->addError(__('auth-router::errors.provider_not_found', ['provider' => $name]));
+                $provider->addError(Error::UnknownService->trans(['name' => $name]));
             }
             $me->push($provider);
         }
 
         return $me;
-    }
-
-    public static function fromProvider(BaseProvider $provider): ProviderCollection
-    {
-        return new self([$provider]);
     }
 
     public function first(?callable $callback = null, $default = null): BaseProvider

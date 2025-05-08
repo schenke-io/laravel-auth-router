@@ -1,7 +1,16 @@
 <?php
 
 return [
-    'provider_not_found' => 'Provider :provider nicht gefunden',
-    'config_not_set' => 'Value :key missing',
-    'service_not_set' => 'Service :name missing in config/services.php',
+    'UnknownService' => 'Unbekannter Login-Dienst: :name',
+    'ServiceNotSet' => 'Dienst nicht definiert: :name',
+    'ConfigNotSet' => 'Fehlender Konfigurationswert :key',
+    'UnableToAddNewUsers' => 'Neue Benutzer können nicht hinzugefügt werden',
+    'EmailMissing' => 'Email-Adresse fehlt',
+    'InvalidEmail' => 'Ungültige E-Mail-Adresse',
+    'LocalAuth' => 'Lokale Authentifizierung fehlgeschlagen',
+    'RemoteAuth' => 'Remote-Authentifizierung fehlgeschlagen',
+    'State' => 'Ungültiger Status',
+    'Network' => 'Netzwerkfehler',
+    'InvalidRequest' => 'Ungültige Anfrage',
+
 ];

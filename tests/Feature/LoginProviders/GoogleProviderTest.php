@@ -68,7 +68,7 @@ it('generates redirect url when config incomplete', function () {
     $provider = new GoogleProvider;
     $routerData = getRouterData(true);
     $response = $provider->callback($routerData);
-    $this->assertEquals('Auth', customErrorType($response));
+    $this->assertEquals('LocalAuth', customErrorType($response));
 });
 
 it('can store errors', function () {

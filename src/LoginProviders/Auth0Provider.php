@@ -65,7 +65,7 @@ class Auth0Provider extends BaseProvider
                 $auth0->exchange();
                 $auth0User = $auth0->getUser();
                 if (! $auth0User) {
-                    return Error::Auth->redirect($routerData);
+                    return Error::LocalAuth->redirect($routerData);
                 }
 
                 return UserData::fromAuth0($auth0User)->authAndRedirect($routerData);
@@ -75,7 +75,7 @@ class Auth0Provider extends BaseProvider
                 return Error::State->redirect($routerData, $e->getMessage());
             }
         } elseif ($hasAuthenticationFailure) {
-            return Error::Auth->redirect($routerData, $requestData['error']);
+            return Error::RemoteAuth->redirect($routerData, $requestData['error']);
         } else {
             return Error::InvalidRequest->redirect($routerData);
         }

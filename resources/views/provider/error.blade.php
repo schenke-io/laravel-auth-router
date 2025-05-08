@@ -1,4 +1,4 @@
-<div class="social-button error-message">
+<div class="error-message">
     @foreach($provider->errors() as $text)
         {{$text}}<br>
     @endforeach
