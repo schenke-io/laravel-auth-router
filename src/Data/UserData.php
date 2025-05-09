@@ -55,47 +55,35 @@ class UserData extends Data
             return Error::InvalidEmail->redirect($routerData);
         }
 
-        // Get the user model class configured in the application
+        /**
+         * Get the user model class configured in the application
+         *
+         * @var class-string<Model> $userModelClass
+         */
         $userModelClass = config('auth.providers.users.model');
         /** @var Authenticatable|null $user */
         $user = $userModelClass::where('email', $this->email)->first();
         if ($user) {
-            $this->partlyUpdate($user);
+            /** @var Model&object{avatar: string } $user */
+            $oldAvatar = $user->avatar;
+            $newAvatar = $this->avatar;
+            if ($oldAvatar != $newAvatar && strlen($newAvatar) > 10) {
+                $user->update(['avatar' => $newAvatar]);
+            }
         } else {
             if ($routerData->canAddUsers) {
-                /** @var Authenticatable $user */
-                $user = new $userModelClass;
-                $this->fullUpdate($user);
+                $user = (new $userModelClass)->updateOrCreate(
+                    ['email' => $this->email],
+                    ['name' => $this->name, 'avatar' => $this->avatar]
+                );
             } else {
                 return Error::UnableToAddNewUsers->redirect($routerData);
             }
         }
         $user->save();
+        /** @var Authenticatable $user */
         Auth::guard('web')->login($user);
 
         return redirect()->route($routerData->routeSuccess);
-    }
-
-    private function fullUpdate(Authenticatable|Model $user): void
-    {
-        $user->update([
-            'name' => $this->name,
-            'email' => $this->email,
-            'avatar' => $this->avatar,
-        ]);
-    }
-
-    /**
-     * we update only the avatar if it's new and valid
-     * if the user change login the old avatar could stay
-     */
-    private function partlyUpdate(Authenticatable|Model $user): void
-    {
-        /** @var Model&object{avatar: string } $user */
-        $oldAvatar = $user->avatar;
-        $newAvatar = $this->avatar;
-        if ($oldAvatar != $newAvatar && strlen($newAvatar) > 10) {
-            $user->update(['avatar' => $newAvatar]);
-        }
     }
 }

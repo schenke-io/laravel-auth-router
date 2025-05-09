@@ -8,6 +8,7 @@ use SchenkeIo\LaravelAuthRouter\LoginProviders\GoogleProvider;
 use Workbench\App\Models\User;
 
 it('can see users from the database', function () {
+    expect(User::all())->toHaveCount(0);
     User::factory(2)->create();
     expect(User::all())->toHaveCount(2);
 });
@@ -31,6 +32,7 @@ it('redirects to google for login', function () {
 it('handles the return code and authenticates the user if possible', function () {
     $this->app->config->set('services.google.client_id', 'google_client_id');
     $this->app->config->set('services.google.client_secret', 'google_client_secret');
+    $this->app->config->set('auth.providers.users.model', User::class);
 
     $socialiteId = 'provider-user-id';
     $name = 'Test User';
@@ -53,9 +55,10 @@ it('handles the return code and authenticates the user if possible', function ()
     $routerData = new RouterData('dashboard', 'home', 'home', true);
     $response = $provider->callback($routerData);
 
-    $this->assertEquals('http://localhost/dashboard', $response->getTargetUrl());
+    $this->assertTrue(Auth::check());
     $this->assertEquals(1, Auth::user()->id);
     $this->assertCount(0, $provider->errors());
+    $this->assertEquals('http://localhost/dashboard', $response->getTargetUrl());
 });
 
 it('generates redirect url when config incomplete', function () {

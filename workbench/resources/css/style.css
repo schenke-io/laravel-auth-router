@@ -261,11 +261,11 @@ body {
     font-size: clamp(12px, 2vmin, 14px); /* Responsive Schriftgröße */
     text-decoration: none;
     transition: opacity 0.2s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-    cursor: pointer;
+
     border: 1px solid red; /* Basis für Border */
     text-align: left;
-    white-space: nowrap; /* Verhindert Umbruch */
-    overflow: hidden; /* Verhindert Überlaufen des Inhalts */
+    white-space: normal;
+    overflow: auto;
     text-overflow: ellipsis; /* Fügt "..." hinzu, falls Text zu lang */
     color: red;
     background-color: ghostwhite;

@@ -5,6 +5,7 @@ use Auth0\SDK\Exception\NetworkException;
 use Auth0\SDK\Exception\StateException;
 use Illuminate\Http\Request;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\Auth0Provider;
+use Workbench\App\Models\User;
 
 it('can redirect to login page without hint', function () {
     $redirectUri = 'http://auth0.com/auth';
@@ -36,6 +37,8 @@ it('has 4 env variables', function () {
 });
 
 it('can authenticate with auth0', function () {
+    $this->app->config->set('auth.providers.users.model', User::class);
+
     $request = new Request(['state' => 'state', 'code' => 'code']);
     $routerData = getRouterData(true);
 

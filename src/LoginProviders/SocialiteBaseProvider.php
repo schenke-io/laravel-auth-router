@@ -29,10 +29,8 @@ abstract class SocialiteBaseProvider extends BaseProvider
         ];
     }
 
-    public function login(string $redirectUri): SymRedirectResponse|RedirectResponse
+    public function login(): SymRedirectResponse|RedirectResponse
     {
-        Config::set('services.'.$this->name.'.redirect', $redirectUri);
-
         return Socialite::driver($this->name)->redirect();
     }
 

@@ -2,6 +2,7 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Auth;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 
@@ -41,7 +42,7 @@ abstract class BaseProvider
             if (is_array(config($longKey))) {
                 foreach (array_keys($this->env()) as $key) {
                     $longKey = implode('.', ['services', $this->name, $key]);
-                    if (config($longKey) === null) {
+                    if ((config($longKey) ?? '') == '') {
                         $this->errors[] = Error::ConfigNotSet->trans(['key' => $longKey]);
                     }
                 }
@@ -73,16 +74,17 @@ abstract class BaseProvider
 
         // make absolute URLs for redirect and callback URIs
         $fullRedirectUri = url($this->callbackUri);
+        // we must store the config just value just here
+        Config::set('services.'.$this->name.'.redirect', $fullRedirectUri);
 
         /*
          *  both methods can have any dependency injection
          *  but receive also a parameter over defaults()
          */
-        $controller = 'SchenkeIo\\LaravelAuthRouter\\LoginProviders\\'.ucfirst($this->name).'Provider';
 
         Route::get($this->loginUri, $this->action('login'))
             ->name($this->loginRoute)
-            ->defaults('fullRedirectUri', $fullRedirectUri)
+//            ->defaults('fullRedirectUri', $fullRedirectUri)
             ->middleware(['guest']);
 
         Route::get($this->callbackUri, $this->action('callback'))
