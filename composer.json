@@ -27,7 +27,7 @@
         "laravel/socialite": "^5.20",
         "spatie/laravel-package-tools": "^1.0",
         "archtechx/enums": "^v1.0",
-        "spatie/laravel-data": "*",
+        "spatie/laravel-data": "^4.15",
         "revolution/socialite-amazon": "^1.2",
         "socialiteproviders/paypal": "^4.3",
         "socialiteproviders/stripe": "^4.1",

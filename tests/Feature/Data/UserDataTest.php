@@ -82,3 +82,30 @@ it('handles invalid email', function () {
     $this->assertEquals('InvalidEmail', customErrorType($response));
     $this->assertEquals(0, User::count());
 });
+
+/*
+ * checks line 89 in src/Data/UserData.php
+ */
+it('prefers an intended url over the given success url', function () {
+    $this->app->config->set('auth.providers.users.model', User::class);
+    $name = 'test name';
+    $email = 'test@example.com';
+    $avatar = 'http://example.com/avatar.jpg';
+
+    // Create a user
+    $user = User::factory()->create(['name' => $name, 'email' => $email, 'avatar' => $avatar]);
+
+    // Set up UserData and RouterData
+    $userData = new UserData($name, $email, $avatar);
+    $routerData = getRouterData(true);
+
+    // Set an intended URL in the session
+    $intendedUrl = 'http://localhost/intended-url';
+    session()->put('url.intended', $intendedUrl);
+
+    // Call authAndRedirect
+    $response = $userData->authAndRedirect($routerData);
+
+    // Verify that the response redirects to the intended URL, not the success URL
+    $this->assertEquals($intendedUrl, $response->getTargetUrl());
+});
