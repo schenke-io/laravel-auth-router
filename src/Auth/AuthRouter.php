@@ -29,7 +29,7 @@ class AuthRouter
 
         if ($providers->count() == 1 && $firstProvider->valid()) {
             // we redirect a single error free service immediately
-            Route::get('login', fn () => redirect()->route($providers->first()->loginRoute))->name('login');
+            Route::get('login', fn () => redirect()->route($firstProvider->loginRoute))->name('login');
         } else {
             // we display a selector page, maybe with errors if any
             Route::view('login', 'auth-router::login', [

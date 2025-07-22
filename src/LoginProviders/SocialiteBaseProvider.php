@@ -5,6 +5,7 @@ namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Config;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\AbstractProvider;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
 use SchenkeIo\LaravelAuthRouter\Auth\Error;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
@@ -13,6 +14,14 @@ use Symfony\Component\HttpFoundation\RedirectResponse as SymRedirectResponse;
 
 abstract class SocialiteBaseProvider extends BaseProvider
 {
+    public readonly bool $isStateless;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->isStateless = (bool) Config::get('services.'.strtolower($this->name).'.stateless', false);
+    }
+
     /**
      * key: expected key in config(system), value: suggested name ov ENV key,
      * used in testing and in documentation
@@ -31,7 +40,14 @@ abstract class SocialiteBaseProvider extends BaseProvider
 
     public function login(): SymRedirectResponse|RedirectResponse
     {
-        return Socialite::driver($this->name)->redirect();
+        /** @var AbstractProvider $driver */
+        $driver = Socialite::driver($this->name);
+
+        if ($this->isStateless) {
+            return $driver->stateless()->redirect();
+        } else {
+            return $driver->redirect();
+        }
     }
 
     /**
@@ -40,7 +56,14 @@ abstract class SocialiteBaseProvider extends BaseProvider
     public function callback(RouterData $routerData): RedirectResponse
     {
         try {
-            $socialUser = Socialite::driver($this->name)->user();
+            /** @var AbstractProvider $driver */
+            $driver = Socialite::driver($this->name);
+
+            if ($this->isStateless) {
+                $socialUser = $driver->stateless()->user();
+            } else {
+                $socialUser = $driver->user();
+            }
 
             return UserData::fromUser($socialUser)->authAndRedirect($routerData);
         } catch (\Exception $e) {
