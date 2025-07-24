@@ -15,9 +15,9 @@ Its mainly missing keys, or missing provider names in `config/services.php`.
 
 The runtime errors are stored in a session and can be handled by the app.
 
-| key                    | value                              | language       |
-|------------------------|------------------------------------|----------------|
-| authRouterErrorInfo    | user message of the error          | localised      |
+| key                    | value                               | language       |
+|------------------------|-------------------------------------|----------------|
+| authRouterErrorInfo    | user message of the error           | localised      |
 | authRouterErrorMessage | exception text of the provider/code | english mainly |
 
 The error page could look like:

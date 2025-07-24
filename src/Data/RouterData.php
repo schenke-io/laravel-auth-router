@@ -10,6 +10,7 @@ class RouterData extends Data
         public string $routeSuccess,
         public string $routeError,
         public string $routeHome,
-        public bool $canAddUsers = true
+        public bool $canAddUsers = true,
+        public bool $rememberMe = false
     ) {}
 }

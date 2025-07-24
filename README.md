@@ -87,6 +87,7 @@ Route::authRouter(/* provider/s */, $routeSuccess, $routeError, $routeHome, $can
 | routeError   | route after login failure, should be able to display errors as feedback | 'error'                               |
 | routeHome    | route to a non protected view                                           | 'home'                                |  
 | canAddUsers  | should unknown users be added or rejected                               | `true` or `false`                     |  
+| remeberMe    | stores the login even when session expirers                             | `true` or `false`                     |  
 
 Route names can be same. If the homepage can display errors `routeError` and `routeHome` could be the same.
 When the service configuration is not complete not all routes will be created.
@@ -166,9 +167,9 @@ Its mainly missing keys, or missing provider names in `config/services.php`.
 
 The runtime errors are stored in a session and can be handled by the app.
 
-| key                    | value                              | language       |
-|------------------------|------------------------------------|----------------|
-| authRouterErrorInfo    | user message of the error          | localised      |
+| key                    | value                               | language       |
+|------------------------|-------------------------------------|----------------|
+| authRouterErrorInfo    | user message of the error           | localised      |
 | authRouterErrorMessage | exception text of the provider/code | english mainly |
 
 The error page could look like:

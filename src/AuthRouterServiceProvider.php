@@ -30,11 +30,12 @@ class AuthRouterServiceProvider extends PackageServiceProvider
             string $routeSuccess,
             string $routeError,
             string $routeHome = 'home',
-            bool $canAddUsers = true
+            bool $canAddUsers = true,
+            bool $rememberMe = false
         ) {
 
             $providers = ProviderCollection::fromTextArray($providerKeys);
-            $routerData = new RouterData($routeSuccess, $routeError, $routeHome, $canAddUsers);
+            $routerData = new RouterData($routeSuccess, $routeError, $routeHome, $canAddUsers, $rememberMe);
             $authRouter = new AuthRouter;
             // add the routes for any provider
             $authRouter->addProviders($providers, $routerData);

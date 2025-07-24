@@ -24,6 +24,7 @@ Route::authRouter(/* provider/s */, $routeSuccess, $routeError, $routeHome, $can
 | routeError   | route after login failure, should be able to display errors as feedback | 'error'                               |
 | routeHome    | route to a non protected view                                           | 'home'                                |  
 | canAddUsers  | should unknown users be added or rejected                               | `true` or `false`                     |  
+| remeberMe    | stores the login even when session expirers                             | `true` or `false`                     |  
 
 Route names can be same. If the homepage can display errors `routeError` and `routeHome` could be the same.
 When the service configuration is not complete not all routes will be created.

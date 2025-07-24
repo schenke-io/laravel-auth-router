@@ -83,7 +83,7 @@ class UserData extends Data
         }
         $user->save();
         /** @var Authenticatable $user */
-        Auth::guard('web')->login($user);
+        Auth::guard('web')->login($user, $routerData->rememberMe);
 
         if (Session::has('url.intended')) {
             return redirect()->intended();
