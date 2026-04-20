@@ -1,10 +1,8 @@
 <?php
 
 use Illuminate\Routing\RouteCollection;
-use Laravel\Socialite\Contracts\Factory;
 use Laravel\Socialite\Facades\Socialite;
 use SchenkeIo\LaravelAuthRouter\AuthRouterServiceProvider;
-use SocialiteProviders\Manager\Config;
 use SocialiteProviders\Manager\Helpers\ConfigRetriever;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Microsoft;
@@ -43,8 +41,6 @@ it('defines a single provider', function ($providerInput) {
     $this->app->config->set('services.google.client_id', 'google_client_id');
     $this->app->config->set('services.google.client_secret', 'google_client_secret');
 
-    $serviceProvider = new AuthRouterServiceProvider($this->app);
-    $serviceProvider->boot();
     Route::authRouter($providerInput)->success('success')->error('error');
     $routeNames = routeNames();
     $this->assertTrue(in_array('login.google', $routeNames));
@@ -59,8 +55,6 @@ it('handles a single defect providers', function ($providerInput) {
     // clear all services
     $this->app->config->set('services', []);
     // no services configured
-    $serviceProvider = new AuthRouterServiceProvider($this->app);
-    $serviceProvider->boot();
     Route::authRouter($providerInput)->success('success')->error('error');
     $routeNames = routeNames();
     $this->assertFalse(in_array('login.google', $routeNames));
@@ -75,33 +69,24 @@ it('defines some providers', function () {
     $this->app->config->set('services.microsoft.client_id', 'microsoft_client_id');
     $this->app->config->set('services.microsoft.client_secret', 'microsoft_client_secret');
 
-    $serviceProvider = new AuthRouterServiceProvider($this->app);
-    $serviceProvider->boot();
     Route::authRouter(['google', 'microsoft'])->success('success')->error('error');
     $this->assertGreaterThan(5, Route::getRoutes()->count());
 });
 
 it('register providers', function () {
-    $serviceProvider = new AuthRouterServiceProvider($this->app);
-    $serviceProvider->boot();
+    $this->app->config->set('services.microsoft', [
+        'client_id' => 'fake-id',
+        'client_secret' => 'fake-secret',
+        'redirect' => 'fake-redirect',
+    ]);
+    $this->app->config->set('services.stripe', [
+        'client_id' => 'fake-id',
+        'client_secret' => 'fake-secret',
+        'redirect' => 'fake-redirect',
+    ]);
 
-    // Let's provide mocks for these if we new it up directly.
-    $socialiteFactoryMock = $this->app->make(Factory::class);
-    $configRetrieverMock = Mockery::mock(ConfigRetriever::class);
-    // Allow any necessary calls on configRetriever if extendSocialite's internal closure uses it.
-    $configRetrieverMock->shouldReceive('fromServices')->times(2)->andReturn(
-        new Config(
-            'client_id',
-            'client_secret',
-            'redirect'
-        )
-    );
+    Event::dispatch(new SocialiteWasCalled($this->app, new ConfigRetriever));
 
-    Event::dispatch(new SocialiteWasCalled($this->app, $configRetrieverMock));
-    $microsoftDriver = Socialite::driver('microsoft');
-    $this->assertInstanceOf(Microsoft\Provider::class, $microsoftDriver);
-
-    $stripeDriver = Socialite::driver('stripe');
-    $this->assertInstanceOf(Stripe\Provider::class, $stripeDriver);
-
+    $this->assertInstanceOf(Microsoft\Provider::class, Socialite::driver('microsoft'));
+    $this->assertInstanceOf(Stripe\Provider::class, Socialite::driver('stripe'));
 });
