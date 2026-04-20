@@ -52,9 +52,18 @@ abstract class BaseProvider
         if ($this->service) {
             $longKey = 'services.'.$this->name;
             $config = config($longKey);
+            $fromMapping = false;
+            if (is_string($config)) {
+                $config = ['client_id' => $config];
+                Config::set($longKey, $config);
+                $fromMapping = true;
+            }
             if (is_array($config)) {
                 foreach ($this->env() as $key => $env) {
                     if (($config[$key] ?? '') == '') {
+                        if ($fromMapping && $key != 'client_id') {
+                            continue;
+                        }
                         $this->errors[] = Error::ConfigNotSet->trans(['key' => $longKey.'.'.$key, 'env' => $env]);
                     }
                 }

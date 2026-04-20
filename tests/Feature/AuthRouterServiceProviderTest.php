@@ -90,3 +90,18 @@ it('register providers', function () {
     $this->assertInstanceOf(Microsoft\Provider::class, Socialite::driver('microsoft'));
     $this->assertInstanceOf(Stripe\Provider::class, Socialite::driver('stripe'));
 });
+
+it('handles string configuration for services', function () {
+    $this->app->config->set('services.google', 'google_client_id');
+    Route::authRouter('google')->success('success')->error('error')->register();
+    expect(config('services.google'))->toBeArray()
+        ->and(config('services.google.client_id'))->toBe('google_client_id')
+        ->and(config('services.google.redirect'))->not->toBeNull();
+
+    // This should not throw TypeError
+    try {
+        Socialite::driver('google');
+    } catch (Exception $e) {
+        expect($e)->not->toBeInstanceOf(TypeError::class);
+    }
+});
