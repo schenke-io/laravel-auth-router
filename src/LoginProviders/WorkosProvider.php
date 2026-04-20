@@ -67,7 +67,7 @@ class WorkosProvider extends BaseProvider
                 $code
             );
 
-            return UserData::fromWorkOs($response->user, $this->getProviderIdField())->authAndRedirect($routerData);
+            return UserData::fromWorkOs($response->user)->authAndRedirect($routerData);
         } catch (\Exception $e) {
             return Error::RemoteAuth->redirect($routerData, $e->getMessage());
         }

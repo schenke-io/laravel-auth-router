@@ -2,7 +2,17 @@
 
 namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
 
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Contracts\User;
+use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\AbstractProvider;
+use SchenkeIo\LaravelAuthRouter\Auth\Error;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
+use SchenkeIo\LaravelAuthRouter\Data\UserData;
 use SchenkeIo\LaravelAuthRouter\Services\AppleAuthService;
 use SchenkeIo\LaravelAuthRouter\Services\AppleTokenGenerator;
 
@@ -46,11 +56,11 @@ class AppleProvider extends SocialiteProvider
         $uriPrefix = $routerData->getUriPrefix();
         $routePrefix = $routerData->getRoutePrefix();
 
-        \Illuminate\Support\Facades\Route::post($uriPrefix.$this->callbackUri, fn (\Illuminate\Http\Request $request) => app()->call([$this, 'callback'], ['routerData' => $routerData]))
+        Route::post($uriPrefix.$this->callbackUri, fn (Request $request) => app()->call([$this, 'callback'], ['routerData' => $routerData]))
             ->defaults('routerData', $routerData)
             ->middleware($middleware);
 
-        \Illuminate\Support\Facades\Route::post($uriPrefix.$this->name.'/webhook', fn (\Illuminate\Http\Request $request) => app()->call([$this, 'webhook'], ['routerData' => $routerData]))
+        Route::post($uriPrefix.$this->name.'/webhook', fn (Request $request) => app()->call([$this, 'webhook'], ['routerData' => $routerData]))
             ->name($routePrefix.$this->name.'.webhook')
             ->middleware($routerData->middleware);
     }
@@ -75,16 +85,14 @@ class AppleProvider extends SocialiteProvider
     /**
      * handles the return code and authenticate the user if possible
      */
-    public function callback(\SchenkeIo\LaravelAuthRouter\Data\RouterData $routerData): \Illuminate\Http\RedirectResponse|\Illuminate\Contracts\View\View
+    public function callback(RouterData $routerData): RedirectResponse|View
     {
         if (request('code') === 'fake_code') {
-            $userData = new \SchenkeIo\LaravelAuthRouter\Data\UserData(
+            $userData = new UserData(
                 name: 'Fake User',
                 email: 'fake@example.com',
                 avatar: 'https://via.placeholder.com/150',
-                provider: $this->name,
-                providerId: 'fake-id',
-                providerIdField: $this->getProviderIdField()
+                provider: $this->name
             );
 
             return view('auth-router::callback-payload', [
@@ -96,28 +104,28 @@ class AppleProvider extends SocialiteProvider
 
         try {
             $this->beforeRequest();
-            /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
-            $driver = \Laravel\Socialite\Facades\Socialite::driver($this->name);
+            /** @var AbstractProvider $driver */
+            $driver = Socialite::driver($this->name);
 
             if ($this->isStateless) {
-                /** @var \Laravel\Socialite\Contracts\User $socialUser */
+                /** @var User $socialUser */
                 $socialUser = $driver->stateless()->user();
             } else {
-                /** @var \Laravel\Socialite\Contracts\User $socialUser */
+                /** @var User $socialUser */
                 $socialUser = $driver->user();
             }
 
-            return \SchenkeIo\LaravelAuthRouter\Data\UserData::fromUser($socialUser, $this->name, $this->getProviderIdField())
+            return UserData::fromUser($socialUser, $this->name)
                 ->authAndRedirect($routerData);
         } catch (\Exception $e) {
-            return \SchenkeIo\LaravelAuthRouter\Auth\Error::LocalAuth->redirect($routerData, $e->getMessage());
+            return Error::LocalAuth->redirect($routerData, $e->getMessage());
         }
     }
 
     /**
      * Handle Apple Server-to-Server notifications.
      */
-    public function webhook(\Illuminate\Http\Request $request): \Illuminate\Http\Response
+    public function webhook(Request $request): Response
     {
         app(AppleAuthService::class)->handleServerNotification($request->all());
 

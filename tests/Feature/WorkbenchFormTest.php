@@ -1,5 +1,7 @@
 <?php
 
+use Workbench\App\Http\Controllers\SetLanguageController;
+
 it('can submit the workbench form and see results', function () {
     $data = [
         'language' => 'de',
@@ -11,7 +13,7 @@ it('can submit the workbench form and see results', function () {
 
     $response->assertRedirect(route('home'));
     $response->assertSessionHas('workbench_form_data', $data);
-    $response->assertCookie(\Workbench\App\Http\Controllers\SetLanguageController::LANG_COOKIE, 'de', false);
+    $response->assertCookie(SetLanguageController::LANG_COOKIE, 'de', false);
 
     // Follow redirect
     $response = $this->get(route('home'));

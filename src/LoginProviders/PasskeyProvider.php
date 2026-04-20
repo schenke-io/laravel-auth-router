@@ -99,9 +99,7 @@ class PasskeyProvider extends BaseProvider
         $userData = new UserData(
             name: explode('@', $email)[0],
             email: $email,
-            provider: $this->name,
-            providerId: 'passkey-'.md5($email),
-            providerIdField: $this->getProviderIdField()
+            provider: $this->name
         );
 
         return $userData->authAndRedirect($routerData);

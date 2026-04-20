@@ -27,8 +27,6 @@ class User extends Authenticatable implements AuthenticatableRouterUser
         'password',
         'avatar',
         'provider',
-        'provider_id',
-        'apple_id',
     ];
 
     /**

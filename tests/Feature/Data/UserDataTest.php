@@ -199,21 +199,6 @@ class TestUserWithInterface extends User implements AuthenticatableRouterUser
 
         return $this->where('email', $email)->first();
     }
-
-    public function findByProvider(string $provider, string $id): ?Model
-    {
-        if (app()->bound(self::class)) {
-            return app(self::class)->findByProvider($provider, $id);
-        }
-
-        return $this->where('provider', $provider)->where('provider_id', $id)->first();
-    }
-
-    public function setProviderId(string $provider, string $id, ?string $fieldName = null): void
-    {
-        $this->provider = $provider;
-        $this->provider_id = $id;
-    }
 }
 
 it('supports AuthenticatableRouterUser interface', function () {
@@ -239,52 +224,8 @@ it('supports AuthenticatableRouterUser interface', function () {
     $this->assertEquals($newName, $user->name);
 });
 
-it('can create a new user with provider and providerId using AuthenticatableRouterUser', function () {
-    $userModelClass = TestUserWithInterface::class;
-    $this->app->config->set('auth.providers.users.model', $userModelClass);
-
-    $name = 'New User';
-    $email = 'new-user-provider@example.com';
-    $provider = 'google';
-    $providerId = 'google-123';
-    $userData = new UserData($name, $email, 'http://example.com/avatar.jpg', $provider, $providerId);
-    $routerData = getRouterData(true);
-
-    $this->assertEquals(0, $userModelClass::count());
-    $userData->authAndRedirect($routerData);
-    $this->assertEquals(1, $userModelClass::count());
-
-    $user = $userModelClass::where('email', $email)->first();
-    $this->assertNotNull($user);
-    $this->assertEquals($name, $user->name);
-    $this->assertEquals($provider, $user->provider);
-    $this->assertEquals($providerId, $user->provider_id);
-});
-
-it('can link an existing user by provider via interface', function () {
-    $this->app->config->set('auth.providers.users.model', TestUserWithInterface::class);
-    $email = 'test-provider@example.com';
-    $name = 'Provider User';
-    $provider = 'apple';
-    $providerId = 'apple-123';
-
-    $mockUser = Mockery::mock(TestUserWithInterface::class)->makePartial();
-    $mockUser->shouldReceive('findByProvider')->with($provider, $providerId)->andReturn($mockUser);
-    $mockUser->shouldReceive('setName')->with($name)->once();
-    $mockUser->shouldReceive('setEmail')->with($email)->once();
-    $mockUser->shouldReceive('setProviderId')->with($provider, $providerId, null)->once();
-    $mockUser->shouldReceive('save')->once();
-
-    $this->app->instance(TestUserWithInterface::class, $mockUser);
-
-    $userData = new UserData($name, $email, null, $provider, $providerId);
-    $routerData = getRouterData(false);
-
-    $userData->authAndRedirect($routerData);
-});
-
 it('can create UserData from Socialite User', function () {
-    $socialiteUser = Mockery::mock(\Laravel\Socialite\Contracts\User::class);
+    $socialiteUser = Mockery::mock(Laravel\Socialite\Contracts\User::class);
     $socialiteUser->shouldReceive('getName')->andReturn('Socialite Name');
     $socialiteUser->shouldReceive('getEmail')->andReturn('socialite@example.com');
     $socialiteUser->shouldReceive('getAvatar')->andReturn('http://example.com/socialite.jpg');
@@ -295,7 +236,6 @@ it('can create UserData from Socialite User', function () {
     expect($userData->name)->toBe('Socialite Name')
         ->and($userData->email)->toBe('socialite@example.com')
         ->and($userData->provider)->toBe('google')
-        ->and($userData->providerId)->toBe('12345')
         ->and($userData->avatar)->toBe('http://example.com/socialite.jpg');
 });
 
@@ -311,44 +251,4 @@ it('can create UserData from Auth0 data', function () {
     expect($userData->name)->toBe('Auth0 Name')
         ->and($userData->email)->toBe('auth0@example.com')
         ->and($userData->avatar)->toBe('http://example.com/auth0.jpg');
-});
-
-it('can link provider id to existing user by email', function () {
-    $userModelClass = TestUserWithInterface::class;
-    $this->app->config->set('auth.providers.users.model', $userModelClass);
-
-    $email = 'test-linking@example.com';
-    $user = User::factory()->create(['email' => $email]);
-
-    $userData = new UserData(name: 'New Name', email: $email, provider: 'google', providerId: 'google-id');
-    $routerData = getRouterData(true);
-
-    $userData->authAndRedirect($routerData);
-
-    $user->refresh();
-    $this->assertEquals('google', $user->provider);
-    $this->assertEquals('google-id', $user->provider_id);
-});
-
-it('can find existing user by provider id', function () {
-    $userModelClass = TestUserWithInterface::class;
-    $this->app->config->set('auth.providers.users.model', $userModelClass);
-
-    $email = 'test-provider-lookup@example.com';
-    $user = User::factory()->create([
-        'email' => $email,
-        'provider' => 'google',
-        'provider_id' => 'google-id',
-    ]);
-
-    // Use a different email in UserData, but the same provider info
-    $userData = new UserData(name: 'New Name', email: 'different-email@example.com', provider: 'google', providerId: 'google-id');
-    $routerData = getRouterData(true);
-
-    $userData->authAndRedirect($routerData);
-
-    $this->assertEquals($user->id, Auth::id());
-    $user->refresh();
-    // email should be updated to what's in UserData
-    $this->assertEquals('different-email@example.com', $user->email);
 });

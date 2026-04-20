@@ -11,9 +11,8 @@ To make a standard Socialite driver stateless, add a `stateless` key in its `con
 'google' => [
     'client_id' => env('GOOGLE_CLIENT_ID'),
     'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-    'stateless' => true,
-    'user_id_field' => true  // enables storage of google_id
-]
+    'stateless' => true
+],
 ```
 
 ### WorkOS Drivers

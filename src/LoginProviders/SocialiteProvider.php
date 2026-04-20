@@ -2,6 +2,7 @@
 
 namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
 
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Config;
 use Laravel\Socialite\Facades\Socialite;
@@ -62,16 +63,14 @@ abstract class SocialiteProvider extends BaseProvider
     /**
      * handles the return code and authenticate the user if possible
      */
-    public function callback(RouterData $routerData): RedirectResponse|\Illuminate\Contracts\View\View
+    public function callback(RouterData $routerData): RedirectResponse|View
     {
         if (request('code') === 'fake_code') {
             $userData = new UserData(
                 name: 'Fake User',
                 email: 'fake@example.com',
                 avatar: 'https://via.placeholder.com/150',
-                provider: $this->name,
-                providerId: 'fake-id',
-                providerIdField: $this->getProviderIdField()
+                provider: $this->name
             );
 
             return view('auth-router::callback-payload', [
@@ -96,7 +95,7 @@ abstract class SocialiteProvider extends BaseProvider
                 $socialUser = $driver->user();
             }
 
-            return UserData::fromUser($socialUser, $this->name, $this->getProviderIdField())->authAndRedirect($routerData);
+            return UserData::fromUser($socialUser, $this->name)->authAndRedirect($routerData);
         } catch (\Exception $e) {
             return Error::LocalAuth->redirect($routerData, $e->getMessage());
         }

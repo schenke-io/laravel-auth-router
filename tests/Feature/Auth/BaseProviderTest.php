@@ -51,14 +51,4 @@ class BaseProviderTest extends TestCase
         $provider = new GoogleProvider;
         $this->assertEquals(GoogleProvider::class.'@myMethod', $provider->getAction('myMethod'));
     }
-
-    public function test_get_provider_id_field()
-    {
-        $this->app->config->set('services.google.user_id_field', true);
-        $provider = new GoogleProvider;
-        $this->assertEquals('google_id', $provider->getProviderIdField());
-
-        $this->app->config->set('services.google.user_id_field', false);
-        $this->assertNull($provider->getProviderIdField());
-    }
 }

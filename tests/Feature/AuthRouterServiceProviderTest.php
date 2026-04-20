@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Routing\RouteCollection;
 use Laravel\Socialite\Contracts\Factory;
 use Laravel\Socialite\Facades\Socialite;
 use SchenkeIo\LaravelAuthRouter\AuthRouterServiceProvider;
@@ -54,7 +55,7 @@ it('defines a single provider', function ($providerInput) {
 
 it('handles a single defect providers', function ($providerInput) {
     // clear all routes
-    Route::setRoutes(new \Illuminate\Routing\RouteCollection);
+    Route::setRoutes(new RouteCollection);
     // clear all services
     $this->app->config->set('services', []);
     // no services configured

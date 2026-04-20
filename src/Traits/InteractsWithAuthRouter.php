@@ -31,23 +31,4 @@ trait InteractsWithAuthRouter
         /** @var Model $this */
         return $this->where('email', $email)->first();
     }
-
-    public function findByProvider(string $provider, string $id): ?Model
-    {
-        /** @var Model $this */
-        if (config("services.$provider.user_id_field")) {
-            return $this->where($provider.'_id', $id)->first();
-        }
-
-        return null;
-    }
-
-    public function setProviderId(string $provider, string $id, ?string $fieldName = null): void
-    {
-        /** @var Model $this */
-        $field = $fieldName ?: $provider.'_id';
-        if (config("services.$provider.user_id_field")) {
-            $this->{$field} = ($id === '') ? null : $id;
-        }
-    }
 }

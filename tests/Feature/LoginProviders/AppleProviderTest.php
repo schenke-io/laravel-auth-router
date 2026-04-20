@@ -3,10 +3,13 @@
 namespace SchenkeIo\LaravelAuthRouter\Tests\Feature\LoginProviders;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\AbstractProvider;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\AppleProvider;
+use SchenkeIo\LaravelAuthRouter\Services\AppleAuthService;
 use SchenkeIo\LaravelAuthRouter\Services\AppleTokenGenerator;
 use SchenkeIo\LaravelAuthRouter\Tests\TestCase;
 use Workbench\App\Models\User;
@@ -135,14 +138,14 @@ class AppleProviderTest extends TestCase
     public function test_webhook_calls_apple_auth_service()
     {
         $payload = ['type' => 'email-disabled', 'sub' => 'apple-id'];
-        $request = \Illuminate\Http\Request::create('/webhook', 'POST', $payload);
+        $request = Request::create('/webhook', 'POST', $payload);
 
-        $mockService = \Mockery::mock(\SchenkeIo\LaravelAuthRouter\Services\AppleAuthService::class);
+        $mockService = \Mockery::mock(AppleAuthService::class);
         $mockService->shouldReceive('handleServerNotification')
             ->once()
             ->with($payload);
 
-        $this->app->instance(\SchenkeIo\LaravelAuthRouter\Services\AppleAuthService::class, $mockService);
+        $this->app->instance(AppleAuthService::class, $mockService);
 
         $provider = new AppleProvider;
         $response = $provider->webhook($request);
@@ -174,7 +177,7 @@ class AppleProviderTest extends TestCase
         $socialiteUserMock->shouldReceive('getEmail')->andReturn('apple@example.com');
         $socialiteUserMock->shouldReceive('getAvatar')->andReturn('avatar-url');
 
-        $driverMock = \Mockery::mock(\Laravel\Socialite\Two\AbstractProvider::class);
+        $driverMock = \Mockery::mock(AbstractProvider::class);
         $driverMock->shouldReceive('stateless')->andReturnSelf();
         $driverMock->shouldReceive('user')->andReturn($socialiteUserMock);
 

@@ -156,9 +156,8 @@ To make a standard Socialite driver stateless, add a `stateless` key in its `con
 'google' => [
     'client_id' => env('GOOGLE_CLIENT_ID'),
     'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-    'stateless' => true,
-    'user_id_field' => true  // enables storage of google_id
-]
+    'stateless' => true
+],
 ```
 
 ### <a name="workos-drivers"></a>WorkOS Drivers
@@ -373,16 +372,14 @@ In Laravel 11+, you can do this in `bootstrap/app.php`:
 
 The handler will:
 - Mark `email_verified_at` as `null` if the user disables email relay.
-- Clear the `apple_id` (provider ID) if the user revokes consent.
 
 ### <a name="apple-socialite-callback"></a>Apple Socialite Callback
 
 Apple Sign-In is unique because it only provides the user's name and email on the **first** successful authentication ("One-Shot"). Subsequent logins only provide the unique Apple ID (`sub` claim).
 
 This package handles this by:
-1.  **Returning User:** Checking for an existing user by their Apple ID.
-2.  **Email Linking:** If no Apple ID match is found, checking if a user with the same email already exists and linking their Apple ID.
-3.  **New User (One-Shot):** Creating a new user and capturing the name and email provided by Apple on their first login.
+1.  **Returning User:** Checking for an existing user by their email.
+2.  **New User (One-Shot):** Creating a new user and capturing the name and email provided by Apple on their first login.
 
 ## <a name="custom-provider"></a>Custom Provider
 

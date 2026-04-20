@@ -76,7 +76,7 @@ class Auth0Provider extends BaseProvider
                     return Error::LocalAuth->redirect($routerData);
                 }
 
-                return UserData::fromAuth0($auth0User, $this->getProviderIdField())->authAndRedirect($routerData);
+                return UserData::fromAuth0($auth0User)->authAndRedirect($routerData);
             } catch (NetworkException $e) {
                 return Error::Network->redirect($routerData, $e->getMessage());
             } catch (StateException $e) {

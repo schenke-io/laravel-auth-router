@@ -4,7 +4,11 @@ namespace SchenkeIo\LaravelAuthRouter\Tests\Feature\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Signer\Ecdsa\Sha256;
+use Lcobucci\JWT\Signer\Key\InMemory;
 use SchenkeIo\LaravelAuthRouter\Contracts\AuthenticatableRouterUser;
+use SchenkeIo\LaravelAuthRouter\Services\AppleAuthService;
 use SchenkeIo\LaravelAuthRouter\Tests\TestCase;
 use Workbench\App\Models\User;
 
@@ -20,17 +24,13 @@ class AppleAuthServiceContractTest extends TestCase
     public function test_handle_server_notification_with_contract()
     {
         $mock = \Mockery::mock(UserWithContract::class)->makePartial();
-        $mock->shouldReceive('findByProvider')->with('apple', 'apple-id')->andReturn($mock);
-        $mock->shouldReceive('setProviderId')->with('apple', '')->once();
+        $mock->shouldReceive('findByEmail')->with('test@example.com')->andReturn($mock);
         $mock->shouldReceive('save')->once();
 
         $this->app->instance(UserWithContract::class, $mock);
 
-        // We need to trick is_subclass_of or the factory instantiation
-        // Since we can't easily mock is_subclass_of, we use the real class that implements it.
-
-        $service = new \SchenkeIo\LaravelAuthRouter\Services\AppleAuthService;
-        $token = $this->createAppleToken('apple-id', ['type' => 'consent-revoked']);
+        $service = new AppleAuthService;
+        $token = $this->createAppleToken('apple-id', ['type' => 'consent-revoked'], 'test@example.com');
 
         $service->handleServerNotification(['payload' => $token]);
 
@@ -44,7 +44,7 @@ class AppleAuthServiceContractTest extends TestCase
         $appleUser->shouldReceive('getEmail')->andReturn('new@example.com');
         $appleUser->shouldReceive('getName')->andReturn('New User');
 
-        $service = new \SchenkeIo\LaravelAuthRouter\Services\AppleAuthService;
+        $service = new AppleAuthService;
         $result = $service->handleAppleCallback($appleUser);
 
         $this->assertInstanceOf(UserWithContract::class, $result);
@@ -59,19 +59,12 @@ class AppleAuthServiceContractTest extends TestCase
         $appleUser->shouldReceive('getEmail')->andReturn('existing@example.com');
         $appleUser->shouldReceive('getName')->andReturn('Existing User');
 
-        // Note: we can't easily mock the 'new $userModelClass' call in handleAppleCallback
-        // since it's not resolved from the container when creating a new user.
-        // BUT for an EXISTING user, it IS resolved via findByEmail if we implement it that way.
-
         $mock = \Mockery::mock(UserWithContract::class)->makePartial();
-        $mock->shouldReceive('findByProvider')->with('apple', 'existing-apple-id')->andReturn(null);
         $mock->shouldReceive('findByEmail')->with('existing@example.com')->andReturn($mock);
-        $mock->shouldReceive('setProviderId')->with('apple', 'existing-apple-id')->once();
-        $mock->shouldReceive('save')->once();
 
         $this->app->bind(UserWithContract::class, fn () => $mock);
 
-        $service = new \SchenkeIo\LaravelAuthRouter\Services\AppleAuthService;
+        $service = new AppleAuthService;
         $result = $service->handleAppleCallback($appleUser);
 
         $this->assertSame($mock, $result);
@@ -84,7 +77,7 @@ class AppleAuthServiceContractTest extends TestCase
         $appleUser->shouldReceive('getEmail')->andReturn('brand-new@example.com');
         $appleUser->shouldReceive('getName')->andReturn('Brand New User');
 
-        $service = new \SchenkeIo\LaravelAuthRouter\Services\AppleAuthService;
+        $service = new AppleAuthService;
         $result = $service->handleAppleCallback($appleUser);
 
         $this->assertInstanceOf(UserWithContract::class, $result);
@@ -96,54 +89,36 @@ class AppleAuthServiceContractTest extends TestCase
     {
         $this->app->config->set('auth.providers.users.model', User::class);
         $user = User::factory()->create([
-            'apple_id' => 'apple-id',
+            'email' => 'test@example.com',
             'email_verified_at' => now(),
         ]);
 
-        $service = new \SchenkeIo\LaravelAuthRouter\Services\AppleAuthService;
-        $token = $this->createAppleToken('apple-id', ['type' => 'email-disabled']);
+        $service = new AppleAuthService;
+        $token = $this->createAppleToken('apple-id', ['type' => 'email-disabled'], 'test@example.com');
 
         $service->handleServerNotification(['payload' => $token]);
 
         $user->refresh();
         $this->assertNull($user->email_verified_at);
-    }
-
-    public function test_handle_server_notification_user_update_via_update_method()
-    {
-        // This test targets the branch where user is a Model but doesn't have email_verified_at directly or method
-        $this->app->config->set('auth.providers.users.model', User::class);
-        $user = User::factory()->create([
-            'apple_id' => 'apple-id',
-        ]);
-
-        $service = new \SchenkeIo\LaravelAuthRouter\Services\AppleAuthService;
-
-        // Consent revoked
-        $token = $this->createAppleToken('apple-id', ['type' => 'consent-revoked']);
-        $service->handleServerNotification(['payload' => $token]);
-
-        $user->refresh();
-        $this->assertNull($user->apple_id);
     }
 
     public function test_handle_server_notification_email_disabled_with_set_method()
     {
         $this->app->config->set('auth.providers.users.model', UserWithEmailSetMethod::class);
         $user = new UserWithEmailSetMethod;
-        $user->apple_id = 'apple-id';
+        $user->email = 'test@example.com';
         $user->email_verified_at = now();
         $this->app->instance(UserWithEmailSetMethod::class, $user);
 
-        $service = new \SchenkeIo\LaravelAuthRouter\Services\AppleAuthService;
-        $token = $this->createAppleToken('apple-id', ['type' => 'email-disabled']);
+        $service = new AppleAuthService;
+        $token = $this->createAppleToken('apple-id', ['type' => 'email-disabled'], 'test@example.com');
         $service->handleServerNotification(['payload' => $token]);
 
         $this->assertNull($user->email_verified_at);
         $this->assertTrue($user->setCalled);
     }
 
-    private function createAppleToken(string $sub, array $event): string
+    private function createAppleToken(string $sub, array $event, string $email = ''): string
     {
         $privateKey = <<<'EOD'
 -----BEGIN EC PRIVATE KEY-----
@@ -153,16 +128,21 @@ uI5ZOrtAwtJE2wgRplCBjRiqdvZ6n6f4Tw==
 -----END EC PRIVATE KEY-----
 EOD;
 
-        $config = \Lcobucci\JWT\Configuration::forAsymmetricSigner(
-            new \Lcobucci\JWT\Signer\Ecdsa\Sha256,
-            \Lcobucci\JWT\Signer\Key\InMemory::plainText($privateKey),
-            \Lcobucci\JWT\Signer\Key\InMemory::plainText('not-used')
+        $config = Configuration::forAsymmetricSigner(
+            new Sha256,
+            InMemory::plainText($privateKey),
+            InMemory::plainText('not-used')
         );
 
-        return $config->builder()
+        $builder = $config->builder()
             ->relatedTo($sub)
-            ->withClaim('events', json_encode($event))
-            ->getToken($config->signer(), $config->signingKey())
+            ->withClaim('events', json_encode($event));
+
+        if ($email) {
+            $builder = $builder->withClaim('email', $email);
+        }
+
+        return $builder->getToken($config->signer(), $config->signingKey())
             ->toString();
     }
 }
@@ -208,20 +188,6 @@ class UserWithContract extends Authenticatable implements AuthenticatableRouterU
         }
 
         return null;
-    }
-
-    public function findByProvider(string $provider, string $id): ?Model
-    {
-        if (app()->bound(self::class)) {
-            return app(self::class)->findByProvider($provider, $id);
-        }
-
-        return null;
-    }
-
-    public function setProviderId(string $provider, string $id, ?string $fieldName = null): void
-    {
-        $this->providerId = $id;
     }
 
     public function save(array $options = [])

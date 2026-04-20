@@ -3,6 +3,7 @@
 use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\GoogleProvider;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\UnknownBaseProvider;
+use SchenkeIo\LaravelAuthRouter\LoginProviders\WhatsappProvider;
 
 it('creates from string names', function () {
     $collection = ProviderCollection::fromTextArray(['google']);
@@ -41,6 +42,6 @@ it('handles unknown names', function () {
 
 it('sorts email-based providers first', function () {
     $collection = ProviderCollection::fromTextArray(['google', 'whatsapp']);
-    expect($collection[0])->toBeInstanceOf(\SchenkeIo\LaravelAuthRouter\LoginProviders\WhatsappProvider::class)
-        ->and($collection[1])->toBeInstanceOf(\SchenkeIo\LaravelAuthRouter\LoginProviders\GoogleProvider::class);
+    expect($collection[0])->toBeInstanceOf(WhatsappProvider::class)
+        ->and($collection[1])->toBeInstanceOf(GoogleProvider::class);
 });

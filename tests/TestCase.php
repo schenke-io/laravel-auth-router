@@ -7,6 +7,7 @@ use Laravel\Socialite\SocialiteServiceProvider;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use SchenkeIo\LaravelAuthRouter\AuthRouterServiceProvider;
+use Workbench\App\Providers\WorkbenchServiceProvider;
 
 use function Orchestra\Testbench\workbench_path;
 
@@ -24,7 +25,7 @@ class TestCase extends BaseTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            \Workbench\App\Providers\WorkbenchServiceProvider::class,
+            WorkbenchServiceProvider::class,
             AuthRouterServiceProvider::class,
             SocialiteServiceProvider::class,
         ];

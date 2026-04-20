@@ -2,6 +2,7 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Auth;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
@@ -92,18 +93,18 @@ abstract class BaseProvider
         // make absolute URLs for redirect and callback URIs
         $fullRedirectUri = url($uriPrefix.$this->callbackUri);
         // we must store the config just value just here
-        \Illuminate\Support\Facades\Config::set('services.'.$this->name.'.redirect', $fullRedirectUri);
+        Config::set('services.'.$this->name.'.redirect', $fullRedirectUri);
 
-        \Illuminate\Support\Facades\Route::get($uriPrefix.$this->loginUri, fn (\Illuminate\Http\Request $request) => app()->call([$this, 'login'], ['routerData' => $routerData]))
+        Route::get($uriPrefix.$this->loginUri, fn (Request $request) => app()->call([$this, 'login'], ['routerData' => $routerData]))
             ->name($this->loginRoute)
             ->defaults('routerData', $routerData)
             ->middleware($middleware);
 
-        \Illuminate\Support\Facades\Route::post($uriPrefix.$this->loginUri, fn (\Illuminate\Http\Request $request) => app()->call([$this, 'login'], ['routerData' => $routerData]))
+        Route::post($uriPrefix.$this->loginUri, fn (Request $request) => app()->call([$this, 'login'], ['routerData' => $routerData]))
             ->defaults('routerData', $routerData)
             ->middleware($middleware);
 
-        \Illuminate\Support\Facades\Route::get($uriPrefix.$this->callbackUri, fn (\Illuminate\Http\Request $request) => app()->call([$this, 'callback'], ['routerData' => $routerData]))
+        Route::get($uriPrefix.$this->callbackUri, fn (Request $request) => app()->call([$this, 'callback'], ['routerData' => $routerData]))
             ->name($this->callbackRoute)
             ->defaults('routerData', $routerData)
             ->middleware($middleware);
@@ -141,18 +142,5 @@ abstract class BaseProvider
     public function valid(): bool
     {
         return count($this->errors) === 0;
-    }
-
-    /**
-     * Returns the name of the database column used for this provider's unique ID.
-     * Default convention: {provider}_id (e.g., "google_id")
-     */
-    public function getProviderIdField(): ?string
-    {
-        if (config("services.{$this->name}.user_id_field")) {
-            return $this->name.'_id';
-        }
-
-        return null;
     }
 }

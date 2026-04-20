@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
 use Workbench\App\Models\User;
 
@@ -31,7 +32,7 @@ it('redirects to payload view when showPayload is enabled', function () {
     Route::get('/success', fn () => 'success')->name('success-route');
 
     $userData = new UserData('John Doe', 'john@example.com', 'google', 'http://avatar.url');
-    $routerData = new \SchenkeIo\LaravelAuthRouter\Data\RouterData(
+    $routerData = new RouterData(
         routeSuccess: 'success-route',
         routeError: 'error-route',
         routeHome: 'home',

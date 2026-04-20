@@ -1,5 +1,6 @@
 <?php
 
+use SchenkeIo\LaravelAuthRouter\Auth\Error;
 use SchenkeIo\LaravelAuthRouter\Auth\Service;
 
 function getLanguages(): array
@@ -11,7 +12,7 @@ it('has all keys translated', function () {
     foreach (['de', 'en'] as $lang) {
         $fileName = __DIR__.'/../../../resources/lang/'.$lang.'/errors.php';
         $data = require $fileName;
-        foreach (\SchenkeIo\LaravelAuthRouter\Auth\Error::cases() as $case) {
+        foreach (Error::cases() as $case) {
             // is the key defined
             $this->assertArrayHasKey($case->name, $data);
             foreach ($case->parameterKeys() as $key) {

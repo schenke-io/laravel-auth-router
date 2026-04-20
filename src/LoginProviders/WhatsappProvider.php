@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
 use SchenkeIo\LaravelAuthRouter\Auth\Error;
+use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
 
@@ -68,7 +69,7 @@ class WhatsappProvider extends BaseProvider
         }
 
         return view('auth-router::login', [
-            'providers' => \SchenkeIo\LaravelAuthRouter\Data\ProviderCollection::fromTextArray([$this]),
+            'providers' => ProviderCollection::fromTextArray([$this]),
             'routeHome' => $routerData->routeHome,
             'prefix' => $routerData->prefix,
         ]);
@@ -85,8 +86,7 @@ class WhatsappProvider extends BaseProvider
         $userData = new UserData(
             name: explode('@', $email)[0],
             email: $email,
-            provider: $this->name,
-            providerId: 'whatsapp-'.md5($email)
+            provider: $this->name
         );
 
         return $userData->authAndRedirect($routerData);

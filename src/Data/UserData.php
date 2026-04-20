@@ -32,53 +32,44 @@ class UserData extends Data
      * @param  string  $email  unique email of the user, cross-linked to other logins
      * @param  string|null  $avatar  image url or empty
      * @param  string  $provider  the login provider
-     * @param  string  $providerId  the unique id of the user at the provider
      */
     public function __construct(
         public string $name,
         public string $email,
         public ?string $avatar = null,
-        public string $provider = '',
-        public string $providerId = '',
-        public ?string $providerIdField = null
+        public string $provider = ''
     ) {}
 
-    public static function fromUser(SocialiteUser $user, string $provider, ?string $providerIdField = null): self
+    public static function fromUser(SocialiteUser $user, string $provider): self
     {
         return new self(
             name: $user->getName() ?? '',
             email: $user->getEmail() ?? '',
             avatar: $user->getAvatar() ?? '',
-            provider: $provider,
-            providerId: $user->getId(),
-            providerIdField: $providerIdField
+            provider: $provider
         );
     }
 
     /**
      * @param  array<string,string>  $data
      */
-    public static function fromAuth0(array $data, ?string $providerIdField = null): self
+    public static function fromAuth0(array $data): self
     {
         return new self(
             name: $data['name'] ?? '',
             email: $data['email'] ?? '',
             avatar: $data['picture'] ?? '',
-            provider: 'auth0',
-            providerId: $data['sub'] ?? '',
-            providerIdField: $providerIdField
+            provider: 'auth0'
         );
     }
 
-    public static function fromWorkOs(object $user, ?string $providerIdField = null): self
+    public static function fromWorkOs(object $user): self
     {
         return new self(
             name: ($user->firstName ?? '').' '.($user->lastName ?? ''),
             email: $user->email ?? '',
             avatar: $user->profilePictureUrl ?? '',
-            provider: 'workos',
-            providerId: $user->id ?? '',
-            providerIdField: $providerIdField
+            provider: 'workos'
         );
     }
 
@@ -109,23 +100,11 @@ class UserData extends Data
         /** @var Authenticatable|null $user */
         $user = null;
 
-        // 1. Primary Check: Look for provider-specific column (e.g., google_id)
-        if ($this->providerIdField && $this->providerId) {
-            $user = $userModelClass::where($this->providerIdField, $this->providerId)->first();
-        }
-
-        if (! $user && is_subclass_of($userModelClass, AuthenticatableRouterUser::class)) {
+        if (is_subclass_of($userModelClass, AuthenticatableRouterUser::class)) {
             /** @var Model&AuthenticatableRouterUser $userFactory */
             $userFactory = new $userModelClass;
-            // first check provider
-            if ($this->provider && $this->providerId) {
-                $user = $userFactory->findByProvider($this->provider, $this->providerId);
-            }
-            // then check email
-            if (! $user) {
-                $user = $userFactory->findByEmail($this->email);
-            }
-        } elseif (! $user) {
+            $user = $userFactory->findByEmail($this->email);
+        } else {
             $user = $userModelClass::where('email', $this->email)->first();
         }
 
@@ -133,9 +112,6 @@ class UserData extends Data
             if ($user instanceof AuthenticatableRouterUser) {
                 $user->setName($this->name);
                 $user->setEmail($this->email);
-                if ($this->provider && $this->providerId) {
-                    $user->setProviderId($this->provider, $this->providerId, $this->providerIdField);
-                }
                 if ($this->avatar) {
                     $user->setAvatar($this->avatar);
                 }
@@ -154,9 +130,6 @@ class UserData extends Data
                 if ($user instanceof AuthenticatableRouterUser) {
                     $user->setName($this->name);
                     $user->setEmail($this->email);
-                    if ($this->provider && $this->providerId) {
-                        $user->setProviderId($this->provider, $this->providerId, $this->providerIdField);
-                    }
                     if ($this->avatar) {
                         $user->setAvatar($this->avatar);
                     }

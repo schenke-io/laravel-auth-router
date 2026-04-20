@@ -155,10 +155,8 @@ Required interface methods (provided by the trait or implemented manually):
 | `setEmail(string)` | Write the user's email |
 | `setAvatar(string)` | Write the user's avatar URL |
 | `findByEmail(string): ?Model` | Look up user by email |
-| `findByProvider(string $provider, string $id): ?Model` | Look up user by provider + provider user ID |
-| `setProviderId(string $provider, string $id, ?string $field)` | Link a provider ID to the user row |
 
-**Convention:** The provider ID column is `{provider_name}_id` (e.g., `google_id`, `apple_id`). To enable storage of this ID, you must set `'user_id_field' => true` in `config/services.{provider_name}`.
+**Convention:** The user is identified solely by their email address.
 
 ---
 
@@ -215,8 +213,7 @@ User → GET /auth/login/{provider}
      → UserData::authAndRedirect()
            validate email
            if showPayload → store in session, show review page → POST finalize
-           findByProvider() or findByEmail() or create (if canAddUsers)
-           setProviderId()
+           findByEmail() or create (if canAddUsers)
            Auth::guard('web')->login($user, $rememberMe)
            redirect to routeSuccess (or intended URL)
      ← on error → Error::redirect() → session + header → routeError
@@ -232,5 +229,4 @@ User → GET /auth/login/{provider}
 4. **Do not mix WorkOS and non-WorkOS providers** in a single `authRouter()` call — it triggers `MixedProviders`.
 5. **Use `'stateless' => true`** for providers that suffer OAuth state mismatches (common in single-page or API-hybrid apps).
 6. **Read setup errors from the login page**, not from exception logs — configuration mistakes render there, not as 500 errors.
-7. **Add provider ID columns to the `users` table** (`google_id`, `apple_id`, etc.) and set `'user_id_field' => true` in `config/services.php` for each provider to enable linking.
-8. **Translation keys are namespaced** as `auth-router::errors.*` and `auth-router::login.*`. Override them via `lang/vendor/auth-router/`.
+7. **Translation keys are namespaced** as `auth-router::errors.*` and `auth-router::login.*`. Override them via `lang/vendor/auth-router/`.

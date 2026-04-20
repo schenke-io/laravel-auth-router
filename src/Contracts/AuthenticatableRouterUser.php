@@ -16,8 +16,4 @@ interface AuthenticatableRouterUser
     public function setAvatar(string $avatar): void;
 
     public function findByEmail(string $email): ?Model;
-
-    public function findByProvider(string $provider, string $id): ?Model;
-
-    public function setProviderId(string $provider, string $id, ?string $fieldName = null): void;
 }
