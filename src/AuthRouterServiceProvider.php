@@ -4,9 +4,11 @@ namespace SchenkeIo\LaravelAuthRouter;
 
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
+use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
 use SchenkeIo\LaravelAuthRouter\Auth\AuthRouterBuilder;
 use SchenkeIo\LaravelAuthRouter\Services\AppleTokenGenerator;
 use SocialiteProviders\Apple;
+use SocialiteProviders\Manager\Helpers\ConfigRetriever;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Microsoft;
 use SocialiteProviders\Stripe;
@@ -32,12 +34,13 @@ class AuthRouterServiceProvider extends PackageServiceProvider
         Router::macro('authRouter', function (string|array $providerKeys) {
             return new AuthRouterBuilder($providerKeys);
         });
+
         Event::listen(function (SocialiteWasCalled $event) {
             /*
              * Ensure configuration is an array for supported drivers
              * to prevent TypeErrors in Socialite 5.14+ / PHP 8.0+
              */
-            foreach (['microsoft', 'stripe', 'apple'] as $name) {
+            foreach (['microsoft', 'stripe', 'apple', 'google'] as $name) {
                 $key = "services.$name";
                 $config = config($key);
                 if (is_string($config)) {
@@ -48,9 +51,18 @@ class AuthRouterServiceProvider extends PackageServiceProvider
                     ]]);
                 }
             }
-            $event->extendSocialite('microsoft', Microsoft\Provider::class);
-            $event->extendSocialite('stripe', Stripe\Provider::class);
-            $event->extendSocialite('apple', Apple\Provider::class);
+            $socialite = app(SocialiteFactory::class);
+            foreach ([
+                'microsoft' => Microsoft\Provider::class,
+                'stripe' => Stripe\Provider::class,
+                'apple' => Apple\Provider::class,
+            ] as $name => $class) {
+                $socialite->extend($name, function () use ($socialite, $name, $class) {
+                    $config = (new ConfigRetriever)->fromServices($name);
+
+                    return $socialite->buildProvider($class, $config->get());
+                });
+            }
         });
 
         // Register views for package consumers

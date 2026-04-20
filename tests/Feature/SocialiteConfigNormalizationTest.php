@@ -6,20 +6,19 @@ use Laravel\Socialite\Facades\Socialite;
 use SocialiteProviders\Manager\Helpers\ConfigRetriever;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 
-it('normalizes string config to array for microsoft', function () {
-    Config::set('services.microsoft', 'dummy-client-id');
+it('normalizes string config to array for google', function () {
+    Config::set('services.google', 'dummy-client-id');
 
-    // Trigger the event
+    // Trigger the event (though google doesn't use it, we test our listener)
     Event::dispatch(new SocialiteWasCalled(app(), new ConfigRetriever));
 
-    $config = Config::get('services.microsoft');
+    $config = Config::get('services.google');
     expect($config)->toBeArray()
         ->and($config)->toHaveKey('client_id', 'dummy-client-id');
 
-    // Verify Socialite can resolve it (mocking may be needed if it tries to hit network,
-    // but the goal is to check for TypeError during driver creation)
+    // Verify Socialite can resolve it
     try {
-        Socialite::driver('microsoft');
+        Socialite::driver('google');
     } catch (TypeError $e) {
         $this->fail('TypeError encountered: '.$e->getMessage());
     } catch (Exception $e) {
