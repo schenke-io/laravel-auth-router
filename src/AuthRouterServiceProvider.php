@@ -33,6 +33,21 @@ class AuthRouterServiceProvider extends PackageServiceProvider
             return new AuthRouterBuilder($providerKeys);
         });
         Event::listen(function (SocialiteWasCalled $event) {
+            /*
+             * Ensure configuration is an array for supported drivers
+             * to prevent TypeErrors in Socialite 5.14+ / PHP 8.0+
+             */
+            foreach (['microsoft', 'stripe', 'apple'] as $name) {
+                $key = "services.$name";
+                $config = config($key);
+                if (is_string($config)) {
+                    config([$key => [
+                        'client_id' => $config,
+                        'client_secret' => '',
+                        'redirect' => '',
+                    ]]);
+                }
+            }
             $event->extendSocialite('microsoft', Microsoft\Provider::class);
             $event->extendSocialite('stripe', Stripe\Provider::class);
             $event->extendSocialite('apple', Apple\Provider::class);
