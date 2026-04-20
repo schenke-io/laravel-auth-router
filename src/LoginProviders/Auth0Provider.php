@@ -7,7 +7,6 @@ use Auth0\SDK\Exception\ConfigurationException;
 use Auth0\SDK\Exception\NetworkException;
 use Auth0\SDK\Exception\StateException;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
 use SchenkeIo\LaravelAuthRouter\Auth\Error;
@@ -39,14 +38,21 @@ class Auth0Provider extends BaseProvider
         ];
     }
 
+    public function isSocial(): bool
+    {
+        return true;
+    }
+
     /**
      * redirect to the provider login page
      *
      * @throws ConfigurationException
      */
-    public function login(Auth0 $auth0, Request $request, string $redirectUri): RedirectResponse
+    public function login(RouterData $routerData): RedirectResponse
     {
-        Config::set('services.auth0.redirect_uri', $redirectUri);
+        $auth0 = app(Auth0::class);
+        $request = request();
+        $redirectUri = config('services.'.$this->name.'.redirect');
 
         return redirect($auth0->login($redirectUri, ['login_hint' => $request->get('hint')]));
     }
@@ -54,8 +60,10 @@ class Auth0Provider extends BaseProvider
     /**
      * handles the return code and authenticate the user if possible
      */
-    public function callback(Auth0 $auth0, Request $request, RouterData $routerData): RedirectResponse
+    public function callback(RouterData $routerData): RedirectResponse
     {
+        $auth0 = app(Auth0::class);
+        $request = request();
         $requestData = $request->all();
         $hasAuthenticated = isset($requestData['state']) && isset($requestData['code']);
         $hasAuthenticationFailure = isset($requestData['error']);
@@ -68,7 +76,7 @@ class Auth0Provider extends BaseProvider
                     return Error::LocalAuth->redirect($routerData);
                 }
 
-                return UserData::fromAuth0($auth0User)->authAndRedirect($routerData);
+                return UserData::fromAuth0($auth0User, $this->getProviderIdField())->authAndRedirect($routerData);
             } catch (NetworkException $e) {
                 return Error::Network->redirect($routerData, $e->getMessage());
             } catch (StateException $e) {

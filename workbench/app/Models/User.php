@@ -5,14 +5,16 @@ namespace Workbench\App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use SchenkeIo\LaravelAuthRouter\Contracts\AuthenticatableRouterUser;
+use SchenkeIo\LaravelAuthRouter\Traits\InteractsWithAuthRouter;
 use Workbench\Database\Factories\UserFactory;
 
-class User extends Authenticatable
+class User extends Authenticatable implements AuthenticatableRouterUser
 {
     protected static string $factory = UserFactory::class;
 
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, InteractsWithAuthRouter, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +26,9 @@ class User extends Authenticatable
         'email',
         'password',
         'avatar',
+        'provider',
+        'provider_id',
+        'apple_id',
     ];
 
     /**

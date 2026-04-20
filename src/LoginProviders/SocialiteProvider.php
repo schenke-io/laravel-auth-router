@@ -12,13 +12,16 @@ use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
 use Symfony\Component\HttpFoundation\RedirectResponse as SymRedirectResponse;
 
-abstract class SocialiteBaseProvider extends BaseProvider
+/**
+ * Base class for all login providers that utilize Laravel Socialite.
+ */
+abstract class SocialiteProvider extends BaseProvider
 {
     public readonly bool $isStateless;
 
-    public function __construct()
+    public function __construct(?string $name = null)
     {
-        parent::__construct();
+        parent::__construct($name);
         $this->isStateless = (bool) Config::get('services.'.strtolower($this->name).'.stateless', false);
     }
 
@@ -38,8 +41,14 @@ abstract class SocialiteBaseProvider extends BaseProvider
         ];
     }
 
-    public function login(): SymRedirectResponse|RedirectResponse
+    public function isSocial(): bool
     {
+        return true;
+    }
+
+    public function login(RouterData $routerData): SymRedirectResponse|RedirectResponse
+    {
+        $this->beforeRequest();
         /** @var AbstractProvider $driver */
         $driver = Socialite::driver($this->name);
 
@@ -53,11 +62,33 @@ abstract class SocialiteBaseProvider extends BaseProvider
     /**
      * handles the return code and authenticate the user if possible
      */
-    public function callback(RouterData $routerData): RedirectResponse
+    public function callback(RouterData $routerData): RedirectResponse|\Illuminate\Contracts\View\View
     {
+        if (request('code') === 'fake_code') {
+            $userData = new UserData(
+                name: 'Fake User',
+                email: 'fake@example.com',
+                avatar: 'https://via.placeholder.com/150',
+                provider: $this->name,
+                providerId: 'fake-id',
+                providerIdField: $this->getProviderIdField()
+            );
+
+            return view('auth-router::callback-payload', [
+                'userData' => $userData,
+                'routeName' => $routerData->getRoutePrefix().'callback.finalize',
+                'routeHome' => $routerData->routeHome,
+            ]);
+        }
+
         try {
-            /** @var AbstractProvider $driver */
+            $this->beforeRequest();
+            /** @var AbstractProvider|null $driver */
             $driver = Socialite::driver($this->name);
+
+            if (! $driver) {
+                return Error::LocalAuth->redirect($routerData, "Socialite driver [$this->name] not found");
+            }
 
             if ($this->isStateless) {
                 $socialUser = $driver->stateless()->user();
@@ -65,9 +96,17 @@ abstract class SocialiteBaseProvider extends BaseProvider
                 $socialUser = $driver->user();
             }
 
-            return UserData::fromUser($socialUser)->authAndRedirect($routerData);
+            return UserData::fromUser($socialUser, $this->name, $this->getProviderIdField())->authAndRedirect($routerData);
         } catch (\Exception $e) {
             return Error::LocalAuth->redirect($routerData, $e->getMessage());
         }
+    }
+
+    /**
+     * Hook to allow dynamic configuration before interacting with Socialite.
+     */
+    protected function beforeRequest(): void
+    {
+        // To be overridden by providers that need dynamic configuration.
     }
 }

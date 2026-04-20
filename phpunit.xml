@@ -13,14 +13,12 @@
     </testsuites>
     <coverage>
         <report>
-            <text outputFile="build/coverage.txt" showOnlySummary="true" showUncoveredFiles="true"/>
             <clover outputFile="build/coverage/clover.xml"/>
         </report>
     </coverage>
     <source>
         <include>
-            <directory>app</directory>
-            <directory>src</directory>
+            <directory suffix=".php">src</directory>
         </include>
     </source>
     <php>

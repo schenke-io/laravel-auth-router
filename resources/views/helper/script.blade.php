@@ -1,26 +1,27 @@
 <script>
-    window.Flux = {
-        applyAppearance (appearance) {
-            let applyDark = () => document.documentElement.classList.add('dark')
-            let applyLight = () => document.documentElement.classList.remove('dark')
+    function showAuthMode(mode) {
+        const regFields = document.getElementById('registration-fields');
+        const authAction = document.getElementById('auth-action');
+        const submitBtn = document.getElementById('submit-button');
+        const tabLogin = document.getElementById('tab-login');
+        const tabRegister = document.getElementById('tab-register');
 
-            if (appearance === 'system') {
-                let media = window.matchMedia('(prefers-color-scheme: dark)')
-
-                window.localStorage.removeItem('flux.appearance')
-
-                media.matches ? applyDark() : applyLight()
-            } else if (appearance === 'dark') {
-                window.localStorage.setItem('flux.appearance', 'dark')
-
-                applyDark()
-            } else if (appearance === 'light') {
-                window.localStorage.setItem('flux.appearance', 'light')
-
-                applyLight()
+        if (regFields) {
+            if (mode === 'register') {
+                regFields.style.display = 'block';
+                if (authAction) authAction.value = 'register';
+                if (submitBtn && tabRegister) submitBtn.innerText = tabRegister.innerText;
+                if (tabRegister) tabRegister.classList.add('active');
+                if (tabLogin) tabLogin.classList.remove('active');
+                regFields.querySelectorAll('input').forEach(el => el.required = true);
+            } else {
+                regFields.style.display = 'none';
+                if (authAction) authAction.value = 'login';
+                if (submitBtn && tabLogin) submitBtn.innerText = tabLogin.innerText;
+                if (tabLogin) tabLogin.classList.add('active');
+                if (tabRegister) tabRegister.classList.remove('active');
+                regFields.querySelectorAll('input').forEach(el => el.required = false);
             }
         }
     }
-
-    window.Flux.applyAppearance(window.localStorage.getItem('flux.appearance') || 'system')
 </script>

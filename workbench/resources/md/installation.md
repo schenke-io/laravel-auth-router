@@ -3,61 +3,65 @@
 Install the package with composer:
 
 ```bash
-  composer require schenke-io/laravel-auth-router
+composer require schenke-io/laravel-auth-router
 ```
 
 ## Basic concept
 
-This package includes services and has to be configured in `config/services.php` only.
-
-In the `routes/web.php` file you add the Route helper `authRouter` to define which providers
-you want to use and your registration policy.
+In the `routes/web.php` file you use the `Route::authRouter()` macro to define which providers you want to use and your registration policy. This package handles the configuration through `config/services.php`.
 
 ```php
-Route::authRouter(/* provider/s */, $routeSuccess, $routeError, $routeHome, $canAddUsers);
+Route::authRouter(['google', 'microsoft'])
+    ->success('dashboard')
+    ->error('login')
+    ->home('home')
+    ->canAddUsers(true)
+    ->rememberMe(false)
+    ->prefix('auth')
+    ->name('auth.')
+    ->register();
 ```
 
-| Parameter    | Definition                                                              | Examples                              |
-|--------------|-------------------------------------------------------------------------|---------------------------------------|
-| provider     | name of the social login providers, single string or array of strings   | 'google'  _or_ ['google','microsoft'] |
-| routeSuccess | route after successful login                                            | 'dashboard'                           |
-| routeError   | route after login failure, should be able to display errors as feedback | 'error'                               |
-| routeHome    | route to a non protected view                                           | 'home'                                |  
-| canAddUsers  | should unknown users be added or rejected                               | `true` or `false`                     |  
-| remeberMe    | stores the login even when session expirers                             | `true` or `false`                     |  
+| Method           | Definition                                                              | Examples                              |
+|------------------|-------------------------------------------------------------------------|---------------------------------------|
+| `success()`      | route after successful login                                            | 'dashboard'                           |
+| `error()`        | route after login failure, should be able to display errors as feedback | 'error'                               |
+| `home()`         | route to a non protected view (default: 'home')                         | 'home'                                |
+| `canAddUsers()`  | should unknown users be added or rejected (default: true)               | `true` or `false`                     |
+| `rememberMe()`   | stores the login even when session expires (default: false)             | `true` or `false`                     |
+| `prefix()`       | prefix for the URIs                                                     | 'auth'                                |
+| `name()`         | prefix for the route names                                              | 'auth.'                               |
+| `middleware()`   | additional middleware for the routes                                    | 'web' or `['web', 'throttle']`        |
+| `emailConfirm()` | implementation of `EmailConfirmInterface` to handle email verification  | `$myEmailConfirm`                     |
+| `register()`     | **Mandatory** call to actually register the routes                      |                                       |
 
-Route names can be same. If the homepage can display errors `routeError` and `routeHome` could be the same.
+Route names can be same. If the homepage can display errors `error()` and `home()` could be the same.
 When the service configuration is not complete not all routes will be created.
 
 ## Login and Logout flow
 
-In the app just  link to the `login` route.
-It either displays the  selector page, configuration errors or redirect to a single login provider.
+In the app just link to the `login` route (or `auth.login` if using `.name('auth.')`).
+It either displays the selector page, configuration errors or redirect to a single login provider.
 
 For logout just do an empty POST to the `logout` route. Only authenticated users can use the logout.
 
 ## Name conflicts
 
-This line:
+If you have multiple authentication setups or want to avoid name conflicts, use `prefix()` and `name()`:
+
 ```php
 // routes/web.php
-Route::authRouter('google','dashboard','error','home',true);
-``` 
-registers the following routes when the configuration is free of errors:
-- /login
-- /login/google
-- /callback/google
-- /logout
-
-and expects the 3 named routes to be defined: `dashboard`, `error` and `home`.
-
-If this conflicts with other existing routes just prefix it with something:
-```php
-// routes/web.php
-Route::prefix('any')->name('any.')->group(function () {
-    Route::authRouter('google','dashboard','error','home',true);
-});
-``` 
+Route::authRouter('google')
+    ->prefix('admin')
+    ->name('admin.')
+    ->success('admin.dashboard')
+    ->register();
+```
+Registers the following routes when the configuration is free of errors:
+- /admin/login (named `admin.login`)
+- /admin/login/google (named `admin.login.google`)
+- /admin/callback/google (named `admin.callback.google`)
+- /admin/logout (named `admin.logout`)
 
 Just use `php artisan route:list` to see which names and routes have been added.
 

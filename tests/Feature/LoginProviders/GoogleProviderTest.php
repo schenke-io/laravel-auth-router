@@ -25,7 +25,8 @@ it('can handle stateless login', function () {
     Socialite::shouldReceive('redirect')->andReturn($redirectResponse);
 
     $provider = new GoogleProvider;
-    $response = $provider->login();
+    $routerData = new RouterData('dashboard', 'home', 'home', true);
+    $response = $provider->login($routerData);
     $this->assertEquals($redirectUrl, $response->getTargetUrl());
     $this->assertTrue($provider->isStateless);
 
@@ -37,6 +38,7 @@ it('can handle stateless login', function () {
 
     Route::get('/', fn () => '')->name('home');
     Route::get('/dashboard', fn () => '')->name('dashboard');
+    app('router')->getRoutes()->refreshNameLookups();
 
     $socialiteUserMock = Mockery::mock(SocialiteUser::class);
     $socialiteUserMock->shouldReceive('getId')->andReturn($socialiteId);
@@ -74,7 +76,8 @@ it('redirects to google for login', function () {
     Socialite::shouldReceive('redirect')->andReturn($redirectResponse);
 
     $provider = new GoogleProvider;
-    $response = $provider->login('a');
+    $routerData = new RouterData('dashboard', 'error', 'home', true);
+    $response = $provider->login($routerData);
     $this->assertEquals($redirectUrl, $response->getTargetUrl());
     $this->assertCount(0, $provider->errors());
 });
@@ -91,6 +94,7 @@ it('handles the return code and authenticates the user if possible', function ()
 
     Route::get('/', fn () => '')->name('home');
     Route::get('/dashboard', fn () => '')->name('dashboard');
+    app('router')->getRoutes()->refreshNameLookups();
 
     $socialiteUserMock = Mockery::mock(SocialiteUser::class);
     $socialiteUserMock->shouldReceive('getId')->andReturn($socialiteId);
@@ -117,6 +121,7 @@ it('generates redirect url when config incomplete', function () {
 
     Route::get('/', fn () => '')->name('home');
     Route::get('/dashboard', fn () => '')->name('dashboard');
+    app('router')->getRoutes()->refreshNameLookups();
 
     $provider = new GoogleProvider;
     $routerData = getRouterData(true);
@@ -125,6 +130,7 @@ it('generates redirect url when config incomplete', function () {
 });
 
 it('can store errors', function () {
+    $this->app->config->set('services.google', null);
     $provider = new GoogleProvider;
     $this->assertCount(1, $provider->errors());
 });
@@ -136,9 +142,24 @@ it('catch exception in callback', function () {
     Route::get('/', fn () => '')->name('home');
     Route::get('/dashboard', fn () => '')->name('dashboard');
     Route::get('/error', fn () => '')->name('error');
+    app('router')->getRoutes()->refreshNameLookups();
     $routerData = new RouterData('dashboard', 'error', 'home', true);
 
     $provider = new GoogleProvider;
     $response = $provider->callback($routerData);
     $this->assertEquals('http://localhost/error', $response->getTargetUrl());
+});
+
+it('renders payload view when code is fake_code', function () {
+    Route::get('/dashboard', fn () => 'dashboard')->name('dashboard');
+    Route::get('/error', fn () => 'error')->name('error');
+    Route::get('/home', fn () => 'home')->name('home');
+
+    $routerData = new RouterData('dashboard', 'error', 'home', true);
+
+    $response = $this->get('/callback/google?code=fake_code');
+
+    $response->assertStatus(200);
+    $response->assertViewIs('auth-router::callback-payload');
+    $response->assertViewHas('userData');
 });

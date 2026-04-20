@@ -11,10 +11,6 @@ use SocialiteProviders\Stripe;
 use Spatie\LaravelPackageTools\Package;
 use Workbench\App\Models\User;
 
-beforeEach(function () {
-    Route::clearResolvedInstances();
-});
-
 it('configures the package correctly', function () {
     User::factory()->create();
     // Create a mock Package object
@@ -48,7 +44,7 @@ it('defines a single provider', function ($providerInput) {
 
     $serviceProvider = new AuthRouterServiceProvider($this->app);
     $serviceProvider->boot();
-    Route::authRouter($providerInput, 'success', 'error');
+    Route::authRouter($providerInput)->success('success')->error('error');
     $routeNames = routeNames();
     $this->assertTrue(in_array('login.google', $routeNames));
     $this->assertTrue(in_array('callback.google', $routeNames));
@@ -57,11 +53,14 @@ it('defines a single provider', function ($providerInput) {
 })->with(['google', ['google']]);
 
 it('handles a single defect providers', function ($providerInput) {
-
+    // clear all routes
+    Route::setRoutes(new \Illuminate\Routing\RouteCollection);
+    // clear all services
+    $this->app->config->set('services', []);
     // no services configured
     $serviceProvider = new AuthRouterServiceProvider($this->app);
     $serviceProvider->boot();
-    Route::authRouter($providerInput, 'success', 'error');
+    Route::authRouter($providerInput)->success('success')->error('error');
     $routeNames = routeNames();
     $this->assertFalse(in_array('login.google', $routeNames));
     $this->assertFalse(in_array('callback.google', $routeNames));
@@ -77,7 +76,7 @@ it('defines some providers', function () {
 
     $serviceProvider = new AuthRouterServiceProvider($this->app);
     $serviceProvider->boot();
-    Route::authRouter(['google', 'microsoft'], 'success', 'error');
+    Route::authRouter(['google', 'microsoft'])->success('success')->error('error');
     $this->assertGreaterThan(5, Route::getRoutes()->count());
 });
 

@@ -2,8 +2,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
-        "dev": "vite",
+        "build": "npm run styles && vite build -c workbench/vite.config.js",
+        "dev": "vite -c workbench/vite.config.js",
         "styles":"node workbench/resources/scripts/make-css.cjs"
     },
     "dependencies": {

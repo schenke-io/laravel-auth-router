@@ -6,6 +6,9 @@ use Illuminate\Http\RedirectResponse;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 
+/**
+ * Fallback provider used when a requested authentication service is unknown or misconfigured.
+ */
 class UnknownBaseProvider extends BaseProvider
 {
     /**
@@ -19,10 +22,15 @@ class UnknownBaseProvider extends BaseProvider
         return [];
     }
 
+    public function isSocial(): bool
+    {
+        return true;
+    }
+
     /**
      * redirect to the provider login page
      */
-    public function login(string $redirectUri): RedirectResponse
+    public function login(RouterData $routerData): RedirectResponse
     {
         return redirect()->back();
     }

@@ -15,10 +15,11 @@ Its mainly missing keys, or missing provider names in `config/services.php`.
 
 The runtime errors are stored in a session and can be handled by the app.
 
-| key                    | value                               | language       |
-|------------------------|-------------------------------------|----------------|
-| authRouterErrorInfo    | user message of the error           | localised      |
-| authRouterErrorMessage | exception text of the provider/code | english mainly |
+| session key            | value                               | language       | header                 |
+|------------------------|-------------------------------------|----------------|------------------------|
+| authRouterErrorInfo    | user message of the error           | localised      |                        |
+| authRouterErrorMessage | exception text of the provider/code | english mainly |                        |
+|                        | name of the error case              |                | X-Custom-Error-Type    |
 
 The error page could look like:
 
@@ -30,3 +31,23 @@ The error page could look like:
     {{session('authRouterErrorMessage')}}
 </p>
 ```
+
+### Error Cases
+
+The following error names are used in the `X-Custom-Error-Type` header and define the error's source:
+
+| Error Name              | Description                                             |
+|-------------------------|---------------------------------------------------------|
+| `UnknownService`        | The requested login provider is unknown.                |
+| `ServiceNotSet`         | The provider service is not defined in config.          |
+| `ConfigNotSet`          | A specific config value (e.g., client_id) is missing.   |
+| `UnableToAddNewUsers`   | New user registration is disabled in the macro call.    |
+| `EmailMissing`          | The provider did not return an email address.           |
+| `InvalidEmail`          | The returned email address is invalid.                  |
+| `LocalAuth`             | Local authentication process failed.                    |
+| `RemoteAuth`            | The third-party provider returned an error.             |
+| `State`                 | OAuth state mismatch (potential CSRF).                  |
+| `Network`               | A network error occurred during the callback.           |
+| `InvalidRequest`        | The login or callback request was invalid.              |
+| `MixedProviders`        | Mixing WorkOS and non-WorkOS providers is not allowed.  |
+| `InvalidCredentials`    | The provided credentials (email/password) are incorrect. |

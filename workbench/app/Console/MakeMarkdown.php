@@ -3,10 +3,15 @@
 namespace Workbench\App\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use SchenkeIo\LaravelAuthRouter\Auth\Service;
-use SchenkeIo\PackagingTools\Badges\BadgeStyle;
+use SchenkeIo\LaravelAuthRouter\Data\UserData;
 use SchenkeIo\PackagingTools\Badges\MakeBadge;
+use SchenkeIo\PackagingTools\Enums\BadgeStyle;
+use SchenkeIo\PackagingTools\Exceptions\PackagingToolException;
+use SchenkeIo\PackagingTools\Markdown\ClassReader;
 use SchenkeIo\PackagingTools\Markdown\MarkdownAssembler;
+use SchenkeIo\PackagingTools\Setup\ProjectContext;
 
 class MakeMarkdown extends Command
 {
@@ -26,74 +31,92 @@ class MakeMarkdown extends Command
 
     /**
      * Execute the console command.
+     *
+     * @throws FileNotFoundException
+     * @throws PackagingToolException
+     * @throws \ReflectionException
      */
-    public function handle()
+    public function handle(): void
     {
-        $mda = new MarkdownAssembler('workbench/resources/md');
-        $mda->storeTestBadge('run-tests.yml', BadgeStyle::Flat);
-        $mda->storeVersionBadge(BadgeStyle::Flat);
-        $mda->storeDownloadBadge(BadgeStyle::Flat);
-        $mda->storeLocalBadge('coverage', '.github/coverage.svg');
-        $mda->storeLocalBadge('phpstan', '.github/phpstan.svg');
+        $projectContext = new ProjectContext;
+        $mda = new MarkdownAssembler('workbench/resources/md', $projectContext);
 
-        // header
-        $mda->addText("# Laravel Auth Router\n\n Social Login made easy\n");
-        $mda->addBadges();
+        $mda->autoHeader();
+
         $mda->addMarkdown('introduction.md');
-        $mda->addTableOfContents();
+
+        $mda->toc();
 
         $mda->addMarkdown('installation.md');
         $mda->addMarkdown('configuration.md');
         $mda->addMarkdown('errors.md');
         $mda->addMarkdown('example.md');
 
+        // Key Classes
+        $tableKeyClasses = [['Class', 'Summary']];
+        foreach ([Service::class, UserData::class] as $classname) {
+            $reader = ClassReader::fromClass($classname, $projectContext);
+            $data = $reader->getClassDataFromClass($classname);
+            $tableKeyClasses[] = ['`'.$data['short'].'`', $data['summary']];
+        }
+        $mda->addText('## Key Classes');
+        $mda->tables()->fromArray($tableKeyClasses);
+
         $mda->addMarkdown('providers.md');
 
-        // provider overview
-        $table[] = ['ID', 'Detail', 'Link'];
+        // Providers overview
+        $tableProviders = [['ID', 'Detail', 'Link']];
         foreach (Service::cases() as $case) {
-            $providerClass = get_class($case->provider());
-            $data = $mda->getClassData($providerClass);
-            $title = $data['summary'] ?? '??';
-            $link = $data['link'][0] ?? '??';
-            $table[] = [$case->name, $title, $link];
-        }
-        $mda->addTableFromArray($table);
+            $provider = $case->provider();
+            $reader = ClassReader::fromClass(get_class($provider), $projectContext);
+            $data = $reader->getClassDataFromClass(get_class($provider));
 
-        // provider details
+            $summary = $data['summary'] ?? '??';
+            $link = $data['link'][0] ?? '??';
+            $tableProviders[] = [$case->name, $summary, $link];
+        }
+        $mda->tables()->fromArray($tableProviders);
+
+        // Providers details
         foreach (Service::cases() as $case) {
-            $providerClass = get_class($case->provider());
-            $data = $mda->getClassData($providerClass);
-            $title = $data['summary'] ?? '??';
+            $provider = $case->provider();
+            $reader = ClassReader::fromClass(get_class($provider), $projectContext);
+            $data = $reader->getClassDataFromClass(get_class($provider));
+
+            $summary = $data['summary'] ?? '??';
             $link = $data['link'][0] ?? '??';
             $description = $data['description'] ?? '??';
 
-            $mda->addText("\n## ".ucfirst($case->name)." Provider\n\n");
-            $mda->addText("First go to $link\n$description\n\n");
-            $mda->addText("Edit the `.env` file in your Laravel project and add the credentials:\n");
+            $mda->addText('## '.ucfirst($case->name).' Provider');
+            $mda->addText("First go to $link\n$description");
+
+            $mda->addText('Edit the `.env` file in your Laravel project and add the credentials:');
             $env = "```dotenv\n";
-            foreach ($case->provider()->env() as $key => $value) {
+            foreach ($provider->env() as $key => $value) {
                 $env .= "$value=...\n";
             }
-            $env .= "``` \n";
+            $env .= '```';
             $mda->addText($env);
-            $mda->addText("Edit the config/services.php file:\n\n");
+
+            $mda->addText('Edit the `config/services.php` file:');
             $php = "```php\n";
             $php .= "    '".$case->name."' => [\n";
-            foreach ($case->provider()->env() as $key => $value) {
+            foreach ($provider->env() as $key => $value) {
                 $php .= "        '$key' => env('$value'),\n";
             }
-            $php .= "    ],\n``` \nYou do not need to configure the callback URL, it will be automatically added\n\n";
+            $php .= "    ],\n```";
             $mda->addText($php);
+            $mda->addText('You do not need to configure the callback URL, it will be automatically added');
         }
 
         $mda->writeMarkdown('README.md');
 
-        $this->info('Markdown files written successfully.');
+        $this->info('README.md generated successfully.');
 
-        MakeBadge::makeCoverageBadge('build/coverage/clover.xml', '32CD32')
+        // Update SVG badges
+        MakeBadge::makeCoverageBadge('build/coverage/clover.xml', $projectContext)
             ->store('.github/coverage.svg', BadgeStyle::Flat);
-        MakeBadge::makePhpStanBadge('phpstan.neon')
+        MakeBadge::makePhpStanBadge('phpstan.neon', '2563eb', $projectContext)
             ->store('.github/phpstan.svg', BadgeStyle::Flat);
     }
 }

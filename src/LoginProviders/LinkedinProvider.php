@@ -9,4 +9,4 @@ namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
  *
  * @link https://developer.linkedin.com/
  */
-class LinkedInProvider extends SocialiteBaseProvider {}
+class LinkedinProvider extends SocialiteProvider {}

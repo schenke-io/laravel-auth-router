@@ -6,6 +6,9 @@ use Auth0\SDK\Exception\ConfigurationException;
 use Auth0\SDK\Exception\NetworkException;
 use Auth0\SDK\Exception\StateException;
 
+/**
+ * Interface for the Auth0 service wrapper.
+ */
 interface Auth0ServiceContract
 {
     /**

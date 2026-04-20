@@ -1,332 +1,253 @@
-/* ==== CSS Variablen für Theming ==== */
 :root {
-    --page-bg: #f8f9fa;
-    --text-color: #212529;
-    --button-border-light: #ced4da;
-    --back-btn-text: #6c757d;
-    --back-btn-border: #adb5bd;
-    --back-btn-hover-bg: #e9ecef;
-    --back-btn-hover-text: #495057;
-
-    --accent-bg: #007bff; /* Beispiel Akzentfarbe (Blau) */
-    --accent-text: #FFFFFF;
-    --accent-focus-ring: rgba(0, 123, 255, 0.3);
-
-    /* Service Light Themes */
-    --google-bg: #FFFFFF;
-    --google-text: #1F1F1F;
-    --google-border: #747775;
-    --microsoft-bg: #FFFFFF;
-    --microsoft-text: #5E5E5E;
-    --microsoft-border: #8C8C8C;
-    --apple-bg: #000000; /* Black button for light background */
-    --apple-text: #FFFFFF;
-    --apple-icon-fill: #FFFFFF;
-    --amazon-bg: #FF9900; /* Amazon Orange */
-    --amazon-text: #111111;
-    --paypal-bg: #eeeeee; /* grey    PayPal Blue #0070BA; */
-    --paypal-text: #000000; /* #FFFFFF; */
-    --paypal-icon-fill: #FFFFFF;
-    --paypal-border: #dddddd;
-
-    --linkedin-bg: #0078d4;
-    --linkedin-text: #ffffff;
-    --linkedin-border: #5E5E5E;
-
-    --stripe-bg: #eeeeee; /* grey    */
-    --stripe-text: #000000; /* #FFFFFF; */
-
-
+    --page-bg: #f3f4f6;
+    --card-bg: #ffffff;
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --input-bg: #f9fafb;
+    --input-border: #e5e7eb;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --social-border: #e5e7eb;
 }
 
 html.dark {
-    --page-bg: #121212;
-    --text-color: #e0e0e0;
-    --button-border-light: #444444;
-    --back-btn-text: #adb5bd;
-    --back-btn-border: #6c757d;
-    --back-btn-hover-bg: #343a40;
-    --back-btn-hover-text: #f8f9fa;
-
-
-
-    --accent-bg: #0d6efd; /* Etwas helleres Blau für Dark Mode */
-    --accent-text: #FFFFFF;
-    --accent-focus-ring: rgba(13, 110, 253, 0.4);
-
-    /* Service Dark Themes */
-    --google-bg: #131314; /* Google Dark */
-    --google-text: #E3E3E3;
-    --google-border: #8E918F;
-    --microsoft-bg: #2B2B2B; /* Microsoft Dark (Approximation) */
-    --microsoft-text: #FFFFFF;
-    --microsoft-border: #5E5E5E;
-    --apple-bg: #FFFFFF; /* White button for dark background */
-    --apple-text: #000000;
-    --apple-icon-fill: #000000;
-    --amazon-bg: #FFA724; /* Slightly adjusted Amazon Orange for dark */
-    --amazon-text: #111111;
-    --paypal-bg: #ededed; /* grey #141414;  PayPal Black */
-    --paypal-text: #000000;  /* #FFFFFF; */
-    --paypal-icon-fill: #FFFFFF;
-    --paypal-border: #5E5E5E;
-
-    --linkedin-bg: #2B2B2B; /* Microsoft Dark (Approximation) */
-    --linkedin-text: #FFFFFF;
-    --linkedin-border: #5E5E5E;
-
-    --stripe-bg: #eeeeee; /* grey    */
-    --stripe-text: #000000; /* #FFFFFF; */
-}
-
-/* ==== Basis Layout & Reset ==== */
-*, *::before, *::after {
-    box-sizing: border-box;
+    --page-bg: #0f172a;
+    --card-bg: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --input-bg: #0f172a;
+    --input-border: #334155;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --social-border: #334155;
 }
 
 body {
     margin: 0;
-    padding: 20px;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background-color: var(--page-bg);
-    color: var(--text-color);
-    overflow: hidden; /* Verhindert Scrollen auf Mobilgeräten */
-    transition: background-color 0.3s ease, color 0.3s ease;
+    color: var(--text-main);
+    transition: background 0.3s ease;
 }
 
-.login-container {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch; /* Buttons füllen die Breite */
+.login-card {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     width: 100%;
-    max-width: 380px; /* Maximale Breite */
+    max-width: 420px;
+    border: 1px solid var(--social-border);
 }
 
-/* ==== Allgemeine Button Stile ==== */
-.social-button,.back-button,.email-login-group {
+h1 { font-size: 1.875rem; font-weight: 700; margin: 0 0 0.5rem; text-align: center; }
+.select-provider { text-align: center; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 2rem; }
+
+/* Tabs Styling */
+.auth-tabs {
+    display: flex;
+    background: var(--input-bg);
+    padding: 4px;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--input-border);
+}
+
+.tab-button {
+    flex: 1;
+    padding: 0.625rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.tab-button.active {
+    background: var(--card-bg);
+    color: var(--text-main);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Styling */
+.field-group { margin-bottom: 1.25rem; }
+.field-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.input-style {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.625rem;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-main);
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.input-style:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.name-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 0.875rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 0.625rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+}
+
+.submit-btn:hover { background: var(--accent-hover); }
+
+/* Social Buttons */
+.separator {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.separator::before, .separator::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--input-border);
+}
+
+.separator:not(:empty)::before { margin-right: 1rem; }
+.separator:not(:empty)::after { margin-left: 1rem; }
+
+.social-grid { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.social-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 7vh; /* Responsive Höhe */
-    min-height: 44px; /* Mindesthöhe für Touch-Interaktion */
-    max-height: 60px; /* Maximale Höhe, um Übergröße zu vermeiden */
-    padding: 0 3vw; /* Responsive Padding */
-    margin-bottom: 2.5vh; /* Responsive Abstand */
-    border-radius: 6px; /* Konsistenter Radius */
-    font-size: clamp(14px, 2.2vmin, 17px); /* Responsive Schriftgröße */
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid var(--social-border);
+    border-radius: 0.625rem;
+    background: var(--card-bg);
+    color: var(--text-main);
     text-decoration: none;
-    transition: opacity 0.2s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-    cursor: pointer;
     font-weight: 500;
-    border: 1px solid transparent; /* Basis für Border */
+    font-size: 0.875rem;
+    transition: background 0.2s;
+}
+
+.social-btn:hover { background: var(--input-bg); }
+.social-btn svg { width: 20px; height: 20px; }
+.social-btn svg.apple-logo { color: black; }
+.dark .social-btn svg.apple-logo { color: white; }
+
+.back-link {
+    display: block;
     text-align: center;
-    white-space: nowrap; /* Verhindert Umbruch */
-    overflow: hidden; /* Verhindert Überlaufen des Inhalts */
-    text-overflow: ellipsis; /* Fügt "..." hinzu, falls Text zu lang */
-}
-
-.social-button:hover,.back-button:hover {
-    opacity: 0.9;
-}
-
-.social-button svg {
-    flex-shrink: 0; /* Verhindert Schrumpfen des Icons */
-    height: clamp(20px, 3vh, 24px); /* Responsive Icon-Höhe */
-    width: auto;
-    margin-right: 12px;
-}
-
-/* ==== Service-spezifische Stile ==== */
-
-/* Google Button (Light/Dark via CSS Vars) */
-.google-button {
-    background-color: var(--google-bg);
-    color: var(--google-text);
-    border-color: var(--google-border);
-    /* font-family: 'Roboto', sans-serif; */ /* Roboto muss auf System installiert sein */
-}
-/* Google SVG ist immer farbig, kein Fill nötig */
-
-/* Microsoft Button (Light/Dark via CSS Vars) */
-.microsoft-button {
-    background-color: var(--microsoft-bg);
-    color: var(--microsoft-text);
-    border-color: var(--microsoft-border);
-}
-.microsoft-button svg { /* Farben sind im SVG definiert */
-    height: clamp(18px, 2.8vh, 21px); /* Ggf. anpassen an MS Logo */
-    margin-right: 10px;
-}
-
-/* Apple Button (Light/Dark via CSS Vars) */
-.apple-button {
-    background-color: var(--apple-bg);
-    color: var(--apple-text);
-    border-color: var(--apple-bg); /* Keine sichtbare Border bei Schwarz/Weiß */
-    min-height: 30px; /* Apple HIG Minimum */
-    /* border-radius kann angepasst werden, hier Standard 6px */
-}
-.apple-button svg {
-    height: clamp(18px, 2.8vh, 21px); /* Ggf. anpassen an Apple Logo */
-    margin-right: 8px;
-}
-.apple-button svg path {
-    fill: var(--apple-icon-fill); /* Stellt sicher, dass Logo Farbe zum Theme passt */
-}
-
-/* Amazon Button (Light/Dark via CSS Vars) */
-.amazon-button {
-    background-color: var(--amazon-bg);
-    color: var(--amazon-text);
-    border: none; /* Amazon Buttons haben oft keinen Rand */
-}
-/* Amazon SVG Farben ggf. anpassen */
-.amazon-button svg {
-    height: clamp(20px, 3vh, 24px);
-    margin-right: 10px;
-}
-.amazon-button svg path {
-    fill: var(--amazon-text); /* Einfarbiges Logo in Textfarbe (Annahme) */
-}
-
-
-/* PayPal Button (Light/Dark via CSS Vars) */
-.paypal-button {
-    background-color: var(--paypal-bg);
-    color: var(--paypal-text);
-    font-weight: 600;
-    border-color: var(--paypal-border); /* PayPal Buttons haben oft keinen Rand */
-    /* border-radius: 50px; */ /* Für Pill-Shape */
-}
-.paypal-button svg {
-    height: clamp(20px, 3vh, 24px);
-    margin-right: 10px;
-}
-.paypal-button svg path {
-    /*fill: var(--paypal-icon-fill); !* Stellt sicher, dass Logo Farbe zum Theme passt *!*/
-}
-
-
-/* LinkedIn Button from Microsoft */
-.linkedin-button {
-    background-color: var(--linkedin-bg);
-    color: var(--linkedin-text);
-    border-color: var(--linkedin-border);
-}
-.linkedin-button svg { /* Farben sind im SVG definiert */
-    height: clamp(24px, 3vh, 24px); /* Ggf. anpassen an Logo */
-    margin-right: 10px;
-}
-
-.facebook-button {
-    background-color: var(--microsoft-bg);
-    color: var(--microsoft-text);
-    border-color: var(--microsoft-border);
-}
-
-.stripe-button {
-    background-color: var(--microsoft-bg);
-    color: var(--microsoft-text);
-    border-color: var(--microsoft-border);
-}
-
-
-/* ==== Zurück Button ==== */
-.back-button {
-    margin-top: 1vh; /* Kleinerer Abstand oben */
-    margin-bottom: 0; /* Letztes Element */
-    background-color: transparent;
-    color: var(--back-btn-text);
-    border-color: var(--back-btn-border);
-    font-weight: 400;
-}
-.back-button:hover {
-    background-color: var(--back-btn-hover-bg);
-    color: var(--back-btn-hover-text);
-    opacity: 1.0; /* Volle Opazität bei Hover */
-}
-.error-message {
-    justify-content: left;
-    width: 100%;
-    min-height: 44px; /* Mindesthöhe für Touch-Interaktion */
-    max-height: 90px; /* Maximale Höhe, um Übergröße zu vermeiden */
-    padding: 10px;
-    margin-bottom: 2.5vh; /* Responsive Abstand */
-    border-radius: 6px; /* Konsistenter Radius */
-    font-size: clamp(12px, 2vmin, 14px); /* Responsive Schriftgröße */
+    margin-top: 1.5rem;
+    color: var(--text-muted);
     text-decoration: none;
-    transition: opacity 0.2s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-
-    border: 1px solid red; /* Basis für Border */
-    text-align: left;
-    white-space: normal;
-    overflow: auto;
-    text-overflow: ellipsis; /* Fügt "..." hinzu, falls Text zu lang */
-    color: red;
-    background-color: ghostwhite;
-    font-weight: 400;
-
+    font-size: 0.875rem;
+    transition: color 0.2s;
 }
 
-/* Beispielhafte Stile für E-Mail Login Gruppe */
-.email-login-group {
-    display: flex;
-    margin-bottom: 2.5vh; /* Gleicher Abstand wie Social Buttons */
-    width: 100%;
-    border-radius: 6px; /* Gleiche Radius wie Social Buttons */
-    border: 1px solid var(--accent-bg);
+.back-link:hover {
+    color: var(--text-main);
+    text-decoration: underline;
 }
 
-.email-input {
-    flex-grow: 1; /* Nimmt verfügbaren Platz ein */
-    height: 7vh; /* Gleiche Höhe wie Social Buttons */
-    min-height: 44px;
-    max-height: 60px;
-    padding: 0 clamp(10px, 30vw, 50px); /* Gleiches horizontales Padding */
-    font-size: clamp(14px, 2.2vmin, 17px); /* Gleiche Schriftgröße */
-    border: 1px solid var(--button-border-light);
-    border-right: none; /* Nahtloser Übergang zum Button */
-    border-radius: 6px 0 0 6px; /* Abgerundete Ecken nur links */
-    background-color: var(--page-bg); /* Hintergrund wie Seite */
-    color: var(--text-color);
-    box-sizing: border-box;
-    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+/* Alerts */
+.alert {
+    padding: 1rem;
+    border-radius: 0.625rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    border: 1px solid transparent;
+}
+.alert-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+.dark .alert-error {
+    background-color: #450a0a;
+    color: #fecaca;
+    border-color: #7f1d1d;
+}
+.alert-success {
+    background-color: #dcfce7;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+.dark .alert-success {
+    background-color: #064e3b;
+    color: #bbf7d0;
+    border-color: #065f46;
+}
+.error-detail {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    opacity: 0.8;
 }
 
-.email-input:focus {
-    outline: none;
-    border-color: var(--accent-bg); /* Akzentfarbe bei Fokus */
-    box-shadow: 0 0 0 2px var(--accent-focus-ring); /* Fokusring */
+.error-msg {
+    color: #ef4444;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
 }
 
-.email-submit-button {
-    height: 7vh; /* Gleiche Höhe */
-    min-height: 44px;
-    max-height: 60px;
-    padding: 0 30px; /* Passendes Padding */
-    font-size: clamp(14px, 2.2vmin, 17px); /* Gleiche Schriftgröße */
-    border: 1px solid var(--accent-bg); /* Rand in Akzentfarbe */
-    border-left: none; /* Nahtloser Übergang zum Input */
-    border-radius: 0 6px 6px 0; /* Abgerundete Ecken nur rechts */
-    background-color: var(--accent-bg); /* Akzentfarbe */
-    color: var(--accent-text);
+.dark .error-msg {
+    color: #f87171;
+}
+
+.registration-success {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: var(--input-bg);
+    border-radius: 1rem;
+    border: 1px dashed var(--accent);
+}
+
+.success-icon {
+    font-size: 3rem;
+    color: var(--accent);
+    margin-bottom: 1rem;
+}
+
+.registration-success p {
+    color: var(--text-main);
     font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease, opacity 0.2s ease;
-    flex-shrink: 0; /* Verhindert Schrumpfen */
+    margin: 0;
 }
-
-.email-submit-button:hover {
-    opacity: 0.9;
-}
-
-.email-submit-button:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--accent-focus-ring); /* Fokusring */
-}
-

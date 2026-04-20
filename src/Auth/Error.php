@@ -6,6 +6,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 
+/**
+ * Enumeration for all login and configuration errors.
+ */
 enum Error
 {
     case UnknownService;
@@ -19,6 +22,8 @@ enum Error
     case State;
     case Network;
     case InvalidRequest;
+    case MixedProviders;
+    case InvalidCredentials;
 
     /**
      * @param  array<string,string>  $errorParameter
@@ -26,6 +31,7 @@ enum Error
     public function redirect(RouterData $routerData, string $codeErrorMessage = '', array $errorParameter = []): RedirectResponse
     {
         return Redirect::route($routerData->routeError)
+            ->withInput()
             ->with('authRouterErrorInfo', $this->trans($errorParameter))
             ->with('authRouterErrorMessage', $codeErrorMessage)
             ->withHeaders(['X-Custom-Error-Type' => $this->name]);
@@ -36,7 +42,11 @@ enum Error
      */
     public function trans(array $parameter = []): string
     {
-        return __('auth-router::errors.'.$this->name, $parameter);
+        if (app()->bound('translator')) {
+            return __('auth-router::errors.'.$this->name, $parameter);
+        }
+
+        return $this->name;
     }
 
     /**
@@ -46,7 +56,7 @@ enum Error
     {
         return match ($this) {
             self::ServiceNotSet, self::UnknownService => ['name'],
-            self::ConfigNotSet => ['key'],
+            self::ConfigNotSet => ['key', 'env'],
             default => [],
         };
 

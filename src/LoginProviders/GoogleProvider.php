@@ -9,4 +9,4 @@ namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
  *
  * @link https://console.cloud.google.com/
  */
-class GoogleProvider extends SocialiteBaseProvider {}
+class GoogleProvider extends SocialiteProvider {}

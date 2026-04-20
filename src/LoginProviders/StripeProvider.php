@@ -9,4 +9,4 @@ namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
  *
  * @link https://dashboard.stripe.com/
  */
-class StripeProvider extends SocialiteBaseProvider {}
+class StripeProvider extends SocialiteProvider {}

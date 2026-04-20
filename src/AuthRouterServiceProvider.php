@@ -4,15 +4,19 @@ namespace SchenkeIo\LaravelAuthRouter;
 
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
-use SchenkeIo\LaravelAuthRouter\Auth\AuthRouter;
-use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
-use SchenkeIo\LaravelAuthRouter\Data\RouterData;
+use SchenkeIo\LaravelAuthRouter\Auth\AuthRouterBuilder;
+use SchenkeIo\LaravelAuthRouter\Services\AppleTokenGenerator;
+use SocialiteProviders\Apple;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Microsoft;
 use SocialiteProviders\Stripe;
+use Spatie\LaravelPackageTools\Exceptions\InvalidPackage;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
+/**
+ * Service provider for registering authentication routes and macros.
+ */
 class AuthRouterServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
@@ -25,28 +29,13 @@ class AuthRouterServiceProvider extends PackageServiceProvider
      */
     public function boot(): void
     {
-        Router::macro('authRouter', function (
-            string|array $providerKeys,
-            string $routeSuccess,
-            string $routeError,
-            string $routeHome = 'home',
-            bool $canAddUsers = true,
-            bool $rememberMe = false
-        ) {
-
-            $providers = ProviderCollection::fromTextArray($providerKeys);
-            $routerData = new RouterData($routeSuccess, $routeError, $routeHome, $canAddUsers, $rememberMe);
-            $authRouter = new AuthRouter;
-            // add the routes for any provider
-            $authRouter->addProviders($providers, $routerData);
-            // add the login selector or redirect
-            $authRouter->addLogin($providers, $routerData);
-            // add the central logout
-            $authRouter->addLogout($routeHome);
+        Router::macro('authRouter', function (string|array $providerKeys) {
+            return new AuthRouterBuilder($providerKeys);
         });
         Event::listen(function (SocialiteWasCalled $event) {
             $event->extendSocialite('microsoft', Microsoft\Provider::class);
             $event->extendSocialite('stripe', Stripe\Provider::class);
+            $event->extendSocialite('apple', Apple\Provider::class);
         });
 
         // Register views for package consumers
@@ -58,6 +47,13 @@ class AuthRouterServiceProvider extends PackageServiceProvider
 
     /**
      * Register any application services.
+     *
+     * @throws InvalidPackage
      */
-    public function register(): void {}
+    public function register(): void
+    {
+        parent::register();
+
+        $this->app->singleton(AppleTokenGenerator::class);
+    }
 }

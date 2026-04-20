@@ -5,7 +5,7 @@ namespace SchenkeIo\LaravelAuthRouter\Contracts;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * this interface needs to be implemented by the User model in the main app
+ * This interface needs to be implemented by the User model in the main app to allow for automated user management.
  */
 interface AuthenticatableRouterUser
 {
@@ -15,5 +15,9 @@ interface AuthenticatableRouterUser
 
     public function setAvatar(string $avatar): void;
 
-    public function findByEmail(string $email): Model;
+    public function findByEmail(string $email): ?Model;
+
+    public function findByProvider(string $provider, string $id): ?Model;
+
+    public function setProviderId(string $provider, string $id, ?string $fieldName = null): void;
 }

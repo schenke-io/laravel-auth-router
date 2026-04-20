@@ -3,7 +3,7 @@
 return [
     'UnknownService' => 'Unknown login-service: :name',
     'ServiceNotSet' => 'service not defined: :name',
-    'ConfigNotSet' => 'Missing config value :key',
+    'ConfigNotSet' => 'Missing config value :key (expected environment variable: :env)',
     'UnableToAddNewUsers' => 'Unable to add new users',
     'EmailMissing' => 'Email address missing',
     'InvalidEmail' => 'Invalid email address',
@@ -12,4 +12,6 @@ return [
     'State' => 'Invalid state',
     'Network' => 'Network error',
     'InvalidRequest' => 'Invalid request',
+    'MixedProviders' => 'A mix of WorkOS and non-WorkOS providers is not supported in the same collection',
+    'InvalidCredentials' => 'The provided credentials are incorrect.',
 ];

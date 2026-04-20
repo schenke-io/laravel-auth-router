@@ -9,4 +9,4 @@ namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
  *
  * @link https://developer.paypal.com/
  */
-class PaypalProvider extends SocialiteBaseProvider {}
+class PaypalProvider extends SocialiteProvider {}

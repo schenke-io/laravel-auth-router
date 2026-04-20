@@ -1,6 +1,6 @@
 <?php
 
-namespace SchenkeIo\LaravelAuthRouter\Workbench\app\Repository;
+namespace Workbench\App\LoginProviders;
 
 use SchenkeIo\LaravelAuthRouter\LoginProviders\UnknownBaseProvider;
 

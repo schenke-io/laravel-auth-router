@@ -9,4 +9,4 @@ namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
  *
  * @link https://portal.azure.com/
  */
-class MicrosoftProvider extends SocialiteBaseProvider {}
+class MicrosoftProvider extends SocialiteProvider {}

@@ -1,10 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use SchenkeIo\LaravelAuthRouter\Auth\AuthRouter;
-use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
-use SchenkeIo\LaravelAuthRouter\Data\RouterData;
-use SchenkeIo\LaravelAuthRouter\Tests\Feature\Auth\DummyProvider;
 use Workbench\App\Models\User;
 
 beforeEach(function () {
@@ -12,15 +8,10 @@ beforeEach(function () {
 });
 
 it('adds a login route', function () {
-    $mockProvider = new DummyProvider;
     // Define a dummy route that the provider's loginRoute will point to
-    Route::get('login/unknown', fn () => 'Provider Login Page')->name('login.unknown');
-    // Instantiate the class containing the addLogin method
-    $authRouter = new AuthRouter;
-    // Call the method to register the login route
-    $providers = new ProviderCollection([new DummyProvider]);
-    $routerData = new RouterData('home', 'error', 'home');
-    $authRouter->addLogin($providers, $routerData);  // sets the login route
+    Route::get('login/google', fn () => 'Provider Login Page')->name('login.google');
+
+    Route::authRouter(['google'])->success('home')->error('error')->home('home');
 
     // find the route
     $route = collect(Route::getRoutes()->getIterator())->first(fn ($route) => $route->getName() === 'login');
@@ -35,11 +26,7 @@ it('allows an authenticated user to log out and redirects to the home route', fu
     // define home
     Route::get('/', fn () => '')->name('home');
 
-    $authRouter = new AuthRouter;
-    $providers = new ProviderCollection([new DummyProvider]);
-    $routerData = new RouterData('home', 'error', 'home');
-    $authRouter->addLogin($providers, $routerData);  // sets the login route
-    $authRouter->addLogout('home');  // sets the logout route
+    Route::authRouter(['google'])->success('home')->error('error')->home('home');
 
     // Make a POST request to the logout route with authenticating
     $response = $this->post(route('logout'));
@@ -53,11 +40,7 @@ it('allows an authenticated user to log out and redirects to the home route', fu
 });
 
 it('does not allow a guest to access the logout route', function () {
-    $authRouter = new AuthRouter;
-    $providers = new ProviderCollection([new DummyProvider]);
-    $routerData = new RouterData('home', 'error', 'home');
-    $authRouter->addLogin($providers, $routerData);  // sets the login route
-    $authRouter->addLogout('home');  // sets the logout route
+    Route::authRouter(['google'])->success('home')->error('error')->home('home');
 
     // Make a POST request to the logout route without authenticating
     $response = $this->post(route('logout'));

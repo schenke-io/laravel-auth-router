@@ -2,6 +2,6 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Tests\Feature\Auth;
 
-use SchenkeIo\LaravelAuthRouter\LoginProviders\SocialiteBaseProvider;
+use SchenkeIo\LaravelAuthRouter\LoginProviders\SocialiteProvider;
 
-class DummyProvider extends SocialiteBaseProvider {}
+class DummyProvider extends SocialiteProvider {}

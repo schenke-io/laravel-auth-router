@@ -66,5 +66,7 @@ function getRouterData(bool $canAddNewUser): RouterData
     Route::get('route-error', fn () => 'route-error')->name('route-error');
     Route::get('route-home', fn () => 'route-home')->name('route-home');
 
+    app('router')->getRoutes()->refreshNameLookups();
+
     return new RouterData('route-success', 'route-error', 'route-home', $canAddNewUser);
 }

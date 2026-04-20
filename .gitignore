@@ -34,3 +34,22 @@ auth.json
 /skeleton
 .idea
 
+/vendor
+/node_modules
+/app/storage
+/public/storage
+/public/hot
+/.junie
+/.gemini
+GEMINI.md
+/.vscode
+/.ai
+.output.txt
+/.idea
+/__old
+/_old
+.run
+CLAUDE.md
+.CLAUDE.md
+.GEMINI.md
+AGENTS.md

@@ -9,4 +9,4 @@ namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
  *
  * @link https://developer.amazon.com/
  */
-class AmazonProvider extends SocialiteBaseProvider {}
+class AmazonProvider extends SocialiteProvider {}

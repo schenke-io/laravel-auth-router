@@ -9,37 +9,59 @@ use SchenkeIo\LaravelAuthRouter\Auth\Service;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\UnknownBaseProvider;
 
 /**
+ * A collection for login providers and factory to create them from text.
+ *
  * @extends Collection<int, BaseProvider>
  */
 class ProviderCollection extends Collection
 {
     /**
-     * @param  string|string[]  $data
+     * @param  string|array<int, string|BaseProvider>  $data
      */
     public static function fromTextArray(string|array $data): ProviderCollection
     {
         $me = new self([]);
-        if (is_string($data)) {
-            $data = [$data];
-        }
-        foreach ($data as $name) {
-            $configKey = 'services.'.$name;
-            $service = Service::get($name);
-            if ($service) {
-                $provider = $service->provider();
-            } else {
-                // error
-                $provider = new UnknownBaseProvider;
-                $provider->addError(Error::UnknownService->trans(['name' => $name]));
-            }
-            $me->push($provider);
+        $data = is_string($data) ? [$data] : $data;
+
+        foreach ($data as $item) {
+            $me->push(self::createProviderFromText($item));
         }
 
-        return $me;
+        return $me->sortProviders();
     }
 
-    public function first(?callable $callback = null, $default = null): BaseProvider
+    private static function createProviderFromText(string|BaseProvider $item): BaseProvider
     {
-        return $this->items[0] ?? new UnknownBaseProvider;
+        if ($item instanceof BaseProvider) {
+            return $item;
+        }
+        if (class_exists($item) && is_subclass_of($item, BaseProvider::class)) {
+            return new $item;
+        }
+        $service = Service::get($item);
+        if ($service) {
+            return $service->provider();
+        }
+        // error
+        $provider = new UnknownBaseProvider;
+        $provider->addError(Error::UnknownService->trans(['name' => $item]));
+
+        return $provider;
+    }
+
+    private function sortProviders(): self
+    {
+        return $this->sortBy(function (BaseProvider $provider) {
+            if (! $provider->isSocial()) {
+                return 1;
+            }
+
+            return 10;
+        })->values();
+    }
+
+    public function first(?callable $callback = null, $default = null): ?BaseProvider
+    {
+        return parent::first($callback, $default);
     }
 }

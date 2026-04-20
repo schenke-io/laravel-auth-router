@@ -8,5 +8,6 @@ parameters:
         - src
     tmpDir: build/phpstan
     ignoreErrors:
+        - '#Trait .*InteractsWithAuthRouter is used zero times and is not analysed.#'
 #    -
 #        message: '#stateless\(\)#'

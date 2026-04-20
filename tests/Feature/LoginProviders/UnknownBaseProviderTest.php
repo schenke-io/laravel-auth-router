@@ -8,8 +8,8 @@ it('has no env data', function () {
 });
 
 it('can handle a dummy login', function () {
-    $uri = 'http://localhost';
-    $this->assertEquals($uri, (new UnknownBaseProvider)->login($uri)->getTargetUrl());
+    $routerData = getRouterData(true);
+    $this->assertEquals('http://localhost', (new UnknownBaseProvider)->login($routerData)->getTargetUrl());
 });
 
 it('can handle a dummy callback', function () {
