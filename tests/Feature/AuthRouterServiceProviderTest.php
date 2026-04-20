@@ -101,7 +101,7 @@ it('handles string configuration for services', function () {
     // This should not throw TypeError
     try {
         Socialite::driver('google');
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         expect($e)->not->toBeInstanceOf(TypeError::class);
     }
 });
