@@ -15,6 +15,7 @@ use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
 use SchenkeIo\LaravelAuthRouter\Services\AppleAuthService;
 use SchenkeIo\LaravelAuthRouter\Services\AppleTokenGenerator;
+use Symfony\Component\HttpFoundation\RedirectResponse as SymRedirectResponse;
 
 /**
  * Social login with Apple.
@@ -44,6 +45,15 @@ class AppleProvider extends SocialiteProvider
     public function isSocial(): bool
     {
         return true;
+    }
+
+    public function login(RouterData $routerData): SymRedirectResponse|RedirectResponse
+    {
+        try {
+            return parent::login($routerData);
+        } catch (\Exception $e) {
+            return Error::LocalAuth->redirect($routerData, $e->getMessage());
+        }
     }
 
     /**

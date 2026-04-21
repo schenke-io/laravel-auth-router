@@ -8,6 +8,7 @@ parameters:
         - src
     tmpDir: build/phpstan
     treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         - '#Trait .*InteractsWithAuthRouter is used zero times and is not analysed.#'
 #    -

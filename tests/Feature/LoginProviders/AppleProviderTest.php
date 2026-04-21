@@ -108,6 +108,28 @@ class AppleProviderTest extends TestCase
         $this->assertStringContainsString('error', $response->getTargetUrl());
     }
 
+    public function test_login_handles_exception_from_token_generator()
+    {
+        $this->app->config->set('services.apple', [
+            'client_id' => 'invalid', // triggers exception
+            'team_id' => 'team',
+            'key_id' => 'key',
+            'private_key' => 'pk',
+        ]);
+
+        $provider = new AppleProvider;
+        $routerData = new RouterData('success', 'error', 'home', true);
+
+        Route::get('/error', fn () => 'error')->name('error');
+        app('router')->getRoutes()->refreshNameLookups();
+
+        $response = $provider->login($routerData);
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals('LocalAuth', $response->headers->get('X-Custom-Error-Type'));
+        $this->assertStringContainsString('error', $response->getTargetUrl());
+    }
+
     public function test_env_returns_correct_variables()
     {
         $provider = new AppleProvider;

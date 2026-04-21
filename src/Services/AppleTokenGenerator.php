@@ -3,6 +3,7 @@
 namespace SchenkeIo\LaravelAuthRouter\Services;
 
 use DateTimeImmutable;
+use Illuminate\Support\Facades\File;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Ecdsa\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
@@ -26,14 +27,34 @@ class AppleTokenGenerator
      */
     public function generate(string $teamId, string $keyId, string $privateKey, string $clientId): string
     {
-        if ($teamId === '' || $keyId === '' || $privateKey === '' || $clientId === '') {
-            throw new \InvalidArgumentException('Apple credentials cannot be empty');
+        if (! str_contains($clientId, '.')) {
+            throw new \InvalidArgumentException('Apple Client ID must contain at least one dot');
+        }
+        if (strlen($teamId) !== 10) {
+            throw new \InvalidArgumentException('Apple Team ID must be 10 characters long');
+        }
+        if (strlen($keyId) !== 10) {
+            throw new \InvalidArgumentException('Apple Key ID must be 10 characters long');
         }
 
-        /** @var non-empty-string $teamId */
-        /** @var non-empty-string $keyId */
-        /** @var non-empty-string $privateKey */
-        /** @var non-empty-string $clientId */
+        if (str_contains($privateKey, '/')) {
+            if (! File::exists($privateKey)) {
+                throw new \InvalidArgumentException('Apple private key file not found');
+            }
+            if (! str_ends_with($privateKey, '.p8')) {
+                throw new \InvalidArgumentException('Apple private key file must have .p8 extension');
+            }
+            $privateKey = File::get($privateKey);
+        }
+
+        if ($privateKey === '') {
+            throw new \InvalidArgumentException('Apple private key cannot be empty');
+        }
+
+        /** @var non-falsy-string $privateKey */
+        /** @var non-falsy-string $teamId */
+        /** @var non-falsy-string $keyId */
+        /** @var non-falsy-string $clientId */
         $config = Configuration::forAsymmetricSigner(
             new Sha256,
             InMemory::plainText($privateKey),
