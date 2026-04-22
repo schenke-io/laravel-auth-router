@@ -9,4 +9,10 @@ namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
  *
  * @link https://developer.linkedin.com/
  */
-class LinkedinProvider extends SocialiteProvider {}
+class LinkedinProvider extends SocialiteProvider
+{
+    protected function getScopes(): array
+    {
+        return ['openid', 'profile', 'email'];
+    }
+}

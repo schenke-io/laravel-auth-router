@@ -51,7 +51,12 @@ abstract class SocialiteProvider extends BaseProvider
     {
         $this->beforeRequest();
         /** @var AbstractProvider $driver */
-        $driver = Socialite::driver($this->name);
+        $driver = Socialite::driver($this->getSocialiteDriverName());
+
+        $scopes = $this->getScopes();
+        if (count($scopes) > 0) {
+            $driver->scopes($scopes);
+        }
 
         if ($this->isStateless) {
             return $driver->stateless()->redirect();
@@ -83,10 +88,10 @@ abstract class SocialiteProvider extends BaseProvider
         try {
             $this->beforeRequest();
             /** @var AbstractProvider|null $driver */
-            $driver = Socialite::driver($this->name);
+            $driver = Socialite::driver($this->getSocialiteDriverName());
 
             if (! $driver) {
-                return Error::LocalAuth->redirect($routerData, "Socialite driver [$this->name] not found");
+                return Error::LocalAuth->redirect($routerData, "Socialite driver [{$this->getSocialiteDriverName()}] not found");
             }
 
             if ($this->isStateless) {
@@ -104,8 +109,18 @@ abstract class SocialiteProvider extends BaseProvider
     /**
      * Hook to allow dynamic configuration before interacting with Socialite.
      */
-    protected function beforeRequest(): void
+    protected function beforeRequest(): void {}
+
+    /**
+     * @return string[]
+     */
+    protected function getScopes(): array
     {
-        // To be overridden by providers that need dynamic configuration.
+        return [];
+    }
+
+    protected function getSocialiteDriverName(): string
+    {
+        return $this->name;
     }
 }
