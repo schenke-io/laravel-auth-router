@@ -1,0 +1,56 @@
+      <file name="/home/srv/packages/schenke-io/laravel-auth-router/src/LoginProviders/SocialiteProvider.php">
+        <class name="SchenkeIo\LaravelAuthRouter\LoginProviders\SocialiteProvider" namespace="SchenkeIo\LaravelAuthRouter\LoginProviders">
+          <metrics complexity="16" methods="8" coveredmethods="7" conditionals="0" coveredconditionals="0" statements="43" coveredstatements="42" elements="51" coveredelements="49"/>
+        </class>
+        <line num="23" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="172"/>
+        <line num="25" type="stmt" count="172"/>
+        <line num="26" type="stmt" count="172"/>
+        <line num="35" type="method" name="env" visibility="public" complexity="1" crap="1" count="172"/>
+        <line num="37" type="stmt" count="172"/>
+        <line num="39" type="stmt" count="172"/>
+        <line num="40" type="stmt" count="172"/>
+        <line num="41" type="stmt" count="172"/>
+        <line num="42" type="stmt" count="172"/>
+        <line num="45" type="method" name="isSocial" visibility="public" complexity="1" crap="1" count="172"/>
+        <line num="47" type="stmt" count="172"/>
+        <line num="50" type="method" name="login" visibility="public" complexity="3" crap="3" count="8"/>
+        <line num="52" type="stmt" count="8"/>
+        <line num="54" type="stmt" count="7"/>
+        <line num="56" type="stmt" count="7"/>
+        <line num="57" type="stmt" count="7"/>
+        <line num="58" type="stmt" count="1"/>
+        <line num="61" type="stmt" count="7"/>
+        <line num="62" type="stmt" count="1"/>
+        <line num="64" type="stmt" count="6"/>
+        <line num="71" type="method" name="callback" visibility="public" complexity="7" crap="7" count="8"/>
+        <line num="73" type="stmt" count="8"/>
+        <line num="74" type="stmt" count="0"/>
+        <line num="77" type="stmt" count="8"/>
+        <line num="78" type="stmt" count="1"/>
+        <line num="79" type="stmt" count="1"/>
+        <line num="80" type="stmt" count="1"/>
+        <line num="81" type="stmt" count="1"/>
+        <line num="82" type="stmt" count="1"/>
+        <line num="83" type="stmt" count="1"/>
+        <line num="85" type="stmt" count="1"/>
+        <line num="86" type="stmt" count="1"/>
+        <line num="87" type="stmt" count="1"/>
+        <line num="88" type="stmt" count="1"/>
+        <line num="89" type="stmt" count="1"/>
+        <line num="93" type="stmt" count="7"/>
+        <line num="95" type="stmt" count="7"/>
+        <line num="97" type="stmt" count="7"/>
+        <line num="98" type="stmt" count="2"/>
+        <line num="101" type="stmt" count="5"/>
+        <line num="102" type="stmt" count="1"/>
+        <line num="104" type="stmt" count="4"/>
+        <line num="107" type="stmt" count="4"/>
+        <line num="108" type="stmt" count="1"/>
+        <line num="109" type="stmt" count="1"/>
+        <line num="116" type="method" name="beforeRequest" visibility="protected" complexity="1" crap="1" count="10"/>
+        <line num="121" type="method" name="getScopes" visibility="protected" complexity="1" crap="1" count="6"/>
+        <line num="123" type="stmt" count="6"/>
+        <line num="126" type="method" name="getSocialiteDriverName" visibility="protected" complexity="1" crap="1" count="11"/>
+        <line num="128" type="stmt" count="11"/>
+        <metrics loc="131" ncloc="111" classes="1" methods="8" coveredmethods="7" conditionals="0" coveredconditionals="0" statements="43" coveredstatements="42" elements="51" coveredelements="49"/>
+      </file>

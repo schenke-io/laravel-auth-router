@@ -70,6 +70,10 @@ abstract class SocialiteProvider extends BaseProvider
      */
     public function callback(RouterData $routerData): RedirectResponse|View
     {
+        if (request('denied') || request('error')) {
+            return Error::LocalAuth->redirect($routerData, 'User cancelled authentication');
+        }
+
         if (request('code') === 'fake_code') {
             $userData = new UserData(
                 name: 'Fake User',

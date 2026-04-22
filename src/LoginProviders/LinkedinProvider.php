@@ -2,6 +2,8 @@
 
 namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
 
+use Illuminate\Support\Facades\Config;
+
 /**
  * Social login with LinkedIn
  *
@@ -11,6 +13,16 @@ namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
  */
 class LinkedinProvider extends SocialiteProvider
 {
+    protected function beforeRequest(): void
+    {
+        Config::set('services.linkedin-openid', Config::get('services.linkedin'));
+    }
+
+    protected function getSocialiteDriverName(): string
+    {
+        return 'linkedin-openid';
+    }
+
     protected function getScopes(): array
     {
         return ['openid', 'profile', 'email'];
