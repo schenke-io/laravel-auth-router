@@ -25,6 +25,9 @@ class LinkedinProvider extends SocialiteProvider
 
     protected function getScopes(): array
     {
-        return ['openid', 'profile', 'email'];
+        return [
+            'r_verify',            # Get your profile verification
+            'r_profile_basicinfo'  # Access your basic profile information, such as your name, headline, profile photo, and profile URL.
+        ];
     }
 }
