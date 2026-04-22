@@ -40,6 +40,7 @@ Edit `routes/web.php` (or whichever route file applies for the intended middlewa
 use Illuminate\Support\Facades\Route;
 
 Route::authRouter(['google', 'microsoft'])
+    ->middleware(['web', 'throttle:60,1'])
     ->success('dashboard')       // redirect here on successful login
     ->error('login')             // redirect here on authentication failure
     ->canAddUsers(false)         // true = allow new user creation (default), false = existing users only
@@ -47,6 +48,8 @@ Route::authRouter(['google', 'microsoft'])
     ->name('auth.')              // route name prefix
     ->register();                // always terminate the chain with register()
 ```
+
+The `middleware()` method is an optional array or string of middleware to apply to the generated routes.
 
 ### Step 4 — Verify
 

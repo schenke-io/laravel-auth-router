@@ -23,7 +23,9 @@ class AuthRouterServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
-        $package->name('auth-router')->hasTranslations()->hasViews('auth-router');
+        $package->name('auth-router')
+            ->hasTranslations()
+            ->hasViews('auth-router');
     }
 
     /**

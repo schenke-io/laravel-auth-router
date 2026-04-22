@@ -12,6 +12,7 @@ In the `routes/web.php` file you use the `Route::authRouter()` macro to define w
 
 ```php
 Route::authRouter(['google', 'microsoft'])
+    ->middleware(['web', 'throttle:60,1'])
     ->success('dashboard')
     ->error('login')
     ->home('home')
