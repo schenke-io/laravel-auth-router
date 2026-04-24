@@ -5,6 +5,7 @@ namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
 use Illuminate\Http\RedirectResponse;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
 use SchenkeIo\LaravelAuthRouter\Auth\Error;
+use SchenkeIo\LaravelAuthRouter\Contracts\UseExclusiveInterface;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
 use WorkOS\UserManagement;
@@ -14,7 +15,7 @@ use WorkOS\UserManagement;
  *
  * @link https://workos.com/docs/user-management
  */
-class WorkosProvider extends BaseProvider
+class WorkosProvider extends BaseProvider implements UseExclusiveInterface
 {
     /**
      * @return array<string,string>
@@ -37,7 +38,7 @@ class WorkosProvider extends BaseProvider
     {
         $request = request();
         $clientId = config('services.workos.client_id');
-        $redirectUri = config('services.workos.redirect');
+        $redirectUri = $this->getRedirectUrl();
 
         $authorizationUrl = app(UserManagement::class)->getAuthorizationUrl(
             $redirectUri,

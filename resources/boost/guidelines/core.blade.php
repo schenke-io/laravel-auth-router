@@ -65,7 +65,7 @@ Valid provider keys are defined in `SchenkeIo\LaravelAuthRouter\Auth\Service`. M
 
 ## 3. Provider Configuration (`config/services.php`)
 
-Each provider reads its config from `config('services.{provider_name}')`. The `redirect` key is set **automatically** — never hardcode it.
+Each provider reads its config from `config('services.{provider_name}')`. The callback URL is handled automatically via named routes.
 
 ```php
 // Standard Socialite provider (google, facebook, amazon, linkedin, paypal, stripe, custom)
@@ -107,7 +107,6 @@ Each provider reads its config from `config('services.{provider_name}')`. The `r
 ```
 
 **Rules:**
-- Never add a `redirect` key manually — it is injected by `BaseProvider::registerRoutes()`.
 - Missing keys surface as "Setup Errors" on the login page, not as exceptions.
 - Do not mix WorkOS providers with non-WorkOS providers in the same `authRouter()` call.
 

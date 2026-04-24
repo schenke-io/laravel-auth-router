@@ -13,6 +13,7 @@ it('can login with Facebook', function () {
     $redirectResponse = new RedirectResponse($redirectUrl);
 
     Socialite::shouldReceive('driver')->with('facebook')->andReturnSelf();
+    Socialite::shouldReceive('redirectUrl')->andReturnSelf();
     Socialite::shouldReceive('redirect')->andReturn($redirectResponse);
 
     $provider = new FacebookProvider;

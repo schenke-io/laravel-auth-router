@@ -13,5 +13,6 @@ return [
     'Network' => 'Netzwerkfehler',
     'InvalidRequest' => 'Ungültige Anfrage',
     'MixedProviders' => 'Ein Mix aus WorkOS- und anderen Login-Providern wird nicht unterstützt',
+    'ExclusiveProvider' => 'Der Provider :name ist exklusiv und kann nicht mit anderen sozialen Providern verwendet werden',
     'InvalidCredentials' => 'Die angegebenen Anmeldedaten sind falsch.',
 ];

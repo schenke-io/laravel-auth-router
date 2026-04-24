@@ -13,6 +13,7 @@ it('can login with Amazon', function () {
     $redirectResponse = new RedirectResponse($redirectUrl);
 
     Socialite::shouldReceive('driver')->with('amazon')->andReturnSelf();
+    Socialite::shouldReceive('redirectUrl')->andReturnSelf();
     Socialite::shouldReceive('redirect')->andReturn($redirectResponse);
 
     $provider = new AmazonProvider;

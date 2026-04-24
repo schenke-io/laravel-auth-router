@@ -26,6 +26,7 @@ it('redirects to the success page after successful login', function () {
     $socialiteUserMock->shouldReceive('getAvatar')->andReturn($avatar);
 
     Socialite::shouldReceive('driver')->with('google')->andReturnSelf();
+    Socialite::shouldReceive('redirectUrl')->andReturnSelf();
     Socialite::shouldReceive('user')->andReturn($socialiteUserMock);
 
     // Register routes

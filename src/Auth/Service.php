@@ -26,6 +26,7 @@ enum Service
     case apple;
     case custom;
     case workos;
+    case logto;
     case passkey;
 
     /**

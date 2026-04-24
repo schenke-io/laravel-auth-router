@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
 use SchenkeIo\LaravelAuthRouter\Auth\Error;
 use SchenkeIo\LaravelAuthRouter\Auth\Service;
+use SchenkeIo\LaravelAuthRouter\Contracts\UseExclusiveInterface;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\UnknownBaseProvider;
 
 /**
@@ -27,7 +28,22 @@ class ProviderCollection extends Collection
             $me->push(self::createProviderFromText($item));
         }
 
-        return $me->sortProviders();
+        return $me->handleExclusivity()->sortProviders();
+    }
+
+    private function handleExclusivity(): self
+    {
+        $exclusive = $this->first(fn (BaseProvider $p) => $p instanceof UseExclusiveInterface);
+        if ($exclusive) {
+            $others = $this->filter(fn (BaseProvider $p) => $p->isSocial() && $p !== $exclusive);
+            if ($others->count() > 0) {
+                foreach ($others as $p) {
+                    $p->addError(Error::ExclusiveProvider->trans(['name' => ucfirst($exclusive->name)]));
+                }
+            }
+        }
+
+        return $this;
     }
 
     private static function createProviderFromText(string|BaseProvider $item): BaseProvider

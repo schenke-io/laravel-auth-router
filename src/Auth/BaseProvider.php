@@ -99,10 +99,7 @@ abstract class BaseProvider
         $this->loginRoute = $routePrefix.$this->loginRoute;
         $this->callbackRoute = $routePrefix.$this->callbackRoute;
 
-        // make absolute URLs for redirect and callback URIs
-        $fullRedirectUri = url($uriPrefix.$this->callbackUri);
-        // we must store the config just value just here
-        Config::set('services.'.$this->name.'.redirect', $fullRedirectUri);
+        Config::set('services.'.$this->name.'.redirect', $this->getRedirectUrl());
 
         Route::get($uriPrefix.$this->loginUri, fn (Request $request) => app()->call([$this, 'login'], ['routerData' => $routerData]))
             ->name($this->loginRoute)
@@ -117,6 +114,15 @@ abstract class BaseProvider
             ->name($this->callbackRoute)
             ->defaults('routerData', $routerData)
             ->middleware($middleware);
+    }
+
+    public function getRedirectUrl(): string
+    {
+        if (Route::has($this->callbackRoute)) {
+            return route($this->callbackRoute);
+        }
+
+        return url($this->callbackUri);
     }
 
     /*

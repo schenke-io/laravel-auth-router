@@ -23,6 +23,7 @@ enum Error
     case Network;
     case InvalidRequest;
     case MixedProviders;
+    case ExclusiveProvider;
     case InvalidCredentials;
 
     /**
@@ -55,7 +56,7 @@ enum Error
     public function parameterKeys(): array
     {
         return match ($this) {
-            self::ServiceNotSet, self::UnknownService => ['name'],
+            self::ServiceNotSet, self::UnknownService, self::ExclusiveProvider => ['name'],
             self::ConfigNotSet => ['key', 'env'],
             default => [],
         };

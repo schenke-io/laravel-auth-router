@@ -116,6 +116,7 @@ class AppleProvider extends SocialiteProvider
             $this->beforeRequest();
             /** @var AbstractProvider $driver */
             $driver = Socialite::driver($this->name);
+            $driver->redirectUrl($this->getRedirectUrl());
 
             if ($this->isStateless) {
                 /** @var User $socialUser */

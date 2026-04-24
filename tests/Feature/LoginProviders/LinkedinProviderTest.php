@@ -16,8 +16,9 @@ it('redirects to linkedin for login', function () {
     $redirectUrl = 'http://provider.auth.url';
     $redirectResponse = new RedirectResponse($redirectUrl);
 
-    Socialite::shouldReceive('driver')->with('linkedin-openid')->andReturnSelf();
-    Socialite::shouldReceive('scopes')->with(['openid', 'profile', 'email'])->once()->andReturnSelf();
+    Socialite::shouldReceive('driver')->with('linkedin')->andReturnSelf();
+    Socialite::shouldReceive('redirectUrl')->andReturnSelf();
+    Socialite::shouldReceive('scopes')->with(['r_liteprofile', 'r_emailaddress'])->once()->andReturnSelf();
     Socialite::shouldReceive('redirect')->andReturn($redirectResponse);
 
     $provider = new LinkedinProvider;
@@ -47,7 +48,8 @@ it('handles the return code and authenticates the user if possible', function ()
     $socialiteUserMock->shouldReceive('getEmail')->andReturn($email);
     $socialiteUserMock->shouldReceive('getAvatar')->andReturn($avatar);
 
-    Socialite::shouldReceive('driver')->with('linkedin-openid')->andReturnSelf();
+    Socialite::shouldReceive('driver')->with('linkedin')->andReturnSelf();
+    Socialite::shouldReceive('redirectUrl')->andReturnSelf();
     Socialite::shouldReceive('user')->andReturn($socialiteUserMock);
 
     $provider = new LinkedinProvider;

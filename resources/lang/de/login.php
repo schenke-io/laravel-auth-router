@@ -27,6 +27,7 @@ return [
         'separator' => 'oder',
     ],
     'workos_linkedin' => 'Mit LinkedIn anmelden (WorkOS)',
+    'logto' => 'Mit Logto anmelden',
     'passkey' => [
         'email_placeholder' => 'E-Mail-Adresse eingeben',
         'submit_button' => 'Weiter mit E-Mail',

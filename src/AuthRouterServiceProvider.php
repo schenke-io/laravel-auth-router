@@ -8,6 +8,7 @@ use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
 use SchenkeIo\LaravelAuthRouter\Auth\AuthRouterBuilder;
 use SchenkeIo\LaravelAuthRouter\Services\AppleTokenGenerator;
 use SocialiteProviders\Apple;
+use SocialiteProviders\LinkedIn;
 use SocialiteProviders\Manager\Helpers\ConfigRetriever;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Microsoft;
@@ -42,7 +43,7 @@ class AuthRouterServiceProvider extends PackageServiceProvider
              * Ensure configuration is an array for supported drivers
              * to prevent TypeErrors in Socialite 5.14+ / PHP 8.0+
              */
-            foreach (['microsoft', 'stripe', 'apple', 'google'] as $name) {
+            foreach (['microsoft', 'stripe', 'apple', 'google', 'linkedin'] as $name) {
                 $key = "services.$name";
                 $config = config($key);
                 if (is_string($config)) {
@@ -58,6 +59,7 @@ class AuthRouterServiceProvider extends PackageServiceProvider
                 'microsoft' => Microsoft\Provider::class,
                 'stripe' => Stripe\Provider::class,
                 'apple' => Apple\Provider::class,
+                'linkedin' => LinkedIn\Provider::class,
             ] as $name => $class) {
                 $socialite->extend($name, function () use ($socialite, $name, $class) {
                     $config = (new ConfigRetriever)->fromServices($name);

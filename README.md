@@ -74,6 +74,7 @@ It automatically handles routing, offers flexible customization for redirects an
   * [Apple Provider](#apple-provider)
   * [Custom Provider](#custom-provider)
   * [Workos Provider](#workos-provider)
+  * [Logto Provider](#logto-provider)
   * [Passkey Provider](#passkey-provider)
 
 ## <a name="installation"></a>Installation
@@ -423,6 +424,7 @@ A collection of login providers passed to `Route::authRouter` must **NOT** conta
 | apple     | Social login with Apple.                | https://developer.apple.com/sign-in-with-apple/ |
 | custom    | A free programmable login provider.     | ??                                              |
 | workos    | Social login with WorkOS                | https://workos.com/docs/user-management         |
+| logto     |                                         | ??                                              |
 | passkey   | Passkey login provider implementation.  | ??                                              |
 
 ## <a name="amazon-provider"></a>Amazon Provider
@@ -707,6 +709,30 @@ Edit the `config/services.php` file:
         'client_id' => env('WORKOS_CLIENT_ID'),
         'api_key' => env('WORKOS_API_KEY'),
         'client_secret' => env('WORKOS_CLIENT_SECRET'),
+    ],
+```
+
+You do not need to configure the callback URL, it will be automatically added
+
+## <a name="logto-provider"></a>Logto Provider
+
+First go to ??
+
+Edit the `.env` file in your Laravel project and add the credentials:
+
+```dotenv
+LOGTO_ENDPOINT=...
+LOGTO_APP_ID=...
+LOGTO_APP_SECRET=...
+```
+
+Edit the `config/services.php` file:
+
+```php
+    'logto' => [
+        'endpoint' => env('LOGTO_ENDPOINT'),
+        'app_id' => env('LOGTO_APP_ID'),
+        'app_secret' => env('LOGTO_APP_SECRET'),
     ],
 ```
 

@@ -21,6 +21,7 @@ it('can handle stateless login', function () {
     $redirectResponse = new RedirectResponse($redirectUrl);
 
     Socialite::shouldReceive('driver')->with('google')->andReturnSelf();
+    Socialite::shouldReceive('redirectUrl')->andReturnSelf();
     Socialite::shouldReceive('stateless')->andReturnSelf();
     Socialite::shouldReceive('redirect')->andReturn($redirectResponse);
 
@@ -47,6 +48,7 @@ it('can handle stateless login', function () {
     $socialiteUserMock->shouldReceive('getAvatar')->andReturn($avatar);
 
     Socialite::shouldReceive('driver')->with('google')->andReturnSelf();
+    Socialite::shouldReceive('redirectUrl')->andReturnSelf();
     Socialite::shouldReceive('stateless')->andReturnSelf();
     Socialite::shouldReceive('user')->andReturn($socialiteUserMock);
 
@@ -73,6 +75,7 @@ it('redirects to google for login', function () {
     $redirectResponse = new RedirectResponse($redirectUrl);
 
     Socialite::shouldReceive('driver')->with('google')->andReturnSelf();
+    Socialite::shouldReceive('redirectUrl')->andReturnSelf();
     Socialite::shouldReceive('redirect')->andReturn($redirectResponse);
 
     $provider = new GoogleProvider;
@@ -103,6 +106,7 @@ it('handles the return code and authenticates the user if possible', function ()
     $socialiteUserMock->shouldReceive('getAvatar')->andReturn($avatar);
 
     Socialite::shouldReceive('driver')->with('google')->andReturnSelf();
+    Socialite::shouldReceive('redirectUrl')->andReturnSelf();
     Socialite::shouldReceive('user')->andReturn($socialiteUserMock);
 
     $provider = new GoogleProvider;
@@ -137,6 +141,7 @@ it('can store errors', function () {
 
 it('catch exception in callback', function () {
     Socialite::shouldReceive('driver')->with('google')->andReturnSelf();
+    Socialite::shouldReceive('redirectUrl')->andReturnSelf();
     Socialite::shouldReceive('user')->andThrowExceptions([new Exception]);
 
     Route::get('/', fn () => '')->name('home');

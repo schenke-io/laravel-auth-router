@@ -53,6 +53,8 @@ abstract class SocialiteProvider extends BaseProvider
         /** @var AbstractProvider $driver */
         $driver = Socialite::driver($this->getSocialiteDriverName());
 
+        $driver->redirectUrl($this->getRedirectUrl());
+
         $scopes = $this->getScopes();
         if (count($scopes) > 0) {
             $driver->scopes($scopes);
@@ -97,6 +99,8 @@ abstract class SocialiteProvider extends BaseProvider
             if (! $driver) {
                 return Error::LocalAuth->redirect($routerData, "Socialite driver [{$this->getSocialiteDriverName()}] not found");
             }
+
+            $driver->redirectUrl($this->getRedirectUrl());
 
             if ($this->isStateless) {
                 $socialUser = $driver->stateless()->user();

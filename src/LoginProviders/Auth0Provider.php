@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Config;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
 use SchenkeIo\LaravelAuthRouter\Auth\Error;
+use SchenkeIo\LaravelAuthRouter\Contracts\UseExclusiveInterface;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
 
@@ -20,7 +21,7 @@ use SchenkeIo\LaravelAuthRouter\Data\UserData;
  *
  * @link https://auth0.com/developers
  */
-class Auth0Provider extends BaseProvider
+class Auth0Provider extends BaseProvider implements UseExclusiveInterface
 {
     /**
      * key: expected key in config(system), value: suggested name ov ENV key,
@@ -52,7 +53,7 @@ class Auth0Provider extends BaseProvider
     {
         $auth0 = app(Auth0::class);
         $request = request();
-        $redirectUri = config('services.'.$this->name.'.redirect');
+        $redirectUri = $this->getRedirectUrl();
 
         return redirect($auth0->login($redirectUri, ['login_hint' => $request->get('hint')]));
     }

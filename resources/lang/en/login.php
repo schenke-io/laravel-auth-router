@@ -31,6 +31,7 @@ return [
         'separator' => '--- or ----',
     ],
     'workos_linkedin' => 'Log in with LinkedIn (WorkOS)',
+    'logto' => 'Sign in with Logto',
     'passkey' => [
         'email_placeholder' => 'Enter email address',
         'submit_button' => 'Continue with Email',

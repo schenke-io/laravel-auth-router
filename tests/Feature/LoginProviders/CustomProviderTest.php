@@ -13,6 +13,7 @@ it('can login with Custom provider', function () {
     $redirectResponse = new RedirectResponse($redirectUrl);
 
     Socialite::shouldReceive('driver')->with('custom')->andReturnSelf();
+    Socialite::shouldReceive('redirectUrl')->andReturnSelf();
     Socialite::shouldReceive('redirect')->andReturn($redirectResponse);
 
     $provider = new CustomProvider;

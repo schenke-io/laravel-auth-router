@@ -45,3 +45,49 @@ it('sorts email-based providers first', function () {
     expect($collection[0])->toBeInstanceOf(WhatsappProvider::class)
         ->and($collection[1])->toBeInstanceOf(GoogleProvider::class);
 });
+
+it('handles exclusivity of Logto', function () {
+    $this->app->config->set('services.logto.endpoint', 'x');
+    $this->app->config->set('services.logto.app_id', 'x');
+    $this->app->config->set('services.logto.app_secret', 'x');
+
+    $collection = ProviderCollection::fromTextArray(['logto', 'google']);
+    expect($collection[1]->valid())->toBeFalse()
+        ->and($collection[1]->errors()[0])->toContain('Logto');
+});
+
+it('handles exclusivity of WorkOS', function () {
+    $this->app->config->set('services.workos.client_id', 'x');
+    $this->app->config->set('services.workos.api_key', 'x');
+    $this->app->config->set('services.workos.client_secret', 'x');
+
+    $collection = ProviderCollection::fromTextArray(['workos', 'google']);
+    expect($collection[1]->valid())->toBeFalse()
+        ->and($collection[1]->errors()[0])->toContain('Workos');
+});
+
+it('handles exclusivity of Auth0', function () {
+    $this->app->config->set('services.auth0.client_id', 'x');
+    $this->app->config->set('services.auth0.client_secret', 'x');
+    $this->app->config->set('services.auth0.domain', 'x');
+    $this->app->config->set('services.auth0.cookie_secret', 'x');
+
+    $collection = ProviderCollection::fromTextArray(['auth0', 'google']);
+    expect($collection[1]->valid())->toBeFalse()
+        ->and($collection[1]->errors()[0])->toContain('Auth0');
+});
+
+it('handles multiple exclusive providers', function () {
+    $this->app->config->set('services.logto.endpoint', 'x');
+    $this->app->config->set('services.logto.app_id', 'x');
+    $this->app->config->set('services.logto.app_secret', 'x');
+
+    $this->app->config->set('services.auth0.client_id', 'x');
+    $this->app->config->set('services.auth0.client_secret', 'x');
+    $this->app->config->set('services.auth0.domain', 'x');
+    $this->app->config->set('services.auth0.cookie_secret', 'x');
+
+    $collection = ProviderCollection::fromTextArray(['logto', 'auth0']);
+    expect($collection[1]->valid())->toBeFalse()
+        ->and($collection[1]->errors()[0])->toContain('Logto');
+});

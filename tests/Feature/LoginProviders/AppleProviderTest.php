@@ -37,6 +37,7 @@ class AppleProviderTest extends TestCase
         $redirectResponse = new RedirectResponse($redirectUrl);
 
         Socialite::shouldReceive('driver')->with('apple')->andReturnSelf();
+        Socialite::shouldReceive('redirectUrl')->andReturnSelf();
         Socialite::shouldReceive('redirect')->andReturn($redirectResponse);
 
         $provider = new AppleProvider;
@@ -76,6 +77,7 @@ class AppleProviderTest extends TestCase
         $socialiteUserMock->shouldReceive('getAvatar')->andReturn('avatar-url');
 
         Socialite::shouldReceive('driver')->with('apple')->andReturnSelf();
+        Socialite::shouldReceive('redirectUrl')->andReturnSelf();
         Socialite::shouldReceive('user')->andReturn($socialiteUserMock);
 
         $provider = new AppleProvider;
@@ -200,6 +202,7 @@ class AppleProviderTest extends TestCase
         $socialiteUserMock->shouldReceive('getAvatar')->andReturn('avatar-url');
 
         $driverMock = \Mockery::mock(AbstractProvider::class);
+        $driverMock->shouldReceive('redirectUrl')->andReturnSelf();
         $driverMock->shouldReceive('stateless')->andReturnSelf();
         $driverMock->shouldReceive('user')->andReturn($socialiteUserMock);
 

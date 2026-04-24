@@ -64,7 +64,7 @@ class MakeMarkdown extends Command
 
         $mda->addMarkdown('providers.md');
 
-        // Providers overview
+        // Provider overview
         $tableProviders = [['ID', 'Detail', 'Link']];
         foreach (Service::cases() as $case) {
             $provider = $case->provider();
@@ -77,7 +77,7 @@ class MakeMarkdown extends Command
         }
         $mda->tables()->fromArray($tableProviders);
 
-        // Providers details
+        // Provider details
         foreach (Service::cases() as $case) {
             $provider = $case->provider();
             $reader = ClassReader::fromClass(get_class($provider), $projectContext);

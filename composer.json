@@ -37,7 +37,9 @@
         "workos/workos-php": "^4.29",
         "socialiteproviders/apple": "^5.0",
         "lcobucci/jwt": "^5.5",
-        "spatie/laravel-passkeys": "^1.6"
+        "spatie/laravel-passkeys": "^1.6",
+        "socialiteproviders/linkedin": "^5.0",
+        "logto/sdk": "^0.3.1"
     },
     "require-dev": {
         "larastan/larastan": "^3.0",

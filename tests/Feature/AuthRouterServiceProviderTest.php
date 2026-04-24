@@ -95,8 +95,7 @@ it('handles string configuration for services', function () {
     $this->app->config->set('services.google', 'google_client_id');
     Route::authRouter('google')->success('success')->error('error')->register();
     expect(config('services.google'))->toBeArray()
-        ->and(config('services.google.client_id'))->toBe('google_client_id')
-        ->and(config('services.google.redirect'))->not->toBeNull();
+        ->and(config('services.google.client_id'))->toBe('google_client_id');
 
     // This should not throw TypeError
     try {

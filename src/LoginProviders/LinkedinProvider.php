@@ -2,8 +2,6 @@
 
 namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
 
-use Illuminate\Support\Facades\Config;
-
 /**
  * Social login with LinkedIn
  *
@@ -13,21 +11,16 @@ use Illuminate\Support\Facades\Config;
  */
 class LinkedinProvider extends SocialiteProvider
 {
-    protected function beforeRequest(): void
-    {
-        Config::set('services.linkedin-openid', Config::get('services.linkedin'));
-    }
-
     protected function getSocialiteDriverName(): string
     {
-        return 'linkedin-openid';
+        return 'linkedin';
     }
 
     protected function getScopes(): array
     {
         return [
-            'r_verify',            # Get your profile verification
-            'r_profile_basicinfo'  # Access your basic profile information, such as your name, headline, profile photo, and profile URL.
+            'r_liteprofile',
+            'r_emailaddress',
         ];
     }
 }
