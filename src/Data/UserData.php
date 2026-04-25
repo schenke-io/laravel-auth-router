@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use SchenkeIo\LaravelAuthRouter\Auth\Error;
@@ -151,6 +152,13 @@ class UserData extends Data
 
         /** @var Authenticatable $user */
         Auth::guard('web')->login($user, $routerData->rememberMe);
+
+        if ($routerData->logChannel) {
+            Log::channel($routerData->logChannel)->info('AuthRouter success', [
+                'provider' => $this->provider,
+                'email' => $this->email,
+            ]);
+        }
 
         if (Session::has('url.intended')) {
             return redirect()->intended();

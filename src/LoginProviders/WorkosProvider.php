@@ -36,6 +36,7 @@ class WorkosProvider extends BaseProvider implements UseExclusiveInterface
 
     public function login(RouterData $routerData): RedirectResponse
     {
+        $this->log($routerData, 'AuthRouter login start');
         $request = request();
         $clientId = config('services.workos.client_id');
         $redirectUri = $this->getRedirectUrl();
@@ -55,6 +56,7 @@ class WorkosProvider extends BaseProvider implements UseExclusiveInterface
 
     public function callback(RouterData $routerData): RedirectResponse
     {
+        $this->log($routerData, 'AuthRouter callback start');
         $request = request();
         $code = $request->query('code');
         if (! $code) {

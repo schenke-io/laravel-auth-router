@@ -31,6 +31,7 @@ class PasskeyProvider extends BaseProvider
 
     public function login(RouterData $routerData): RedirectResponse|Response|View
     {
+        $this->log($routerData, 'AuthRouter login start');
         $request = request();
         $email = $request->input('email');
         $otp = $request->input('otp');
@@ -89,6 +90,7 @@ class PasskeyProvider extends BaseProvider
 
     public function callback(RouterData $routerData): RedirectResponse|View
     {
+        $this->log($routerData, 'AuthRouter callback start');
         // finalize authentication via spatie/laravel-passkeys
         // for now, a placeholder
         $email = session('passkey_email');

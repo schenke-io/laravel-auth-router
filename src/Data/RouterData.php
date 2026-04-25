@@ -23,7 +23,8 @@ class RouterData extends Data
         public ?string $routeName = null,
         public ?EmailConfirmInterface $emailConfirm = null,
         public array $middleware = [],
-        public bool $showPayload = false
+        public bool $showPayload = false,
+        public ?string $logChannel = null
     ) {}
 
     public function getRoutePrefix(): string

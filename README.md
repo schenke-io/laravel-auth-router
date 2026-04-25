@@ -41,6 +41,7 @@ It automatically handles routing, offers flexible customization for redirects an
   * [Basic concept](#basic-concept)
   * [Login and Logout flow](#login-and-logout-flow)
   * [Name conflicts](#name-conflicts)
+  * [Debugging](#debugging)
   * [Configuration](#configuration)
     * [Standard Socialite Drivers](#standard-socialite-drivers)
     * [WorkOS Drivers](#workos-drivers)
@@ -99,6 +100,7 @@ Route::authRouter(['google', 'microsoft'])
     ->rememberMe(false)
     ->prefix('auth')
     ->name('auth.')
+    ->debug('stack')
     ->register();
 ```
 
@@ -113,6 +115,7 @@ Route::authRouter(['google', 'microsoft'])
 | `name()`         | prefix for the route names                                              | 'auth.'                               |
 | `middleware()`   | additional middleware for the routes                                    | 'web' or `['web', 'throttle']`        |
 | `emailConfirm()` | implementation of `EmailConfirmInterface` to handle email verification  | `$myEmailConfirm`                     |
+| `debug()`        | log channel for debug information (registration and communication)      | 'stack'                               |
 | `register()`     | **Mandatory** call to actually register the routes                      |                                       |
 
 Route names can be same. If the homepage can display errors `error()` and `home()` could be the same.
@@ -144,6 +147,14 @@ Registers the following routes when the configuration is free of errors:
 - /admin/logout (named `admin.logout`)
 
 Just use `php artisan route:list` to see which names and routes have been added.
+
+## <a name="debugging"></a>Debugging
+
+If you want to track the authentication process, use the `debug()` method with a log channel name. This will log:
+- Successful route registrations
+- Start of login and callback processes
+- Successful authentications (with provider and email)
+- Errors (with error type and details)
 
 ## <a name="configuration"></a>Configuration
 

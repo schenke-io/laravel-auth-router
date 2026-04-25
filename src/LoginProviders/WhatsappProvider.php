@@ -36,6 +36,7 @@ class WhatsappProvider extends BaseProvider
 
     public function login(RouterData $routerData): RedirectResponse|Response|View
     {
+        $this->log($routerData, 'AuthRouter login start');
         $request = request();
         if ($request->isMethod('post')) {
             $email = $request->input('email');
@@ -77,6 +78,7 @@ class WhatsappProvider extends BaseProvider
 
     public function callback(RouterData $routerData): RedirectResponse|View
     {
+        $this->log($routerData, 'AuthRouter callback start');
         $email = request()->input('email');
 
         if (! $email) {

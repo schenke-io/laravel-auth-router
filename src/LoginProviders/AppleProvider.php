@@ -97,6 +97,7 @@ class AppleProvider extends SocialiteProvider
      */
     public function callback(RouterData $routerData): RedirectResponse|View
     {
+        $this->log($routerData, 'AuthRouter callback start');
         if (request('code') === 'fake_code') {
             $userData = new UserData(
                 name: 'Fake User',

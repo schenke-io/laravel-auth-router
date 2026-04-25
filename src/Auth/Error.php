@@ -3,6 +3,7 @@
 namespace SchenkeIo\LaravelAuthRouter\Auth;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 
@@ -31,6 +32,14 @@ enum Error
      */
     public function redirect(RouterData $routerData, string $codeErrorMessage = '', array $errorParameter = []): RedirectResponse
     {
+        if ($routerData->logChannel) {
+            Log::channel($routerData->logChannel)->error('AuthRouter error', [
+                'type' => $this->name,
+                'info' => $this->trans($errorParameter),
+                'message' => $codeErrorMessage,
+            ]);
+        }
+
         return Redirect::route($routerData->routeError)
             ->withInput()
             ->with('authRouterErrorInfo', $this->trans($errorParameter))

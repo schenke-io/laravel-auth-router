@@ -2,6 +2,7 @@
 
 namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
 
+use Logto\Sdk\Constants\UserScope;
 use Logto\Sdk\LogtoClient;
 use Logto\Sdk\LogtoConfig;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
@@ -36,6 +37,10 @@ class LogtoProvider extends BaseProvider implements UseExclusiveInterface
                 endpoint: $config['endpoint'] ?? '',
                 appId: $config['app_id'] ?? '',
                 appSecret: $config['app_secret'] ?? '',
+                scopes: [
+                    UserScope::email,
+                    UserScope::profile,
+                ]  // must be explicitly named to avoid scope issues
             ),
             new LogtoStorage
         );
@@ -43,6 +48,7 @@ class LogtoProvider extends BaseProvider implements UseExclusiveInterface
 
     public function login(RouterData $routerData): mixed
     {
+        $this->log($routerData, 'AuthRouter login start');
         $client = $this->getClient();
 
         return redirect($client->signIn($this->getRedirectUrl()));
@@ -50,6 +56,7 @@ class LogtoProvider extends BaseProvider implements UseExclusiveInterface
 
     public function callback(RouterData $routerData): mixed
     {
+        $this->log($routerData, 'AuthRouter callback start');
         $client = $this->getClient();
         try {
             $client->handleSignInCallback();

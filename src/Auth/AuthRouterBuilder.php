@@ -2,6 +2,7 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Auth;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use SchenkeIo\LaravelAuthRouter\Contracts\EmailConfirmInterface;
 use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
@@ -66,6 +67,11 @@ class AuthRouterBuilder
      * Whether to show the payload data before finalizing authentication.
      */
     protected bool $showPayload = false;
+
+    /**
+     * The log channel to send debug information to.
+     */
+    protected ?string $logChannel = null;
 
     /**
      * Tracks whether the routes have already been registered to avoid duplicates.
@@ -210,6 +216,19 @@ class AuthRouterBuilder
     }
 
     /**
+     * Set the log channel for debug information.
+     *
+     * @param  string  $channel  The log channel name.
+     * @return $this
+     */
+    public function debug(string $channel): self
+    {
+        $this->logChannel = $channel;
+
+        return $this;
+    }
+
+    /**
      * Final method to register the configured routes.
      *
      * This method must be called to explicitly register the routes.
@@ -233,8 +252,28 @@ class AuthRouterBuilder
             $this->routeName,
             $this->emailConfirm,
             $this->middleware,
-            $this->showPayload
+            $this->showPayload,
+            $this->logChannel
         );
+
+        if ($this->logChannel) {
+            Log::channel($this->logChannel)->debug('AuthRouter registration', [
+                'providers' => $providers->map(fn ($p) => $p->name)->toArray(),
+                'routerData' => [
+                    'routeSuccess' => $this->routeSuccess,
+                    'routeError' => $this->routeError,
+                    'routeHome' => $this->routeHome,
+                    'canAddUsers' => $this->canAddUsers,
+                    'rememberMe' => $this->rememberMe,
+                    'prefix' => $this->prefix,
+                    'routeName' => $this->routeName,
+                    'emailConfirm' => $this->emailConfirm ? $this->emailConfirm::class : null,
+                    'middleware' => $this->middleware,
+                    'showPayload' => $this->showPayload,
+                ],
+            ]);
+        }
+
         $authRouter = new AuthRouter;
         // add the routes for any provider
         $authRouter->addProviders($providers, $routerData);

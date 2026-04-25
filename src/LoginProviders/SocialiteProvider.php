@@ -49,6 +49,7 @@ abstract class SocialiteProvider extends BaseProvider
 
     public function login(RouterData $routerData): SymRedirectResponse|RedirectResponse
     {
+        $this->log($routerData, 'AuthRouter login start');
         $this->beforeRequest();
         /** @var AbstractProvider $driver */
         $driver = Socialite::driver($this->getSocialiteDriverName());
@@ -72,6 +73,7 @@ abstract class SocialiteProvider extends BaseProvider
      */
     public function callback(RouterData $routerData): RedirectResponse|View
     {
+        $this->log($routerData, 'AuthRouter callback start');
         if (request('denied') || request('error')) {
             return Error::LocalAuth->redirect($routerData, 'User cancelled authentication');
         }

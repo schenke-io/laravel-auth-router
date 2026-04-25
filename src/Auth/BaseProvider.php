@@ -4,6 +4,7 @@ namespace SchenkeIo\LaravelAuthRouter\Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 
@@ -157,5 +158,17 @@ abstract class BaseProvider
     public function valid(): bool
     {
         return count($this->errors) === 0;
+    }
+
+    /**
+     * @param  array<string, mixed>  $context
+     */
+    public function log(RouterData $routerData, string $message, array $context = []): void
+    {
+        if ($routerData->logChannel) {
+            Log::channel($routerData->logChannel)->info($message, array_merge([
+                'provider' => $this->name,
+            ], $context));
+        }
     }
 }

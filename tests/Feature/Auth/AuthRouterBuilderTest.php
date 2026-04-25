@@ -2,6 +2,7 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Tests\Feature\Auth;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use SchenkeIo\LaravelAuthRouter\Auth\AuthRouterBuilder;
 use SchenkeIo\LaravelAuthRouter\Contracts\EmailConfirmInterface;
@@ -28,6 +29,20 @@ it('can set all fluent methods', function () {
     // Now check if routes are registered with the given parameters
     $routes = Route::getRoutes();
     expect($routes->hasNamedRoute('login'))->toBeTrue();
+});
+
+it('can log debug information', function () {
+    Log::shouldReceive('channel')
+        ->once()
+        ->with('test-channel')
+        ->andReturnSelf();
+
+    Log::shouldReceive('debug')
+        ->once()
+        ->with('AuthRouter registration', \Mockery::type('array'));
+
+    $builder = new AuthRouterBuilder(['google']);
+    $builder->debug('test-channel')->register();
 });
 
 it('can register routes explicitly', function () {

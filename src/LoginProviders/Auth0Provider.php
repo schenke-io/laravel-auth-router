@@ -51,6 +51,7 @@ class Auth0Provider extends BaseProvider implements UseExclusiveInterface
      */
     public function login(RouterData $routerData): RedirectResponse
     {
+        $this->log($routerData, 'AuthRouter login start');
         $auth0 = app(Auth0::class);
         $request = request();
         $redirectUri = $this->getRedirectUrl();
@@ -63,6 +64,7 @@ class Auth0Provider extends BaseProvider implements UseExclusiveInterface
      */
     public function callback(RouterData $routerData): RedirectResponse
     {
+        $this->log($routerData, 'AuthRouter callback start');
         $auth0 = app(Auth0::class);
         $request = request();
         $requestData = $request->all();
