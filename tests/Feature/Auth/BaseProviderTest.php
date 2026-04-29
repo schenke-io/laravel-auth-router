@@ -2,6 +2,9 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Tests\Feature\Auth;
 
+use Illuminate\Support\Facades\Log;
+use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
+use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\GoogleProvider;
 use SchenkeIo\LaravelAuthRouter\Tests\TestCase;
 
@@ -50,5 +53,67 @@ class BaseProviderTest extends TestCase
     {
         $provider = new GoogleProvider;
         $this->assertEquals(GoogleProvider::class.'@myMethod', $provider->getAction('myMethod'));
+    }
+
+    public function test_logout_returns_null()
+    {
+        $provider = new class extends BaseProvider
+        {
+            public function env(): array
+            {
+                return [];
+            }
+
+            public function isSocial(): bool
+            {
+                return false;
+            }
+
+            public function login(RouterData $routerData): mixed
+            {
+                return null;
+            }
+
+            public function callback(RouterData $routerData): mixed
+            {
+                return null;
+            }
+        };
+        $routerData = getRouterData(true);
+        $this->assertNull($provider->logout($routerData));
+    }
+
+    public function test_log_method()
+    {
+        $provider = new GoogleProvider;
+        $routerData = getRouterData(true);
+        $routerData->logChannel = 'stack';
+
+        Log::shouldReceive('channel')
+            ->with('stack')
+            ->once()
+            ->andReturnSelf();
+        Log::shouldReceive('info')
+            ->once();
+
+        $provider->log($routerData, 'test message');
+    }
+
+    public function test_constructor_normalizes_string_config()
+    {
+        $this->app->config->set('services.google', 'just-the-client-id');
+        $provider = new GoogleProvider;
+        $this->assertEquals('just-the-client-id', config('services.google.client_id'));
+        $this->assertTrue($provider->valid());
+    }
+
+    public function test_constructor_handles_missing_keys_in_mapped_config()
+    {
+        $this->app->config->set('services.google', 'just-the-client-id');
+        // GoogleProvider's env() returns [client_id, client_secret]
+        // If fromMapping is true, it only checks client_id
+        $provider = new GoogleProvider;
+        $this->assertTrue($provider->valid());
+        $this->assertEmpty($provider->errors());
     }
 }

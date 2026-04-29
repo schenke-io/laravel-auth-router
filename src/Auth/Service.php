@@ -61,6 +61,6 @@ enum Service
     {
         $className = 'SchenkeIo\\LaravelAuthRouter\\LoginProviders\\'.ucfirst($this->name).'Provider';
 
-        return new $className;
+        return app($className, ['name' => $this->name]);
     }
 }

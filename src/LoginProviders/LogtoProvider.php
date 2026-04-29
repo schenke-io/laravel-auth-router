@@ -2,6 +2,7 @@
 
 namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
 
+use Illuminate\Http\RedirectResponse;
 use Logto\Sdk\Constants\UserScope;
 use Logto\Sdk\LogtoClient;
 use Logto\Sdk\LogtoConfig;
@@ -32,8 +33,8 @@ class LogtoProvider extends BaseProvider implements UseExclusiveInterface
     {
         $config = config('services.logto');
 
-        return new LogtoClient(
-            new LogtoConfig(
+        return app(LogtoClient::class, [
+            'config' => new LogtoConfig(
                 endpoint: $config['endpoint'] ?? '',
                 appId: $config['app_id'] ?? '',
                 appSecret: $config['app_secret'] ?? '',
@@ -42,8 +43,8 @@ class LogtoProvider extends BaseProvider implements UseExclusiveInterface
                     UserScope::profile,
                 ]  // must be explicitly named to avoid scope issues
             ),
-            new LogtoStorage
-        );
+            'storage' => new LogtoStorage,
+        ]);
     }
 
     public function login(RouterData $routerData): mixed
@@ -73,5 +74,13 @@ class LogtoProvider extends BaseProvider implements UseExclusiveInterface
         } catch (\Exception $e) {
             return Error::LocalAuth->redirect($routerData, $e->getMessage());
         }
+    }
+
+    public function logout(RouterData $routerData): ?RedirectResponse
+    {
+        $client = $this->getClient();
+        $signOutUrl = $client->signOut(url(route($routerData->routeHome)));
+
+        return redirect($signOutUrl);
     }
 }

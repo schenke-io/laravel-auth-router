@@ -160,6 +160,8 @@ class UserData extends Data
             ]);
         }
 
+        Session::put('auth-router-provider', $this->provider);
+
         if (Session::has('url.intended')) {
             return redirect()->intended();
         } else {

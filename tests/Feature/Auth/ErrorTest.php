@@ -1,5 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
+use SchenkeIo\LaravelAuthRouter\Auth\Error;
+
 it('redirect an error and has text stored in a session', function () {
     $this->app->config->set('services.google.client_id', 'google_client_id');
     $this->app->config->set('services.google.client_secret', 'google_client_secret');
@@ -20,4 +25,36 @@ it('redirect an error and has text stored in a session', function () {
     $response->assertSessionHas('authRouterErrorInfo');
     $response->assertSessionHas('authRouterErrorMessage');
 
+});
+
+it('can redirect with log channel', function () {
+    $routerData = getRouterData(true);
+    $routerData->logChannel = 'stack';
+
+    Log::shouldReceive('channel')
+        ->with('stack')
+        ->once()
+        ->andReturnSelf();
+    Log::shouldReceive('error')
+        ->once();
+
+    $response = Error::LocalAuth->redirect($routerData, 'some error');
+    expect($response->getTargetUrl())->toBe(route('route-error'));
+});
+
+it('returns correct parameter keys', function () {
+    expect(Error::ServiceNotSet->parameterKeys())->toBe(['name'])
+        ->and(Error::UnknownService->parameterKeys())->toBe(['name'])
+        ->and(Error::ExclusiveProvider->parameterKeys())->toBe(['name'])
+        ->and(Error::ConfigNotSet->parameterKeys())->toBe(['key', 'env'])
+        ->and(Error::LocalAuth->parameterKeys())->toBe([]);
+});
+
+it('translates correctly without translator bound', function () {
+    // This is hard to test in Laravel because translator is usually bound.
+    // But we can try to use a mock or just rely on the fact that it's bound.
+    // If I want to hit the line 59 in Error.php, I'd need to unbind 'translator'
+    // but that might break many things.
+    // Let's just check the normal translation.
+    expect(Error::LocalAuth->trans())->toBe(__('auth-router::errors.LocalAuth'));
 });

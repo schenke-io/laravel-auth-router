@@ -110,3 +110,26 @@ it('has correct env and social status', function () {
     expect($provider->env())->toBeArray();
     expect($provider->env())->toHaveKey('endpoint');
 });
+
+it('can logout from logto', function () {
+    $this->app->config->set('services.logto.endpoint', 'https://logto.example.com');
+    $this->app->config->set('services.logto.app_id', 'app_id');
+    $this->app->config->set('services.logto.app_secret', 'app_secret');
+
+    Route::get('/the-home-path', fn () => '')->name('the-home-route');
+    app('router')->getRoutes()->refreshNameLookups();
+
+    $clientMock = Mockery::mock(LogtoClient::class);
+    $clientMock->shouldReceive('signOut')
+        ->with('http://localhost/the-home-path')
+        ->andReturn('https://logto.example.com/oidc/logout?test=1');
+
+    $provider = new TestLogtoProvider('logto');
+    $provider->clientMock = $clientMock;
+
+    $routerData = new RouterData('dashboard', 'error', 'the-home-route', true);
+    $response = $provider->logout($routerData);
+
+    expect($response)->toBeInstanceOf(RedirectResponse::class);
+    expect($response->getTargetUrl())->toBe('https://logto.example.com/oidc/logout?test=1');
+});

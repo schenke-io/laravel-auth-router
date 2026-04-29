@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Logto\Sdk\LogtoClient;
 use Workbench\App\Models\User;
 
 beforeEach(function () {
@@ -37,6 +38,34 @@ it('allows an authenticated user to log out and redirects to the home route', fu
     // Assert that the user is no longer authenticated (optional but recommended)
     $this->assertGuest();
 
+});
+
+it('redirects to logto logout if logto is in session', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $this->app->config->set('services.logto', [
+        'endpoint' => 'https://logto.example.com',
+        'app_id' => 'app_id',
+        'app_secret' => 'app_secret',
+    ]);
+
+    Route::get('/the-home-path', fn () => '')->name('the-home-route');
+    app('router')->getRoutes()->refreshNameLookups();
+
+    session(['auth-router-provider' => 'logto']);
+
+    $mockClient = Mockery::mock(LogtoClient::class);
+    $mockClient->shouldReceive('signOut')->andReturn('https://logto.example.com/logout');
+
+    app()->bind(LogtoClient::class, fn () => $mockClient);
+
+    Route::authRouter(['logto'])->success('the-home-route')->error('error')->home('the-home-route');
+
+    $response = $this->post(route('logout'));
+
+    $response->assertRedirect('https://logto.example.com/logout');
+    $this->assertGuest();
 });
 
 it('does not allow a guest to access the logout route', function () {

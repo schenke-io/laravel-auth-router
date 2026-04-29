@@ -2,6 +2,7 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Auth;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
@@ -88,6 +89,11 @@ abstract class BaseProvider
     abstract public function login(RouterData $routerData): mixed;
 
     abstract public function callback(RouterData $routerData): mixed;
+
+    public function logout(RouterData $routerData): ?RedirectResponse
+    {
+        return null;
+    }
 
     /**
      * @param  array<int, string>  $middleware

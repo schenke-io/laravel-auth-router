@@ -85,11 +85,21 @@ class RouteRegistrar
         $uriPrefix = $routerData->getUriPrefix();
 
         Route::post($uriPrefix.'logout', function (Request $request) use ($routerData) {
+            $providerName = $request->session()->get('auth-router-provider');
+            $redirect = null;
+
+            if ($providerName) {
+                $service = Service::get($providerName);
+                if ($service) {
+                    $redirect = $service->provider()->logout($routerData);
+                }
+            }
+
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return Redirect::route($routerData->routeHome);
+            return $redirect ?? Redirect::route($routerData->routeHome);
         })
             ->name($routePrefix.'logout')
             ->middleware(array_merge(['web', 'auth'], $routerData->middleware));
