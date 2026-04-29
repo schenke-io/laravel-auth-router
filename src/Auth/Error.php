@@ -26,6 +26,7 @@ enum Error
     case MixedProviders;
     case ExclusiveProvider;
     case InvalidCredentials;
+    case InvalidToken;
 
     /**
      * @param  array<string,string>  $errorParameter

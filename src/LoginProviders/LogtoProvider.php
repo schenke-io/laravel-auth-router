@@ -83,4 +83,11 @@ class LogtoProvider extends BaseProvider implements UseExclusiveInterface
 
         return redirect($signOutUrl);
     }
+
+    public function getIssuer(): ?string
+    {
+        $endpoint = config('services.logto.endpoint');
+
+        return $endpoint ? rtrim($endpoint, '/').'/oidc' : null;
+    }
 }

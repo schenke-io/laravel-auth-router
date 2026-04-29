@@ -91,4 +91,11 @@ class Auth0Provider extends BaseProvider implements UseExclusiveInterface
             return Error::InvalidRequest->redirect($routerData);
         }
     }
+
+    public function getIssuer(): ?string
+    {
+        $domain = config('services.auth0.domain');
+
+        return $domain ? 'https://'.rtrim($domain, '/').'/' : null;
+    }
 }

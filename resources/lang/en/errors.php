@@ -15,4 +15,5 @@ return [
     'MixedProviders' => 'A mix of WorkOS and non-WorkOS providers is not supported in the same collection',
     'ExclusiveProvider' => 'The provider :name is exclusive and cannot be used with other social providers',
     'InvalidCredentials' => 'The provided credentials are incorrect.',
+    'InvalidToken' => 'The provided token is invalid.',
 ];
