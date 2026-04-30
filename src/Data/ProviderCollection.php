@@ -17,6 +17,14 @@ use SchenkeIo\LaravelAuthRouter\LoginProviders\UnknownBaseProvider;
 class ProviderCollection extends Collection
 {
     /**
+     * @param  array<string, mixed>  $properties
+     */
+    public static function __set_state(array $properties): self
+    {
+        return new self($properties['items'] ?? []);
+    }
+
+    /**
      * @param  string|array<int, string|BaseProvider>  $data
      */
     public static function fromTextArray(string|array $data): ProviderCollection

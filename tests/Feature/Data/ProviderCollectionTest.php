@@ -91,3 +91,11 @@ it('handles multiple exclusive providers', function () {
     expect($collection[1]->valid())->toBeFalse()
         ->and($collection[1]->errors()[0])->toContain('Logto');
 });
+
+it('can be restored via __set_state', function () {
+    $items = [new GoogleProvider];
+    $collection = ProviderCollection::__set_state(['items' => $items]);
+
+    expect($collection)->toBeInstanceOf(ProviderCollection::class)
+        ->and($collection->all())->toBe($items);
+});

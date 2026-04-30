@@ -27,6 +27,26 @@ class RouterData extends Data
         public ?string $logChannel = null
     ) {}
 
+    /**
+     * @param  array<string, mixed>  $properties
+     */
+    public static function __set_state(array $properties): self
+    {
+        return new self(
+            routeSuccess: $properties['routeSuccess'],
+            routeError: $properties['routeError'],
+            routeHome: $properties['routeHome'],
+            canAddUsers: $properties['canAddUsers'] ?? true,
+            rememberMe: $properties['rememberMe'] ?? false,
+            prefix: $properties['prefix'] ?? '',
+            routeName: $properties['routeName'] ?? null,
+            emailConfirm: $properties['emailConfirm'] ?? null,
+            middleware: $properties['middleware'] ?? [],
+            showPayload: $properties['showPayload'] ?? false,
+            logChannel: $properties['logChannel'] ?? null
+        );
+    }
+
     public function getRoutePrefix(): string
     {
         $prefix = $this->routeName ?? $this->prefix;

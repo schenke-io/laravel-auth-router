@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse as SymRedirectResponse;
  */
 abstract class SocialiteProvider extends BaseProvider
 {
-    public readonly bool $isStateless;
+    public bool $isStateless;
 
     public function __construct(?string $name = null)
     {

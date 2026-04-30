@@ -88,6 +88,15 @@ abstract class BaseProvider
     }
 
     /**
+     * @param  array<string, mixed>  $properties
+     */
+    public static function __set_state(array $properties): static
+    {
+        /** @phpstan-ignore new.static */
+        return new static($properties['name'] ?? null);
+    }
+
+    /**
      * key: expected key in config(system), value: suggested name ov ENV key,
      * used in testing and in documentation
      *

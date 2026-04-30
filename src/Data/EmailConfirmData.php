@@ -18,6 +18,20 @@ class EmailConfirmData implements EmailConfirmInterface
         public Carbon $expires_at
     ) {}
 
+    /**
+     * @param  array<string, mixed>  $properties
+     */
+    public static function __set_state(array $properties): self
+    {
+        return new self(
+            email: $properties['email'],
+            token: $properties['token'],
+            first_name: $properties['first_name'],
+            last_name: $properties['last_name'],
+            expires_at: $properties['expires_at']
+        );
+    }
+
     public function getEmail(): string
     {
         return $this->email;

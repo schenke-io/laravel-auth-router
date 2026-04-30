@@ -116,4 +116,11 @@ class BaseProviderTest extends TestCase
         $this->assertTrue($provider->valid());
         $this->assertEmpty($provider->errors());
     }
+
+    public function test_set_state()
+    {
+        $provider = GoogleProvider::__set_state(['name' => 'google']);
+        $this->assertInstanceOf(GoogleProvider::class, $provider);
+        $this->assertEquals('google', $provider->name);
+    }
 }
