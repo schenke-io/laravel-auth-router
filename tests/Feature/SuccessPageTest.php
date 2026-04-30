@@ -16,7 +16,7 @@ it('redirects to the success page after successful login', function () {
     $socialiteId = 'provider-user-id';
     $name = 'Test User';
     $email = 'test@example.com';
-    $avatar = 'http://example.com/avatar.jpg';
+    $avatar = 'https://example.com/avatar.jpg';
 
     // Mock Socialite User
     $socialiteUserMock = Mockery::mock(SocialiteUser::class);

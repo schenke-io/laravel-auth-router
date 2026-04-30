@@ -39,7 +39,16 @@ class UserData extends Data
         public string $email,
         public ?string $avatar = null,
         public string $provider = ''
-    ) {}
+    ) {
+        if ($this->avatar && ! str_starts_with($this->avatar, 'https://')) {
+            /*
+             * we truncate potential large data-urls first
+             * and then do not use it
+             */
+            $this->avatar = substr($this->avatar, 0, 10);
+            $this->avatar = null;
+        }
+    }
 
     public static function fromUser(SocialiteUser $user, string $provider): self
     {

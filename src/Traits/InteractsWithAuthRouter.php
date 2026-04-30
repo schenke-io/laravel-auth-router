@@ -18,7 +18,11 @@ trait InteractsWithAuthRouter
 
     public function setAvatar(string $avatar): void
     {
-        $this->avatar = $avatar;
+        if (str_starts_with($avatar, 'https://')) {
+            $this->avatar = $avatar;
+        } else {
+            $this->avatar = null;
+        }
     }
 
     public function setEmailVerifiedAt($date): void

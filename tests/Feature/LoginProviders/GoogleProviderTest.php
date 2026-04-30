@@ -35,7 +35,7 @@ it('can handle stateless login', function () {
     $socialiteId = 'provider-user-id';
     $name = 'Test User';
     $email = 'test@example.com';
-    $avatar = 'http://example.com/avatar.jpg';
+    $avatar = 'https://example.com/avatar.jpg';
 
     Route::get('/', fn () => '')->name('home');
     Route::get('/dashboard', fn () => '')->name('dashboard');
@@ -93,7 +93,7 @@ it('handles the return code and authenticates the user if possible', function ()
     $socialiteId = 'provider-user-id';
     $name = 'Test User';
     $email = 'test@example.com';
-    $avatar = 'http://example.com/avatar.jpg';
+    $avatar = 'https://example.com/avatar.jpg';
 
     Route::get('/', fn () => '')->name('home');
     Route::get('/dashboard', fn () => '')->name('dashboard');

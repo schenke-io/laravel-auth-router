@@ -31,7 +31,12 @@ it('redirects to payload view when showPayload is enabled', function () {
 
     Route::get('/success', fn () => 'success')->name('success-route');
 
-    $userData = new UserData('John Doe', 'john@example.com', 'google', 'http://avatar.url');
+    $userData = new UserData(
+        name: 'John Doe',
+        email: 'john@example.com',
+        avatar: 'https://example.com/avatar.jpg',
+        provider: 'google'
+    );
     $routerData = new RouterData(
         routeSuccess: 'success-route',
         routeError: 'error-route',
@@ -60,7 +65,12 @@ it('can finalize login from payload session', function () {
         ->error('error-route')
         ->showPayload();
 
-    $userData = new UserData('John Doe', 'john@example.com', 'google', 'http://avatar.url');
+    $userData = new UserData(
+        name: 'John Doe',
+        email: 'john@example.com',
+        avatar: 'https://example.com/avatar.jpg',
+        provider: 'google'
+    );
     session(['auth-router-payload' => $userData]);
 
     $response = $this->post(route('callback.finalize'));

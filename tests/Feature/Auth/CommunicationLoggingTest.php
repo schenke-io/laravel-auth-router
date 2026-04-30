@@ -61,7 +61,7 @@ it('logs callback start and success', function () {
     $socialiteUserMock->shouldReceive('getId')->andReturn('123');
     $socialiteUserMock->shouldReceive('getName')->andReturn('Test User');
     $socialiteUserMock->shouldReceive('getEmail')->andReturn('test@example.com');
-    $socialiteUserMock->shouldReceive('getAvatar')->andReturn('http://example.com/avatar.jpg');
+    $socialiteUserMock->shouldReceive('getAvatar')->andReturn('https://example.com/avatar.jpg');
 
     Socialite::shouldReceive('driver')->with('google')->andReturnSelf();
     Socialite::shouldReceive('redirectUrl')->andReturnSelf();

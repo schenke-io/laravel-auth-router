@@ -57,7 +57,7 @@ class WorkOsProviderTest extends TestCase
         $user->email = 'test@example.com';
         $user->firstName = 'Test';
         $user->lastName = 'User';
-        $user->profilePictureUrl = 'http://example.com/avatar.jpg';
+        $user->profilePictureUrl = 'https://example.com/avatar.jpg';
 
         $responseObj = new \stdClass;
         $responseObj->user = $user;

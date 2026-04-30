@@ -37,7 +37,7 @@ class PayloadRouteTest extends TestCase
     {
         Route::authRouter(['google'])->success('home')->error('error')->showPayload(true);
 
-        $userData = new UserData('Test User', 'test@example.com', 'avatar');
+        $userData = new UserData('Test User', 'test@example.com', 'https://example.com/avatar.jpg');
         session(['auth-router-payload' => $userData]);
 
         $response = $this->get(route('callback.payload'));
@@ -69,7 +69,7 @@ class PayloadRouteTest extends TestCase
     {
         Route::authRouter(['google'])->success('home')->error('error')->showPayload(false);
 
-        $userData = new UserData('Test User', 'test@example.com', 'avatar');
+        $userData = new UserData('Test User', 'test@example.com', 'https://example.com/avatar.jpg');
         session(['auth-router-payload' => $userData]);
 
         $response = $this->post(route('callback.finalize', ['code' => 'fake_code']));
