@@ -16,4 +16,5 @@ return [
     'ExclusiveProvider' => 'Der Provider :name ist exklusiv und kann nicht mit anderen sozialen Providern verwendet werden',
     'InvalidCredentials' => 'Die angegebenen Anmeldedaten sind falsch.',
     'InvalidToken' => 'Das angegebene Token ist ungültig.',
+    'DatabaseError' => 'Ein Datenbankfehler ist aufgetreten',
 ];

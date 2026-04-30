@@ -31,13 +31,13 @@ class UserData extends Data
     /**
      * @param  string  $name  full name of the user, maybe local overwritten
      * @param  string  $email  unique email of the user, cross-linked to other logins
-     * @param  string|null  $avatar  image url or empty
+     * @param  string  $avatar  image url or empty
      * @param  string  $provider  the login provider
      */
     public function __construct(
         public string $name,
         public string $email,
-        public ?string $avatar = null,
+        public string $avatar = '',
         public string $provider = ''
     ) {
         if ($this->avatar && ! str_starts_with($this->avatar, 'https://')) {
@@ -46,7 +46,7 @@ class UserData extends Data
              * and then do not use it
              */
             $this->avatar = substr($this->avatar, 0, 10);
-            $this->avatar = null;
+            $this->avatar = '';
         }
     }
 
@@ -122,13 +122,11 @@ class UserData extends Data
             if ($user instanceof AuthenticatableRouterUser) {
                 $user->setName($this->name);
                 $user->setEmail($this->email);
-                if ($this->avatar) {
-                    $user->setAvatar($this->avatar);
-                }
+                $user->setAvatar($this->avatar);
             } else {
                 /** @phpstan-ignore-next-line */
                 $oldAvatar = $user->avatar;
-                $newAvatar = $this->avatar ?? '';
+                $newAvatar = $this->avatar;
                 if ($oldAvatar != $newAvatar && strlen($newAvatar) > 10) {
                     /** @phpstan-ignore-next-line */
                     $user->avatar = $newAvatar;
@@ -140,24 +138,24 @@ class UserData extends Data
                 if ($user instanceof AuthenticatableRouterUser) {
                     $user->setName($this->name);
                     $user->setEmail($this->email);
-                    if ($this->avatar) {
-                        $user->setAvatar($this->avatar);
-                    }
+                    $user->setAvatar($this->avatar);
                 } else {
                     /** @phpstan-ignore-next-line */
                     $user->email = $this->email;
                     /** @phpstan-ignore-next-line */
                     $user->name = $this->name;
-                    if ($this->avatar) {
-                        /** @phpstan-ignore-next-line */
-                        $user->avatar = $this->avatar;
-                    }
+                    /** @phpstan-ignore-next-line */
+                    $user->avatar = $this->avatar;
                 }
             } else {
                 return Error::UnableToAddNewUsers->redirect($routerData);
             }
         }
-        $user->save();
+        try {
+            $user->save();
+        } catch (\Throwable $e) {
+            return Error::LocalAuth->redirect($routerData, $e->getMessage());
+        }
 
         /** @var Authenticatable $user */
         Auth::guard('web')->login($user, $routerData->rememberMe);

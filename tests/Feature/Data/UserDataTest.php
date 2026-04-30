@@ -11,6 +11,18 @@ class TestUserWithoutInterface extends Authenticatable
     protected $fillable = ['name', 'email', 'avatar'];
 }
 
+class FailingTestUser extends Authenticatable
+{
+    protected $table = 'users';
+
+    protected $fillable = ['name', 'email', 'avatar'];
+
+    public function save(array $options = [])
+    {
+        throw new Exception('failing');
+    }
+}
+
 it('can partly update a user', function () {
     $this->app->config->set('auth.providers.users.model', TestUserWithoutInterface::class);
     $name = 'test name';
@@ -85,13 +97,13 @@ it('can add new user without avatar for models without interface', function () {
     $name = 'test name';
     $email = 'test@example.com';
 
-    $userData = new UserData($name, $email, null);
+    $userData = new UserData($name, $email, '');
     $routerData = getRouterData(true);
     $this->assertEquals(0, TestUserWithoutInterface::count());
     $response = $userData->authAndRedirect($routerData);
     $this->assertEquals(1, TestUserWithoutInterface::count());
     $newUser = TestUserWithoutInterface::first();
-    expect($newUser->avatar)->toBeNull();
+    expect($newUser->avatar)->toBe('');
 });
 
 it('handles missing email', function () {
@@ -156,7 +168,7 @@ it('can handle optional avatar', function () {
     $name = 'test name';
     $email = 'test-optional@example.com';
 
-    $userData = new UserData($name, $email, null);
+    $userData = new UserData($name, $email, '');
     $routerData = getRouterData(true);
 
     $response = $userData->authAndRedirect($routerData);
@@ -270,7 +282,7 @@ it('rejects http avatar urls', function () {
 
     $userData->authAndRedirect($routerData);
     $user = User::where('email', 'test@example.com')->first();
-    expect($user->avatar)->toBeNull();
+    expect($user->avatar)->toBe('');
 });
 
 it('rejects data avatar urls', function () {
@@ -281,7 +293,7 @@ it('rejects data avatar urls', function () {
 
     $userData->authAndRedirect($routerData);
     $user = User::where('email', 'test@example.com')->first();
-    expect($user->avatar)->toBeNull();
+    expect($user->avatar)->toBe('');
 });
 
 it('rejects very large data avatar urls', function () {
@@ -292,7 +304,7 @@ it('rejects very large data avatar urls', function () {
 
     $userData->authAndRedirect($routerData);
     $user = User::where('email', 'test@example.com')->first();
-    expect($user->avatar)->toBeNull();
+    expect($user->avatar)->toBe('');
 });
 
 it('trait setAvatar rejects and truncates data urls', function () {
@@ -304,5 +316,15 @@ it('trait setAvatar rejects and truncates data urls', function () {
     };
     $largeDataUrl = 'data:image/png;base64,'.str_repeat('A', 1000);
     $user->setAvatar($largeDataUrl);
-    expect($user->avatar)->toBeNull();
+    expect($user->avatar)->toBe('');
+});
+
+it('handles model save errors', function () {
+    $this->app->config->set('auth.providers.users.model', FailingTestUser::class);
+    $userData = new UserData('test', 'test@example.com', 'https://example.com/avatar.jpg');
+    $routerData = getRouterData(true);
+
+    $response = $userData->authAndRedirect($routerData);
+
+    expect(customErrorType($response))->toBe('LocalAuth');
 });

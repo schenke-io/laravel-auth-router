@@ -21,7 +21,7 @@ trait InteractsWithAuthRouter
         if (str_starts_with($avatar, 'https://')) {
             $this->avatar = $avatar;
         } else {
-            $this->avatar = null;
+            $this->avatar = '';
         }
     }
 

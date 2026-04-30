@@ -41,10 +41,17 @@ enum Error
             ]);
         }
 
+        $briefMessage = $codeErrorMessage;
+        if (str_contains($briefMessage, 'SQLSTATE')) {
+            $briefMessage = $this->transDatabaseError();
+        } elseif (strlen($briefMessage) > 100) {
+            $briefMessage = substr($briefMessage, 0, 97).'...';
+        }
+
         return Redirect::route($routerData->routeError)
             ->withInput()
             ->with('authRouterErrorInfo', $this->trans($errorParameter))
-            ->with('authRouterErrorMessage', $codeErrorMessage)
+            ->with('authRouterErrorMessage', $briefMessage)
             ->withHeaders(['X-Custom-Error-Type' => $this->name]);
     }
 
@@ -58,6 +65,15 @@ enum Error
         }
 
         return $this->name;
+    }
+
+    private function transDatabaseError(): string
+    {
+        if (app()->bound('translator')) {
+            return __('auth-router::errors.DatabaseError');
+        }
+
+        return 'Database error';
     }
 
     /**
