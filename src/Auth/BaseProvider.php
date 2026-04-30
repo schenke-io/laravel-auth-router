@@ -37,7 +37,7 @@ abstract class BaseProvider
 
     public string $backChannelLogoutRoute;
 
-    public readonly ?Service $service;
+    public ?Service $service;
 
     public string $blade = '';
 
