@@ -35,4 +35,20 @@ trait InteractsWithAuthRouter
         /** @var Model $this */
         return $this->where('email', $email)->first();
     }
+
+    public function findByProviderId(string $providerId): ?Model
+    {
+        /** @var Model $this */
+        return $this->where('provider_id', $providerId)->first();
+    }
+
+    public function setProviderId(string $providerId): void
+    {
+        $this->provider_id = $providerId;
+    }
+
+    public function getProviderId(): ?string
+    {
+        return $this->provider_id;
+    }
 }

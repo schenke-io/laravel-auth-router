@@ -67,7 +67,9 @@ class LogtoProvider extends BaseProvider implements UseExclusiveInterface
                 name: $claims->name ?? $claims->username ?? $claims->sub,
                 email: $claims->email ?? '',
                 avatar: $claims->picture ?? '',
-                provider: $this->name
+                provider: $this->name,
+                providerId: $claims->sub,
+                isExclusive: true
             );
 
             return $userData->authAndRedirect($routerData);

@@ -24,7 +24,8 @@ class RouterData extends Data
         public ?EmailConfirmInterface $emailConfirm = null,
         public array $middleware = [],
         public bool $showPayload = false,
-        public ?string $logChannel = null
+        public ?string $logChannel = null,
+        public bool $useProviderId = false
     ) {}
 
     /**
@@ -43,7 +44,8 @@ class RouterData extends Data
             emailConfirm: $properties['emailConfirm'] ?? null,
             middleware: $properties['middleware'] ?? [],
             showPayload: $properties['showPayload'] ?? false,
-            logChannel: $properties['logChannel'] ?? null
+            logChannel: $properties['logChannel'] ?? null,
+            useProviderId: $properties['useProviderId'] ?? false
         );
     }
 

@@ -154,6 +154,9 @@ Required interface methods (provided by the trait or implemented manually):
 | `setEmail(string)` | Write the user's email |
 | `setAvatar(string)` | Write the user's avatar URL |
 | `findByEmail(string): ?Model` | Look up user by email |
+| `findByProviderId(string): ?Model` | Look up user by provider ID |
+| `setProviderId(string)` | Write the provider ID |
+| `getProviderId(): ?string` | Read the provider ID |
 
 **Convention:** The user is identified solely by their email address.
 

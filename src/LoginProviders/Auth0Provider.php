@@ -79,7 +79,10 @@ class Auth0Provider extends BaseProvider implements UseExclusiveInterface
                     return Error::LocalAuth->redirect($routerData);
                 }
 
-                return UserData::fromAuth0($auth0User)->authAndRedirect($routerData);
+                $userData = UserData::fromAuth0($auth0User);
+                $userData->isExclusive = true;
+
+                return $userData->authAndRedirect($routerData);
             } catch (NetworkException $e) {
                 return Error::Network->redirect($routerData, $e->getMessage());
             } catch (StateException $e) {

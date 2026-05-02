@@ -9,6 +9,7 @@ use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\AbstractProvider;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
 use SchenkeIo\LaravelAuthRouter\Auth\Error;
+use SchenkeIo\LaravelAuthRouter\Contracts\UseExclusiveInterface;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
 use Symfony\Component\HttpFoundation\RedirectResponse as SymRedirectResponse;
@@ -110,7 +111,10 @@ abstract class SocialiteProvider extends BaseProvider
                 $socialUser = $driver->user();
             }
 
-            return UserData::fromUser($socialUser, $this->name)->authAndRedirect($routerData);
+            $userData = UserData::fromUser($socialUser, $this->name);
+            $userData->isExclusive = $this instanceof UseExclusiveInterface;
+
+            return $userData->authAndRedirect($routerData);
         } catch (\Exception $e) {
             return Error::LocalAuth->redirect($routerData, $e->getMessage());
         }

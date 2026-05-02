@@ -163,16 +163,17 @@ class AppleProviderTest extends TestCase
     {
         $payload = ['type' => 'email-disabled', 'sub' => 'apple-id'];
         $request = Request::create('/webhook', 'POST', $payload);
+        $routerData = new RouterData('success', 'error', 'home', true);
 
         $mockService = \Mockery::mock(AppleAuthService::class);
         $mockService->shouldReceive('handleServerNotification')
             ->once()
-            ->with($payload);
+            ->with($payload, $routerData->useProviderId);
 
         $this->app->instance(AppleAuthService::class, $mockService);
 
         $provider = new AppleProvider;
-        $response = $provider->webhook($request);
+        $response = $provider->webhook($request, $routerData);
 
         $this->assertEquals(204, $response->getStatusCode());
     }

@@ -11,6 +11,7 @@ use Laravel\Socialite\Contracts\User;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\AbstractProvider;
 use SchenkeIo\LaravelAuthRouter\Auth\Error;
+use SchenkeIo\LaravelAuthRouter\Contracts\UseExclusiveInterface;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
 use SchenkeIo\LaravelAuthRouter\Services\AppleAuthService;
@@ -127,8 +128,10 @@ class AppleProvider extends SocialiteProvider
                 $socialUser = $driver->user();
             }
 
-            return UserData::fromUser($socialUser, $this->name)
-                ->authAndRedirect($routerData);
+            $userData = UserData::fromUser($socialUser, $this->name);
+            $userData->isExclusive = $this instanceof UseExclusiveInterface;
+
+            return $userData->authAndRedirect($routerData);
         } catch (\Exception $e) {
             return Error::LocalAuth->redirect($routerData, $e->getMessage());
         }
@@ -137,9 +140,9 @@ class AppleProvider extends SocialiteProvider
     /**
      * Handle Apple Server-to-Server notifications.
      */
-    public function webhook(Request $request): Response
+    public function webhook(Request $request, RouterData $routerData): Response
     {
-        app(AppleAuthService::class)->handleServerNotification($request->all());
+        app(AppleAuthService::class)->handleServerNotification($request->all(), $routerData->useProviderId);
 
         return response()->noContent();
     }

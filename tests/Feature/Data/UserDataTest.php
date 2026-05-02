@@ -8,7 +8,7 @@ class TestUserWithoutInterface extends Authenticatable
 {
     protected $table = 'users';
 
-    protected $fillable = ['name', 'email', 'avatar'];
+    protected $fillable = ['name', 'email', 'avatar', 'provider_id'];
 }
 
 class FailingTestUser extends Authenticatable
@@ -327,4 +327,48 @@ it('handles model save errors', function () {
     $response = $userData->authAndRedirect($routerData);
 
     expect(customErrorType($response))->toBe('LocalAuth');
+});
+
+it('fails when mixed providers are used with useProviderId', function () {
+    $this->app->config->set('auth.providers.users.model', TestUserWithoutInterface::class);
+    $email = 'test-mixed@example.com';
+    $providerId1 = 'id-1';
+    $providerId2 = 'id-2';
+
+    // create user with providerId1
+    TestUserWithoutInterface::create([
+        'name' => 'Existing User',
+        'email' => $email,
+        'provider_id' => $providerId1,
+        'avatar' => '',
+    ]);
+
+    // try to auth with providerId2
+    $userData = new UserData('New Name', $email, 'https://example.com/avatar.jpg', 'google', $providerId2);
+    $routerData = getRouterData(true, true);
+
+    $response = $userData->authAndRedirect($routerData);
+    expect(customErrorType($response))->toBe('MixedProviders');
+});
+
+it('fails when exclusive provider is used with models without interface', function () {
+    $this->app->config->set('auth.providers.users.model', TestUserWithoutInterface::class);
+    $email = 'test-exclusive@example.com';
+    $providerId1 = 'id-1';
+    $providerId2 = 'id-2';
+
+    // create user with providerId1
+    TestUserWithoutInterface::create([
+        'name' => 'Existing User',
+        'email' => $email,
+        'provider_id' => $providerId1,
+        'avatar' => '',
+    ]);
+
+    // try to auth with providerId2 and isExclusive = true
+    $userData = new UserData('New Name', $email, 'https://example.com/avatar.jpg', 'google', $providerId2, true);
+    $routerData = getRouterData(true, false);
+
+    $response = $userData->authAndRedirect($routerData);
+    expect(customErrorType($response))->toBe('ExclusiveProvider');
 });

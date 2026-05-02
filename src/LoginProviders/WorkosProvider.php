@@ -70,7 +70,10 @@ class WorkosProvider extends BaseProvider implements UseExclusiveInterface
                 $code
             );
 
-            return UserData::fromWorkOs($response->user)->authAndRedirect($routerData);
+            $userData = UserData::fromWorkOs($response->user);
+            $userData->isExclusive = true;
+
+            return $userData->authAndRedirect($routerData);
         } catch (\Exception $e) {
             return Error::RemoteAuth->redirect($routerData, $e->getMessage());
         }

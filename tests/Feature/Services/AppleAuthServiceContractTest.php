@@ -190,6 +190,18 @@ class UserWithContract extends Authenticatable implements AuthenticatableRouterU
         return null;
     }
 
+    public function findByProviderId(string $providerId): ?Model
+    {
+        return null;
+    }
+
+    public function setProviderId(string $providerId): void {}
+
+    public function getProviderId(): ?string
+    {
+        return $this->providerId;
+    }
+
     public function save(array $options = [])
     {
         return true;

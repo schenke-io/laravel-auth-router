@@ -21,7 +21,7 @@ class AppleAuthService
      *
      * @param  array<string, mixed>  $payload
      */
-    public function handleServerNotification(array $payload): void
+    public function handleServerNotification(array $payload, bool $useProviderId = false): void
     {
         // Apple sends a signed 'payload' string which is a JWT
         $token = $payload['payload'] ?? null;
@@ -41,8 +41,9 @@ class AppleAuthService
             $event = json_decode((string) $eventJson, true);
 
             $email = (string) ($allClaims['email'] ?? '');
+            $sub = (string) ($allClaims['sub'] ?? '');
             $type = (string) ($event['type'] ?? '');
-            if ($email === '') {
+            if ($email === '' && $sub === '') {
                 return;
             }
 
@@ -52,10 +53,21 @@ class AppleAuthService
             $user = null;
 
             if (is_subclass_of($userModelClass, AuthenticatableRouterUser::class)) {
-                $user = (new $userModelClass)->findByEmail($email);
+                $userFactory = new $userModelClass;
+                if ($useProviderId && $sub) {
+                    $user = $userFactory->findByProviderId($sub);
+                }
+                if (! $user && $email) {
+                    $user = $userFactory->findByEmail($email);
+                }
             } else {
                 // fallback for models not implementing the interface
-                $user = $userModelClass::where('email', $email)->first();
+                if ($useProviderId && $sub) {
+                    $user = $userModelClass::where('provider_id', $sub)->first();
+                }
+                if (! $user && $email) {
+                    $user = $userModelClass::where('email', $email)->first();
+                }
             }
 
             if (! $user) {
@@ -90,12 +102,13 @@ class AppleAuthService
     /**
      * Handles the Apple Socialite User callback.
      */
-    public function handleAppleCallback(User $appleUser): ?Model
+    public function handleAppleCallback(User $appleUser, bool $useProviderId = false): ?Model
     {
         $email = (string) $appleUser->getEmail();
+        $sub = (string) $appleUser->getId();
         $name = (string) ($appleUser->getName() ?: 'Apple User');
 
-        if ($email === '') {
+        if ($email === '' && $sub === '') {
             return null;
         }
 
@@ -104,11 +117,22 @@ class AppleAuthService
         /** @var Model|null $user */
         $user = null;
 
-        // check if a user already exists with this email address
+        // check if a user already exists
         if (is_subclass_of($userModelClass, AuthenticatableRouterUser::class)) {
-            $user = (new $userModelClass)->findByEmail($email);
+            $userFactory = new $userModelClass;
+            if ($useProviderId && $sub) {
+                $user = $userFactory->findByProviderId($sub);
+            }
+            if (! $user && $email) {
+                $user = $userFactory->findByEmail($email);
+            }
         } else {
-            $user = $userModelClass::where('email', $email)->first();
+            if ($useProviderId && $sub) {
+                $user = $userModelClass::where('provider_id', $sub)->first();
+            }
+            if (! $user && $email) {
+                $user = $userModelClass::where('email', $email)->first();
+            }
         }
 
         if ($user) {
@@ -122,6 +146,9 @@ class AppleAuthService
         if ($user instanceof AuthenticatableRouterUser) {
             $user->setName($name);
             $user->setEmail($email);
+            if ($sub) {
+                $user->setProviderId($sub);
+            }
             // Apple guarantees the email belongs to the user, so we can mark it verified if possible
             if (method_exists($user, 'setEmailVerifiedAt')) {
                 $user->setEmailVerifiedAt(now());
@@ -131,6 +158,10 @@ class AppleAuthService
             $user->email = $email;
             /** @phpstan-ignore-next-line */
             $user->name = $name;
+            if ($sub) {
+                /** @phpstan-ignore-next-line */
+                $user->provider_id = $sub;
+            }
             /** @phpstan-ignore-next-line */
             $user->email_verified_at = now();
         }

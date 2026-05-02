@@ -18,7 +18,8 @@ it('can set all fluent methods', function () {
         ->rememberMe(true)
         ->prefix('auth')
         ->emailConfirm($emailConfirm)
-        ->middleware(['web', 'auth']);
+        ->middleware(['web', 'auth'])
+        ->useProviderId(true);
 
     // We can use reflection to check the protected properties if we really want,
     // but the real test is whether it registers the routes correctly on destruction.

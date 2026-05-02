@@ -33,12 +33,16 @@ class UserData extends Data
      * @param  string  $email  unique email of the user, cross-linked to other logins
      * @param  string  $avatar  image url or empty
      * @param  string  $provider  the login provider
+     * @param  string|null  $providerId  the unique id from the provider
+     * @param  bool  $isExclusive  if true, only this provider can be used for this user
      */
     public function __construct(
         public string $name,
         public string $email,
         public string $avatar = '',
-        public string $provider = ''
+        public string $provider = '',
+        public ?string $providerId = null,
+        public bool $isExclusive = false
     ) {
         if ($this->avatar && ! str_starts_with($this->avatar, 'https://')) {
             /*
@@ -56,7 +60,8 @@ class UserData extends Data
             name: $user->getName() ?? '',
             email: $user->getEmail() ?? '',
             avatar: $user->getAvatar() ?? '',
-            provider: $provider
+            provider: $provider,
+            providerId: $user->getId()
         );
     }
 
@@ -69,7 +74,8 @@ class UserData extends Data
             name: $data['name'] ?? '',
             email: $data['email'] ?? '',
             avatar: $data['picture'] ?? '',
-            provider: 'auth0'
+            provider: 'auth0',
+            providerId: $data['sub'] ?? null
         );
     }
 
@@ -79,7 +85,8 @@ class UserData extends Data
             name: ($user->firstName ?? '').' '.($user->lastName ?? ''),
             email: $user->email ?? '',
             avatar: $user->profilePictureUrl ?? '',
-            provider: 'workos'
+            provider: 'workos',
+            providerId: $user->id ?? null
         );
     }
 
@@ -113,9 +120,48 @@ class UserData extends Data
         if (is_subclass_of($userModelClass, AuthenticatableRouterUser::class)) {
             /** @var Model&AuthenticatableRouterUser $userFactory */
             $userFactory = new $userModelClass;
-            $user = $userFactory->findByEmail($this->email);
+            if ($routerData->useProviderId && $this->providerId) {
+                $user = $userFactory->findByProviderId($this->providerId);
+                if (! $user) {
+                    $user = $userFactory->findByEmail($this->email);
+                    if ($user) {
+                        /** @var Model&AuthenticatableRouterUser $user */
+                        if ($user->getProviderId() && $user->getProviderId() !== $this->providerId) {
+                            return Error::MixedProviders->redirect($routerData);
+                        }
+                        $user->setProviderId($this->providerId);
+                    }
+                }
+            } else {
+                $user = $userFactory->findByEmail($this->email);
+                /** @var (Model&AuthenticatableRouterUser)|null $user */
+                if ($user && $this->isExclusive && $user->getProviderId() && $user->getProviderId() !== $this->providerId) {
+                    return Error::ExclusiveProvider->redirect($routerData, '', ['name' => $this->provider]);
+                }
+            }
         } else {
-            $user = $userModelClass::where('email', $this->email)->first();
+            if ($routerData->useProviderId && $this->providerId) {
+                /** @var Model|null $user */
+                $user = $userModelClass::where('provider_id', $this->providerId)->first();
+                if (! $user) {
+                    $user = $userModelClass::where('email', $this->email)->first();
+                    if ($user) {
+                        /** @phpstan-ignore-next-line */
+                        if ($user->provider_id && $user->provider_id !== $this->providerId) {
+                            return Error::MixedProviders->redirect($routerData);
+                        }
+                        /** @phpstan-ignore-next-line */
+                        $user->provider_id = $this->providerId;
+                    }
+                }
+            } else {
+                /** @var Model|null $user */
+                $user = $userModelClass::where('email', $this->email)->first();
+                /** @phpstan-ignore-next-line */
+                if ($user && $this->isExclusive && $user->provider_id && $user->provider_id !== $this->providerId) {
+                    return Error::ExclusiveProvider->redirect($routerData, '', ['name' => $this->provider]);
+                }
+            }
         }
 
         if ($user) {

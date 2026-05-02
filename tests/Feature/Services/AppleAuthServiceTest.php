@@ -373,6 +373,7 @@ EOD;
     public function test_handle_apple_callback_with_empty_email()
     {
         $appleUser = \Mockery::mock(\Laravel\Socialite\Contracts\User::class);
+        $appleUser->shouldReceive('getId')->andReturn('');
         $appleUser->shouldReceive('getEmail')->andReturn('');
         $appleUser->shouldReceive('getName')->andReturn('Some Name');
 
@@ -380,5 +381,85 @@ EOD;
         $result = $service->handleAppleCallback($appleUser);
 
         $this->assertNull($result);
+    }
+
+    public function test_handle_apple_callback_with_provider_id_lookup()
+    {
+        $user = User::factory()->create([
+            'email' => 'other@example.com',
+            'provider_id' => 'apple-123',
+        ]);
+
+        $appleUser = \Mockery::mock(\Laravel\Socialite\Contracts\User::class);
+        $appleUser->shouldReceive('getId')->andReturn('apple-123');
+        $appleUser->shouldReceive('getEmail')->andReturn('test@example.com');
+        $appleUser->shouldReceive('getName')->andReturn('Test User');
+
+        $service = new AppleAuthService;
+        // Without useProviderId, it should find nothing (or create new if email differs)
+        // actually it will lookup by email 'test@example.com' and find nothing.
+        $result = $service->handleAppleCallback($appleUser, false);
+        $this->assertNotEquals($user->id, $result->id);
+
+        // With useProviderId, it should find the user by provider_id
+        $result = $service->handleAppleCallback($appleUser, true);
+        $this->assertEquals($user->id, $result->id);
+    }
+
+    public function test_handle_server_notification_with_provider_id_lookup()
+    {
+        $user = User::factory()->create([
+            'email' => 'other@example.com',
+            'provider_id' => 'apple-123',
+            'email_verified_at' => now(),
+        ]);
+
+        $this->app->config->set('auth.providers.users.model', User::class);
+
+        $token = $this->createAppleToken('apple-123', ['type' => 'email-disabled'], 'test@example.com');
+
+        $service = new AppleAuthService;
+        $service->handleServerNotification(['payload' => $token], true);
+
+        $user->refresh();
+        $this->assertNull($user->email_verified_at);
+    }
+
+    public function test_handle_server_notification_with_provider_id_lookup_non_interface_model()
+    {
+        $user = User::factory()->create([
+            'email' => 'other@example.com',
+            'provider_id' => 'apple-123',
+            'email_verified_at' => now(),
+        ]);
+
+        $this->app->config->set('auth.providers.users.model', ModelWithProperties::class);
+
+        $token = $this->createAppleToken('apple-123', ['type' => 'email-disabled'], 'test@example.com');
+
+        $service = new AppleAuthService;
+        $service->handleServerNotification(['payload' => $token], true);
+
+        $user->refresh();
+        $this->assertNull($user->email_verified_at);
+    }
+
+    public function test_handle_apple_callback_with_provider_id_lookup_non_interface_model()
+    {
+        $user = User::factory()->create([
+            'email' => 'other@example.com',
+            'provider_id' => 'apple-123',
+        ]);
+
+        $this->app->config->set('auth.providers.users.model', ModelWithProperties::class);
+
+        $appleUser = \Mockery::mock(\Laravel\Socialite\Contracts\User::class);
+        $appleUser->shouldReceive('getId')->andReturn('apple-123');
+        $appleUser->shouldReceive('getEmail')->andReturn('test@example.com');
+        $appleUser->shouldReceive('getName')->andReturn('Test User');
+
+        $service = new AppleAuthService;
+        $result = $service->handleAppleCallback($appleUser, true);
+        $this->assertEquals($user->id, $result->id);
     }
 }

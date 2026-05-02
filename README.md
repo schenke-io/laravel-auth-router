@@ -38,6 +38,7 @@ It automatically handles routing, offers flexible customization for redirects an
 * [Schenke Io Laravel Auth Router](#schenke-io-laravel-auth-router)
   * [Contents](#contents)
   * [Installation](#installation)
+  * [Database Requirements](#database-requirements)
   * [Basic concept](#basic-concept)
   * [Login and Logout flow](#login-and-logout-flow)
   * [Name conflicts](#name-conflicts)
@@ -86,6 +87,16 @@ Install the package with composer:
 composer require schenke-io/laravel-auth-router
 ```
 
+## <a name="database-requirements"></a>Database Requirements
+
+Your `users` table should include a `provider_id` column to support unique identification of users across different login providers. You can add it using a migration:
+
+```php
+Schema::table('users', function (Blueprint $table) {
+    $table->string('provider_id')->nullable()->index()->after('email');
+});
+```
+
 ## <a name="basic-concept"></a>Basic concept
 
 In the `routes/web.php` file you use the `Route::authRouter()` macro to define which providers you want to use and your registration policy. This package handles the configuration through `config/services.php`.
@@ -98,6 +109,7 @@ Route::authRouter(['google', 'microsoft'])
     ->home('home')
     ->canAddUsers(true)
     ->rememberMe(false)
+    ->useProviderId(true)
     ->prefix('auth')
     ->name('auth.')
     ->debug('stack')
@@ -111,6 +123,7 @@ Route::authRouter(['google', 'microsoft'])
 | `home()`         | route to a non protected view (default: 'home')                         | 'home'                                |
 | `canAddUsers()`  | should unknown users be added or rejected (default: true)               | `true` or `false`                     |
 | `rememberMe()`   | stores the login even when session expires (default: false)             | `true` or `false`                     |
+| `useProviderId()` | use the provider ID for user lookup (default: false)                   | `true` or `false`                     |
 | `prefix()`       | prefix for the URIs                                                     | 'auth'                                |
 | `name()`         | prefix for the route names                                              | 'auth.'                               |
 | `middleware()`   | additional middleware for the routes                                    | 'web' or `['web', 'throttle']`        |

@@ -60,7 +60,7 @@ function customErrorType(Response $response): ?string
     return $headers['x-custom-error-type'][0] ?? null;
 }
 
-function getRouterData(bool $canAddNewUser): RouterData
+function getRouterData(bool $canAddNewUser, bool $useProviderId = false): RouterData
 {
     Route::get('route-success', fn () => 'route-success')->name('route-success');
     Route::get('route-error', fn () => 'route-error')->name('route-error');
@@ -68,5 +68,11 @@ function getRouterData(bool $canAddNewUser): RouterData
 
     app('router')->getRoutes()->refreshNameLookups();
 
-    return new RouterData('route-success', 'route-error', 'route-home', $canAddNewUser);
+    return new RouterData(
+        routeSuccess: 'route-success',
+        routeError: 'route-error',
+        routeHome: 'route-home',
+        canAddUsers: $canAddNewUser,
+        useProviderId: $useProviderId
+    );
 }

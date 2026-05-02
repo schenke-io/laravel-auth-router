@@ -74,6 +74,11 @@ class AuthRouterBuilder
     protected ?string $logChannel = null;
 
     /**
+     * Whether to use the provider ID for user identification.
+     */
+    protected bool $useProviderId = false;
+
+    /**
      * Tracks whether the routes have already been registered to avoid duplicates.
      */
     protected bool $isRegistered = false;
@@ -229,6 +234,19 @@ class AuthRouterBuilder
     }
 
     /**
+     * Enable or disable the use of provider IDs for user identification.
+     *
+     * @param  bool  $use  True to use provider IDs.
+     * @return $this
+     */
+    public function useProviderId(bool $use = true): self
+    {
+        $this->useProviderId = $use;
+
+        return $this;
+    }
+
+    /**
      * Final method to register the configured routes.
      *
      * This method must be called to explicitly register the routes.
@@ -253,7 +271,8 @@ class AuthRouterBuilder
             $this->emailConfirm,
             $this->middleware,
             $this->showPayload,
-            $this->logChannel
+            $this->logChannel,
+            $this->useProviderId
         );
 
         if ($this->logChannel) {
@@ -270,6 +289,7 @@ class AuthRouterBuilder
                     'emailConfirm' => $this->emailConfirm ? $this->emailConfirm::class : null,
                     'middleware' => $this->middleware,
                     'showPayload' => $this->showPayload,
+                    'useProviderId' => $this->useProviderId,
                 ],
             ]);
         }
