@@ -24,6 +24,7 @@ enum Error
     case Network;
     case InvalidRequest;
     case MixedProviders;
+    case LoginEmailError;
     case ExclusiveProvider;
     case InvalidCredentials;
     case InvalidToken;

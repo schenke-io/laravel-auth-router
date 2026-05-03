@@ -2,8 +2,10 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Auth;
 
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -115,7 +117,7 @@ abstract class BaseProvider
         return null;
     }
 
-    public function backChannelLogout(Request $request, RouterData $routerData): mixed
+    public function backChannelLogout(Request $request, RouterData $routerData): ResponseFactory|Response
     {
         $tokenString = $request->input('logout_token');
         if (! is_string($tokenString) || $tokenString === '') {
@@ -123,11 +125,8 @@ abstract class BaseProvider
         }
 
         try {
+            /** @var UnencryptedToken $token */
             $token = $this->parseToken($tokenString);
-
-            if (! $token instanceof UnencryptedToken) {
-                return response('Invalid token format', 400);
-            }
 
             // 1. MUST NOT contain nonce
             if ($token->claims()->has('nonce')) {

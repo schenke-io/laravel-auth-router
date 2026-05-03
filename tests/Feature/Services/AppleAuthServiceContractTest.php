@@ -176,6 +176,11 @@ class UserWithContract extends Authenticatable implements AuthenticatableRouterU
         $this->email = $email;
     }
 
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
     public function setAvatar(string $avatar): void
     {
         $this->avatar = $avatar;

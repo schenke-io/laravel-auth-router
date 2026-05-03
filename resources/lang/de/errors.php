@@ -17,4 +17,5 @@ return [
     'InvalidCredentials' => 'Die angegebenen Anmeldedaten sind falsch.',
     'InvalidToken' => 'Das angegebene Token ist ungültig.',
     'DatabaseError' => 'Ein Datenbankfehler ist aufgetreten',
+    'LoginEmailError' => 'Login Email Fehler',
 ];

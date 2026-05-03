@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Token;
+use Lcobucci\JWT\UnencryptedToken;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Events\BackChannelLogoutEvent;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\Auth0Provider;
@@ -278,7 +278,8 @@ it('rejects invalid token format using mock', function () {
     $provider->shouldReceive('valid')->andReturn(true);
     $provider->__construct('logto');
 
-    $token = Mockery::mock(Token::class);
+    $token = Mockery::mock(UnencryptedToken::class);
+    $token->shouldReceive('claims')->andThrow(new Exception('Invalid token format'));
     $provider->shouldReceive('parseToken')->andReturn($token);
 
     $request = Request::create('/logout', 'POST', ['logout_token' => 'some-token']);
@@ -286,5 +287,5 @@ it('rejects invalid token format using mock', function () {
     $response = $provider->backChannelLogout($request, $routerData);
 
     expect($response->status())->toBe(400);
-    expect($response->getContent())->toBe('Invalid token format');
+    expect($response->getContent())->toBe('Invalid token: Invalid token format');
 });

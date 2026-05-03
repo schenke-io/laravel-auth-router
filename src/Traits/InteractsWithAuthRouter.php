@@ -16,6 +16,11 @@ trait InteractsWithAuthRouter
         $this->email = $email;
     }
 
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
     public function setAvatar(string $avatar): void
     {
         if (str_starts_with($avatar, 'https://')) {

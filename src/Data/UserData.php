@@ -28,6 +28,8 @@ use Spatie\LaravelData\Data;
  */
 class UserData extends Data
 {
+    use HasUserAdapter;
+
     /**
      * @param  string  $name  full name of the user, maybe local overwritten
      * @param  string  $email  unique email of the user, cross-linked to other logins
@@ -114,85 +116,54 @@ class UserData extends Data
          */
         $userModelClass = config('auth.providers.users.model');
 
-        /** @var Authenticatable|null $user */
+        /** @var Model|null $user */
         $user = null;
 
-        if (is_subclass_of($userModelClass, AuthenticatableRouterUser::class)) {
-            /** @var Model&AuthenticatableRouterUser $userFactory */
-            $userFactory = new $userModelClass;
-            if ($routerData->useProviderId && $this->providerId) {
-                $user = $userFactory->findByProviderId($this->providerId);
-                if (! $user) {
-                    $user = $userFactory->findByEmail($this->email);
-                    if ($user) {
-                        /** @var Model&AuthenticatableRouterUser $user */
-                        if ($user->getProviderId() && $user->getProviderId() !== $this->providerId) {
-                            return Error::MixedProviders->redirect($routerData);
-                        }
-                        $user->setProviderId($this->providerId);
+        if ($this->isExclusive && $this->providerId) {
+            $user = $this->findUserByProviderId($userModelClass, $this->providerId);
+            if ($user) {
+                $storedEmail = $this->getModelEmail($user);
+                if ($storedEmail !== $this->email) {
+                    if ($this->findUserByEmail($userModelClass, $this->email)) {
+                        return Error::LoginEmailError->redirect($routerData);
                     }
+                    $this->setModelEmail($user, $this->email);
                 }
             } else {
-                $user = $userFactory->findByEmail($this->email);
-                /** @var (Model&AuthenticatableRouterUser)|null $user */
-                if ($user && $this->isExclusive && $user->getProviderId() && $user->getProviderId() !== $this->providerId) {
-                    return Error::ExclusiveProvider->redirect($routerData, '', ['name' => $this->provider]);
+                $user = $this->findUserByEmail($userModelClass, $this->email);
+                if ($user) {
+                    $storedProviderId = $this->getModelProviderId($user);
+                    if ($storedProviderId === null) {
+                        $this->setModelProviderId($user, $this->providerId);
+                    } elseif ($storedProviderId !== $this->providerId) {
+                        return Error::ExclusiveProvider->redirect($routerData, '', ['name' => $this->provider]);
+                    }
+                }
+            }
+        } elseif ($routerData->useProviderId && $this->providerId) {
+            $user = $this->findUserByProviderId($userModelClass, $this->providerId);
+            if (! $user) {
+                $user = $this->findUserByEmail($userModelClass, $this->email);
+                if ($user) {
+                    if ($this->getModelProviderId($user) && $this->getModelProviderId($user) !== $this->providerId) {
+                        return Error::MixedProviders->redirect($routerData);
+                    }
+                    $this->setModelProviderId($user, $this->providerId);
                 }
             }
         } else {
-            if ($routerData->useProviderId && $this->providerId) {
-                /** @var Model|null $user */
-                $user = $userModelClass::where('provider_id', $this->providerId)->first();
-                if (! $user) {
-                    $user = $userModelClass::where('email', $this->email)->first();
-                    if ($user) {
-                        /** @phpstan-ignore-next-line */
-                        if ($user->provider_id && $user->provider_id !== $this->providerId) {
-                            return Error::MixedProviders->redirect($routerData);
-                        }
-                        /** @phpstan-ignore-next-line */
-                        $user->provider_id = $this->providerId;
-                    }
-                }
-            } else {
-                /** @var Model|null $user */
-                $user = $userModelClass::where('email', $this->email)->first();
-                /** @phpstan-ignore-next-line */
-                if ($user && $this->isExclusive && $user->provider_id && $user->provider_id !== $this->providerId) {
-                    return Error::ExclusiveProvider->redirect($routerData, '', ['name' => $this->provider]);
-                }
+            $user = $this->findUserByEmail($userModelClass, $this->email);
+            if ($user && $this->isExclusive && $this->getModelProviderId($user) && $this->getModelProviderId($user) !== $this->providerId) {
+                return Error::ExclusiveProvider->redirect($routerData, '', ['name' => $this->provider]);
             }
         }
 
         if ($user) {
-            if ($user instanceof AuthenticatableRouterUser) {
-                $user->setName($this->name);
-                $user->setEmail($this->email);
-                $user->setAvatar($this->avatar);
-            } else {
-                /** @phpstan-ignore-next-line */
-                $oldAvatar = $user->avatar;
-                $newAvatar = $this->avatar;
-                if ($oldAvatar != $newAvatar && strlen($newAvatar) > 10) {
-                    /** @phpstan-ignore-next-line */
-                    $user->avatar = $newAvatar;
-                }
-            }
+            $this->fillModel($user, $this->name, $this->email, $this->avatar, false);
         } else {
             if ($routerData->canAddUsers) {
                 $user = new $userModelClass;
-                if ($user instanceof AuthenticatableRouterUser) {
-                    $user->setName($this->name);
-                    $user->setEmail($this->email);
-                    $user->setAvatar($this->avatar);
-                } else {
-                    /** @phpstan-ignore-next-line */
-                    $user->email = $this->email;
-                    /** @phpstan-ignore-next-line */
-                    $user->name = $this->name;
-                    /** @phpstan-ignore-next-line */
-                    $user->avatar = $this->avatar;
-                }
+                $this->fillModel($user, $this->name, $this->email, $this->avatar, true, $this->providerId);
             } else {
                 return Error::UnableToAddNewUsers->redirect($routerData);
             }
