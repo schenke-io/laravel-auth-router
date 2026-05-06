@@ -6,6 +6,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
+use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 use SchenkeIo\LaravelAuthRouter\Contracts\PasskeyMailerInterface;
 use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
@@ -40,8 +41,8 @@ class PasskeyProvider extends BaseProvider
         if ($request->isMethod('post')) {
             if ($otp) {
                 // Step 3: Verify OTP
-                $storedOtp = session('passkey_otp');
-                $storedEmail = session('passkey_email');
+                $storedOtp = session(SessionKey::PASSKEY_OTP);
+                $storedEmail = session(SessionKey::PASSKEY_EMAIL);
 
                 if ($otp === $storedOtp && $email === $storedEmail) {
                     // OTP valid, start passkey process
@@ -55,7 +56,7 @@ class PasskeyProvider extends BaseProvider
                 } else {
                     return redirect()->route($this->loginRoute)
                         ->withInput()
-                        ->with('authRouterErrorMessage', 'Invalid OTP');
+                        ->with(SessionKey::ERROR_MESSAGE, 'Invalid OTP');
                 }
             }
 
@@ -64,11 +65,11 @@ class PasskeyProvider extends BaseProvider
                 if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     return redirect()->route($this->loginRoute)
                         ->withInput()
-                        ->with('authRouterErrorMessage', 'Valid email is required');
+                        ->with(SessionKey::ERROR_MESSAGE, 'Valid email is required');
                 }
 
                 $otp = (string) rand(100000, 999999);
-                session(['passkey_otp' => $otp, 'passkey_email' => $email]);
+                session([SessionKey::PASSKEY_OTP => $otp, SessionKey::PASSKEY_EMAIL => $email]);
 
                 /** @var PasskeyMailerInterface $mailer */
                 $mailer = app(PasskeyMailerInterface::class);
@@ -93,13 +94,13 @@ class PasskeyProvider extends BaseProvider
         $this->log($routerData, 'AuthRouter callback start');
         // finalize authentication via spatie/laravel-passkeys
         // for now, a placeholder
-        $email = session('passkey_email');
+        $email = session(SessionKey::PASSKEY_EMAIL);
         if (! $email) {
-            return redirect()->route($this->loginRoute)->with('authRouterErrorMessage', 'Session expired');
+            return redirect()->route($this->loginRoute)->with(SessionKey::ERROR_MESSAGE, 'Session expired');
         }
 
         $userData = new UserData(
-            name: explode('@', $email)[0],
+            name: '',
             email: $email,
             provider: $this->name
         );

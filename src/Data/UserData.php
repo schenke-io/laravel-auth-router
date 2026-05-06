@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use SchenkeIo\LaravelAuthRouter\Auth\Error;
+use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 use SchenkeIo\LaravelAuthRouter\Contracts\AuthenticatableRouterUser;
 use Spatie\LaravelData\Data;
 
@@ -84,7 +85,7 @@ class UserData extends Data
     public static function fromWorkOs(object $user): self
     {
         return new self(
-            name: ($user->firstName ?? '').' '.($user->lastName ?? ''),
+            name: trim(($user->firstName ?? '').' '.($user->lastName ?? '')),
             email: $user->email ?? '',
             avatar: $user->profilePictureUrl ?? '',
             provider: 'workos',
@@ -104,7 +105,7 @@ class UserData extends Data
         }
 
         if ($routerData->showPayload) {
-            Session::put('auth-router-payload', $this);
+            Session::put(SessionKey::PAYLOAD, $this);
 
             return redirect()->route($routerData->getRoutePrefix().'callback.payload');
         }
@@ -184,12 +185,8 @@ class UserData extends Data
             ]);
         }
 
-        Session::put('auth-router-provider', $this->provider);
+        Session::put(SessionKey::PROVIDER, $this->provider);
 
-        if (Session::has('url.intended')) {
-            return redirect()->intended();
-        } else {
-            return redirect()->route($routerData->routeSuccess);
-        }
+        return redirect()->intended(route($routerData->routeSuccess));
     }
 }

@@ -5,6 +5,7 @@ namespace SchenkeIo\LaravelAuthRouter\Tests\Feature\LoginProviders;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Mockery;
+use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 use SchenkeIo\LaravelAuthRouter\Contracts\PasskeyMailerInterface;
 use Workbench\App\Models\User;
 
@@ -41,29 +42,29 @@ it('sends an OTP and shows the OTP view', function () {
         ->assertViewHas('showOtp', true)
         ->assertViewHas('email', 'test@example.com');
 
-    $this->assertEquals('test@example.com', session('passkey_email'));
-    $this->assertNotNull(session('passkey_otp'));
+    $this->assertEquals('test@example.com', session(SessionKey::PASSKEY_EMAIL));
+    $this->assertNotNull(session(SessionKey::PASSKEY_OTP));
 });
 
 it('handles invalid email in login', function () {
     $this->post('/login/passkey', ['email' => 'invalid-email'])
         ->assertRedirect('http://localhost/login/passkey')
-        ->assertSessionHas('authRouterErrorMessage', 'Valid email is required');
+        ->assertSessionHas(SessionKey::ERROR_MESSAGE, 'Valid email is required');
 });
 
 it('handles invalid OTP in login', function () {
-    session(['passkey_email' => 'test@example.com', 'passkey_otp' => '123456']);
+    session([SessionKey::PASSKEY_EMAIL => 'test@example.com', SessionKey::PASSKEY_OTP => '123456']);
 
     $this->post('/login/passkey', [
         'email' => 'test@example.com',
         'otp' => 'wrong-otp',
     ])
         ->assertRedirect('http://localhost/login/passkey')
-        ->assertSessionHas('authRouterErrorMessage', 'Invalid OTP');
+        ->assertSessionHas(SessionKey::ERROR_MESSAGE, 'Invalid OTP');
 });
 
 it('verifies OTP and shows initiation view', function () {
-    session(['passkey_email' => 'test@example.com', 'passkey_otp' => '123456']);
+    session([SessionKey::PASSKEY_EMAIL => 'test@example.com', SessionKey::PASSKEY_OTP => '123456']);
 
     $this->post('/login/passkey', [
         'email' => 'test@example.com',
@@ -75,7 +76,7 @@ it('verifies OTP and shows initiation view', function () {
 });
 
 it('handles callback and authenticates user', function () {
-    session(['passkey_email' => 'test@example.com']);
+    session([SessionKey::PASSKEY_EMAIL => 'test@example.com']);
 
     // Call callback route
     $response = $this->get('/callback/passkey');
@@ -86,9 +87,9 @@ it('handles callback and authenticates user', function () {
 });
 
 it('fails callback if session expired', function () {
-    session()->forget('passkey_email');
+    session()->forget(SessionKey::PASSKEY_EMAIL);
 
     $response = $this->get('/callback/passkey');
     $response->assertRedirect('http://localhost/login/passkey');
-    $this->assertEquals('Session expired', session('authRouterErrorMessage'));
+    $this->assertEquals('Session expired', session(SessionKey::ERROR_MESSAGE));
 });

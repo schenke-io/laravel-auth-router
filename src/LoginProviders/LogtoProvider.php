@@ -64,7 +64,7 @@ class LogtoProvider extends BaseProvider implements UseExclusiveInterface
             $claims = $client->getIdTokenClaims();
 
             $userData = new UserData(
-                name: $claims->name ?? $claims->username ?? $claims->sub,
+                name: $claims->name ?? $claims->username ?? '',
                 email: $claims->email ?? '',
                 avatar: $claims->picture ?? '',
                 provider: $this->name,

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Logto\Sdk\LogtoClient;
+use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 use Workbench\App\Models\User;
 
 beforeEach(function () {
@@ -53,7 +54,7 @@ it('redirects to logto logout if logto is in session', function () {
     Route::get('/the-home-path', fn () => '')->name('the-home-route');
     app('router')->getRoutes()->refreshNameLookups();
 
-    session(['auth-router-provider' => 'logto']);
+    session([SessionKey::PROVIDER => 'logto']);
 
     $mockClient = Mockery::mock(LogtoClient::class);
     $mockClient->shouldReceive('signOut')->andReturn('https://logto.example.com/logout');

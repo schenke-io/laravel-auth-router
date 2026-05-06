@@ -220,21 +220,23 @@ Its mainly missing keys, or missing provider names in `config/services.php`.
 ### <a name="runtime-errors"></a>Runtime errors
 
 The runtime errors are stored in a session and can be handled by the app.
+All session keys are defined as constants in the `SchenkeIo\LaravelAuthRouter\Auth\SessionKey` class.
 
-| session key            | value                               | language       | header                 |
-|------------------------|-------------------------------------|----------------|------------------------|
-| authRouterErrorInfo    | user message of the error           | localised      |                        |
-| authRouterErrorMessage | exception text of the provider/code | english mainly |                        |
-|                        | name of the error case              |                | X-Custom-Error-Type    |
+| constant                | value                  | value                               | language       | header                 |
+|-------------------------|------------------------|-------------------------------------|----------------|------------------------|
+| `ERROR_INFO`            | auth-router-error-info    | user message of the error           | localised      |                        |
+| `ERROR_MESSAGE`         | auth-router-error-message | exception text of the provider/code | english mainly |                        |
+|                         |                        | name of the error case              |                | X-Custom-Error-Type    |
 
 The error page could look like:
 
 ```bladehtml
+@use(SchenkeIo\LaravelAuthRouter\Auth\SessionKey)
 <h3>
-    {{session('authRouterErrorInfo')}}
+    {{session(SessionKey::ERROR_INFO)}}
 </h3>
 <p>
-    {{session('authRouterErrorMessage')}}
+    {{session(SessionKey::ERROR_MESSAGE)}}
 </p>
 ```
 

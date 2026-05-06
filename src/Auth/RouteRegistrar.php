@@ -54,6 +54,24 @@ class RouteRegistrar
         $uriPrefix = $routerData->getUriPrefix();
         $middleware = array_merge(['web', 'guest'], $routerData->middleware);
 
+        Route::get($uriPrefix.'login/come-back/{path}', function (Request $request, string $path) use ($routePrefix) {
+            if (str_contains($path, '://') || str_contains($path, '?') || ! empty($request->query())) {
+                return abort(400, 'Invalid redirect path');
+            }
+            $request->session()->put(SessionKey::URL_INTENDED, '/'.ltrim($path, '/'));
+
+            return redirect()->route($routePrefix.'login', ['come-back' => $path]);
+        })->where('path', '.*')
+            ->name($routePrefix.'login.come-back')
+            ->middleware($middleware);
+
+        Route::get($uriPrefix.'login-return', function () use ($routePrefix) {
+            session([SessionKey::URL_INTENDED => url()->previous()]);
+
+            return redirect()->route($routePrefix.'login');
+        })->name($routePrefix.'login.return')
+            ->middleware($middleware);
+
         if ($providers->count() === 1 && ($firstProvider = $providers->first()) && $firstProvider->valid()) {
             // we redirect a single error-free service immediately
             Route::get($uriPrefix.'login', fn () => redirect()->route($firstProvider->loginRoute))
@@ -85,7 +103,7 @@ class RouteRegistrar
         $uriPrefix = $routerData->getUriPrefix();
 
         Route::post($uriPrefix.'logout', function (Request $request) use ($routerData) {
-            $providerName = $request->session()->get('auth-router-provider');
+            $providerName = $request->session()->get(SessionKey::PROVIDER);
             $redirect = null;
 
             if ($providerName) {
@@ -120,7 +138,7 @@ class RouteRegistrar
             if (! $routerData->showPayload && request('code') !== 'fake_code') {
                 return redirect()->route($routerData->routeError);
             }
-            $userData = session('auth-router-payload');
+            $userData = session(SessionKey::PAYLOAD);
             if (! $userData) {
                 return redirect()->route($routerData->routeError);
             }
@@ -138,7 +156,7 @@ class RouteRegistrar
             if (! $routerData->showPayload && request('code') !== 'fake_code') {
                 return redirect()->route($routerData->routeError);
             }
-            $userData = session()->pull('auth-router-payload');
+            $userData = session()->pull(SessionKey::PAYLOAD);
             if (! $userData) {
                 return redirect()->route($routerData->routeError);
             }

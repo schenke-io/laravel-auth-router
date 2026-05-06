@@ -1,5 +1,5 @@
 <x-auth-router::provider>
-    @php $success = $authRouterSuccess ?? session('authRouterSuccess'); @endphp
+    @php $success = $authRouterSuccess ?? session(\SchenkeIo\LaravelAuthRouter\Auth\SessionKey::SUCCESS_MESSAGE); @endphp
     @if($success)
         <div class="registration-success">
             <div class="success-icon">✓</div>
@@ -23,27 +23,37 @@
                 <div class="name-grid">
                     <div class="field-group">
                         <label>{{__('auth-router::login.first_name')}}</label>
-                        <input name="first_name" type="text" class="input-style" placeholder="{{__('auth-router::login.first_name_placeholder')}}" value="{{ old('first_name') }}">
-                        @error('first_name') <div class="error-msg">{{ $message }}</div> @enderror
+                        <input name="first_name" type="text" class="input-style"
+                               placeholder="{{__('auth-router::login.first_name_placeholder')}}"
+                               value="{{ old('first_name') }}">
+                        @error('first_name')
+                        <div class="error-msg">{{ $message }}</div> @enderror
                     </div>
                     <div class="field-group">
                         <label>{{__('auth-router::login.last_name')}}</label>
-                        <input name="last_name" type="text" class="input-style" placeholder="{{__('auth-router::login.last_name_placeholder')}}" value="{{ old('last_name') }}">
-                        @error('last_name') <div class="error-msg">{{ $message }}</div> @enderror
+                        <input name="last_name" type="text" class="input-style"
+                               placeholder="{{__('auth-router::login.last_name_placeholder')}}"
+                               value="{{ old('last_name') }}">
+                        @error('last_name')
+                        <div class="error-msg">{{ $message }}</div> @enderror
                     </div>
                 </div>
             </div>
 
             <div class="field-group">
                 <label>{{__('auth-router::login.email_placeholder')}}</label>
-                <input name="email" type="email" class="input-style" placeholder="{{__('auth-router::login.email_placeholder')}}" required value="{{ old('email') }}">
-                @error('email') <div class="error-msg">{{ $message }}</div> @enderror
+                <input name="email" type="email" class="input-style"
+                       placeholder="{{__('auth-router::login.email_placeholder')}}" required value="{{ old('email') }}">
+                @error('email')
+                <div class="error-msg">{{ $message }}</div> @enderror
             </div>
 
             <div class="field-group">
                 <label>{{__('auth-router::login.password')}}</label>
-                <input name="password" type="password" class="input-style" placeholder="{{__('auth-router::login.workos_email.password_placeholder')}}" required>
-                @error('password') <div class="error-msg">{{ $message }}</div> @enderror
+                <input name="password" type="password" class="input-style"
+                       placeholder="{{__('auth-router::login.workos_email.password_placeholder')}}" required>
+                @error('password')
+                <div class="error-msg">{{ $message }}</div> @enderror
             </div>
 
             <button type="submit" class="submit-btn" id="submit-button">

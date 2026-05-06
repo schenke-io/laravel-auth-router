@@ -3,6 +3,7 @@
 namespace SchenkeIo\LaravelAuthRouter\Tests\Feature\Auth;
 
 use Illuminate\Support\Facades\Route;
+use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
 use SchenkeIo\LaravelAuthRouter\Tests\TestCase;
 
@@ -38,7 +39,7 @@ class PayloadRouteTest extends TestCase
         Route::authRouter(['google'])->success('home')->error('error')->showPayload(true);
 
         $userData = new UserData('Test User', 'test@example.com', 'https://example.com/avatar.jpg');
-        session(['auth-router-payload' => $userData]);
+        session([SessionKey::PAYLOAD => $userData]);
 
         $response = $this->get(route('callback.payload'));
 
@@ -70,11 +71,11 @@ class PayloadRouteTest extends TestCase
         Route::authRouter(['google'])->success('home')->error('error')->showPayload(false);
 
         $userData = new UserData('Test User', 'test@example.com', 'https://example.com/avatar.jpg');
-        session(['auth-router-payload' => $userData]);
+        session([SessionKey::PAYLOAD => $userData]);
 
         $response = $this->post(route('callback.finalize', ['code' => 'fake_code']));
 
         $response->assertRedirect(route('home'));
-        $this->assertNull(session('auth-router-payload'));
+        $this->assertNull(session(SessionKey::PAYLOAD));
     }
 }

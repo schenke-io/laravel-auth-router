@@ -12,15 +12,15 @@
     <h1>{{__('auth-router::login.title')}}</h1>
     <p class="select-provider">{{__('auth-router::login.subtitle')}}</p>
 
-    @if(session('authRouterErrorInfo'))
+    @if(session(\SchenkeIo\LaravelAuthRouter\Auth\SessionKey::ERROR_INFO))
         <div class="alert alert-error">
-            {{ session('authRouterErrorInfo') }}
-            @if(session('authRouterErrorMessage'))
-                <div class="error-detail">{{ session('authRouterErrorMessage') }}</div>
+            {{ session(\SchenkeIo\LaravelAuthRouter\Auth\SessionKey::ERROR_INFO) }}
+            @if(session(\SchenkeIo\LaravelAuthRouter\Auth\SessionKey::ERROR_MESSAGE))
+                <div class="error-detail">{{ session(\SchenkeIo\LaravelAuthRouter\Auth\SessionKey::ERROR_MESSAGE) }}</div>
             @endif
         </div>
     @endif
-    @php $success = $authRouterSuccess ?? session('authRouterSuccess'); @endphp
+    @php $success = $authRouterSuccess ?? session(\SchenkeIo\LaravelAuthRouter\Auth\SessionKey::SUCCESS_MESSAGE); @endphp
     @if($success)
         <div class="alert alert-success">
             {{ $success }}

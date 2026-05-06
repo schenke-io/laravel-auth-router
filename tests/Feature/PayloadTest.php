@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
 use Workbench\App\Models\User;
@@ -47,7 +48,7 @@ it('redirects to payload view when showPayload is enabled', function () {
     $response = $userData->authAndRedirect($routerData);
 
     expect($response->getTargetUrl())->toBe(route('callback.payload'));
-    expect(session('auth-router-payload'))->toBe($userData);
+    expect(session(SessionKey::PAYLOAD))->toBe($userData);
 });
 
 it('can finalize login from payload session', function () {
@@ -71,11 +72,11 @@ it('can finalize login from payload session', function () {
         avatar: 'https://example.com/avatar.jpg',
         provider: 'google'
     );
-    session(['auth-router-payload' => $userData]);
+    session([SessionKey::PAYLOAD => $userData]);
 
     $response = $this->post(route('callback.finalize'));
 
     $response->assertRedirect(route('success-route'));
     $this->assertAuthenticated();
-    expect(session('auth-router-payload'))->toBeNull();
+    expect(session(SessionKey::PAYLOAD))->toBeNull();
 });

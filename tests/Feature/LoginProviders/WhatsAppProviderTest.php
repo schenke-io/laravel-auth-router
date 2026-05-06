@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\WhatsappProvider;
 use Workbench\App\Models\User;
@@ -40,7 +41,7 @@ it('fails login if email is missing', function () {
     $response = $provider->login($routerData);
 
     expect($response->getTargetUrl())->toContain('login/whatsapp');
-    expect(session('authRouterErrorMessage'))->toBe('Valid email is required');
+    expect(session(SessionKey::ERROR_MESSAGE))->toBe('Valid email is required');
 });
 
 it('fails login if email is not approved', function () {
@@ -54,7 +55,7 @@ it('fails login if email is not approved', function () {
     $response = $provider->login($routerData);
 
     expect($response->getTargetUrl())->toContain('login/whatsapp');
-    expect(session('authRouterErrorMessage'))->toBe('Email not approved for WhatsApp login');
+    expect(session(SessionKey::ERROR_MESSAGE))->toBe('Email not approved for WhatsApp login');
 });
 
 it('fails login if approved_emails config is missing', function () {
@@ -68,7 +69,7 @@ it('fails login if approved_emails config is missing', function () {
     $response = $provider->login($routerData);
 
     expect($response->getTargetUrl())->toContain('login/whatsapp');
-    expect(session('authRouterErrorMessage'))->toBe('WhatsApp login is not configured with approved emails');
+    expect(session(SessionKey::ERROR_MESSAGE))->toBe('WhatsApp login is not configured with approved emails');
 });
 
 it('shows waiting page if email is approved', function () {
@@ -107,5 +108,5 @@ it('fails callback if email is missing', function () {
     $response = $provider->callback($routerData);
 
     expect($response->getTargetUrl())->toBe('http://localhost/error');
-    expect(session('authRouterErrorMessage'))->toBe('Email missing in WhatsApp callback');
+    expect(session(SessionKey::ERROR_MESSAGE))->toBe('Email missing in WhatsApp callback');
 });

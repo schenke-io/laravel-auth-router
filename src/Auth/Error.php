@@ -51,8 +51,8 @@ enum Error
 
         return Redirect::route($routerData->routeError)
             ->withInput()
-            ->with('authRouterErrorInfo', $this->trans($errorParameter))
-            ->with('authRouterErrorMessage', $briefMessage)
+            ->with(SessionKey::ERROR_INFO, $this->trans($errorParameter))
+            ->with(SessionKey::ERROR_MESSAGE, $briefMessage)
             ->withHeaders(['X-Custom-Error-Type' => $this->name]);
     }
 

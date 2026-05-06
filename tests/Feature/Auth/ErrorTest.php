@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use SchenkeIo\LaravelAuthRouter\Auth\Error;
+use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 
 it('redirect an error and has text stored in a session', function () {
     $this->app->config->set('services.google.client_id', 'google_client_id');
@@ -22,8 +23,8 @@ it('redirect an error and has text stored in a session', function () {
 
     $response = $this->get('/callback/google');
     $response->assertRedirect(route('error'));
-    $response->assertSessionHas('authRouterErrorInfo');
-    $response->assertSessionHas('authRouterErrorMessage');
+    $response->assertSessionHas(SessionKey::ERROR_INFO);
+    $response->assertSessionHas(SessionKey::ERROR_MESSAGE);
 
 });
 
@@ -73,7 +74,7 @@ it('returns fallback messages when translator is not bound', function () {
 
     // Test transDatabaseError() fallback (line 76)
     $response = Error::LocalAuth->redirect($routerData, 'SQLSTATE[HY000]');
-    $errorMessage = session('authRouterErrorMessage');
+    $errorMessage = session(SessionKey::ERROR_MESSAGE);
     expect($errorMessage)->toBe('Database error');
 
     // Restore it
@@ -86,7 +87,7 @@ it('shortens database error messages', function () {
 
     $response = Error::LocalAuth->redirect($routerData, $longSqlError);
 
-    $errorMessage = session('authRouterErrorMessage');
+    $errorMessage = session(SessionKey::ERROR_MESSAGE);
     expect($errorMessage)->not->toContain('SQLSTATE');
     expect($errorMessage)->toBe(__('auth-router::errors.DatabaseError'));
 });
@@ -97,7 +98,7 @@ it('truncates very long error messages', function () {
 
     $response = Error::LocalAuth->redirect($routerData, $longMessage);
 
-    $errorMessage = session('authRouterErrorMessage');
+    $errorMessage = session(SessionKey::ERROR_MESSAGE);
     expect(strlen($errorMessage))->toBeLessThanOrEqual(100);
     expect($errorMessage)->toEndWith('...');
 });

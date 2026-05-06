@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
 use SchenkeIo\LaravelAuthRouter\Auth\Error;
+use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
@@ -43,7 +44,7 @@ class WhatsappProvider extends BaseProvider
             if (! $email || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 return redirect()->route($this->loginRoute)
                     ->withInput()
-                    ->with('authRouterErrorMessage', 'Valid email is required');
+                    ->with(SessionKey::ERROR_MESSAGE, 'Valid email is required');
             }
 
             // Check if email is approved
@@ -53,12 +54,12 @@ class WhatsappProvider extends BaseProvider
                 if (! in_array($email, $approvedArray)) {
                     return redirect()->route($this->loginRoute)
                         ->withInput()
-                        ->with('authRouterErrorMessage', 'Email not approved for WhatsApp login');
+                        ->with(SessionKey::ERROR_MESSAGE, 'Email not approved for WhatsApp login');
                 }
             } else {
                 return redirect()->route($this->loginRoute)
                     ->withInput()
-                    ->with('authRouterErrorMessage', 'WhatsApp login is not configured with approved emails');
+                    ->with(SessionKey::ERROR_MESSAGE, 'WhatsApp login is not configured with approved emails');
             }
 
             // Logic to send WhatsApp message would go here
@@ -86,7 +87,7 @@ class WhatsappProvider extends BaseProvider
         }
 
         $userData = new UserData(
-            name: explode('@', $email)[0],
+            name: '',
             email: $email,
             provider: $this->name
         );
