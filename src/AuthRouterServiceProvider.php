@@ -86,5 +86,6 @@ class AuthRouterServiceProvider extends PackageServiceProvider
         parent::register();
 
         $this->app->singleton(AppleTokenGenerator::class);
+        $this->app->singleton(Auth\Validator::class);
     }
 }

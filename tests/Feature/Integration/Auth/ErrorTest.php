@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('feature');
+
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;

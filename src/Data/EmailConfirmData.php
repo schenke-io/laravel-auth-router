@@ -4,11 +4,12 @@ namespace SchenkeIo\LaravelAuthRouter\Data;
 
 use Carbon\Carbon;
 use SchenkeIo\LaravelAuthRouter\Contracts\EmailConfirmInterface;
+use Spatie\LaravelData\Data;
 
 /**
  * Data structure for email confirmation.
  */
-class EmailConfirmData implements EmailConfirmInterface
+class EmailConfirmData extends Data implements EmailConfirmInterface
 {
     public function __construct(
         public string $email,

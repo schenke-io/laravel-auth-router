@@ -1,6 +1,6 @@
 <?php
 
-namespace SchenkeIo\LaravelAuthRouter\Tests\Feature\Auth;
+pest()->group('feature');
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -8,7 +8,7 @@ use SchenkeIo\LaravelAuthRouter\Auth\AuthRouterBuilder;
 use SchenkeIo\LaravelAuthRouter\Contracts\EmailConfirmInterface;
 
 it('can set all fluent methods', function () {
-    $emailConfirm = \Mockery::mock(EmailConfirmInterface::class);
+    $emailConfirm = Mockery::mock(EmailConfirmInterface::class);
 
     $builder = new AuthRouterBuilder(['google']);
     $builder->success('success_route')
@@ -19,7 +19,8 @@ it('can set all fluent methods', function () {
         ->prefix('auth')
         ->emailConfirm($emailConfirm)
         ->middleware(['web', 'auth'])
-        ->useProviderId(true);
+        ->useProviderId(true)
+        ->canImpersonate('admin');
 
     // We can use reflection to check the protected properties if we really want,
     // but the real test is whether it registers the routes correctly on destruction.
@@ -40,7 +41,7 @@ it('can log debug information', function () {
 
     Log::shouldReceive('debug')
         ->once()
-        ->with('AuthRouter registration', \Mockery::type('array'));
+        ->with('AuthRouter registration', Mockery::type('array'));
 
     $builder = new AuthRouterBuilder(['google']);
     $builder->debug('test-channel')->register();

@@ -95,6 +95,10 @@ class UserData extends Data
 
     public function authAndRedirect(RouterData $routerData): RedirectResponse
     {
+        if ($routerData->impersonateGate !== null && Session::has(SessionKey::IMPERSONATOR_ID)) {
+            return redirect()->intended(route($routerData->routeSuccess));
+        }
+
         // without any email we redirect
         if (! str_contains($this->email, '@')) {
             return Error::EmailMissing->redirect($routerData);

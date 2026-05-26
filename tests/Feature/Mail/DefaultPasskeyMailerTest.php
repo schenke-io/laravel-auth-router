@@ -2,6 +2,8 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Tests\Feature\Mail;
 
+pest()->group('feature');
+
 use SchenkeIo\LaravelAuthRouter\Mail\DefaultPasskeyMailer;
 use SchenkeIo\LaravelAuthRouter\Tests\TestCase;
 

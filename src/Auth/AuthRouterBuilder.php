@@ -79,6 +79,11 @@ class AuthRouterBuilder
     protected bool $useProviderId = false;
 
     /**
+     * The gate to check before allowing impersonation.
+     */
+    protected ?string $impersonateGate = null;
+
+    /**
      * Tracks whether the routes have already been registered to avoid duplicates.
      */
     protected bool $isRegistered = false;
@@ -247,6 +252,19 @@ class AuthRouterBuilder
     }
 
     /**
+     * Configure whether the authentication system should allow impersonation.
+     *
+     * @param  string|null  $gate  The gate name to check.
+     * @return $this
+     */
+    public function canImpersonate(?string $gate = null): self
+    {
+        $this->impersonateGate = $gate;
+
+        return $this;
+    }
+
+    /**
      * Final method to register the configured routes.
      *
      * This method must be called to explicitly register the routes.
@@ -272,7 +290,8 @@ class AuthRouterBuilder
             $this->middleware,
             $this->showPayload,
             $this->logChannel,
-            $this->useProviderId
+            $this->useProviderId,
+            $this->impersonateGate
         );
 
         if ($this->logChannel) {
@@ -290,6 +309,7 @@ class AuthRouterBuilder
                     'middleware' => $this->middleware,
                     'showPayload' => $this->showPayload,
                     'useProviderId' => $this->useProviderId,
+                    'impersonateGate' => $this->impersonateGate,
                 ],
             ]);
         }
@@ -303,6 +323,8 @@ class AuthRouterBuilder
         $authRouter->addLogout($routerData);
         // add payload routes
         $authRouter->addPayloadRoutes($routerData);
+        // add impersonation routes
+        $authRouter->addImpersonationRoutes($routerData);
         // ensures that the named routes are available in the current request
         Route::getRoutes()->refreshNameLookups();
     }

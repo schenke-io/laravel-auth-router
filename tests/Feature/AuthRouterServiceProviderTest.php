@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('feature');
+
 use Illuminate\Routing\RouteCollection;
 use Laravel\Socialite\Facades\Socialite;
 use SchenkeIo\LaravelAuthRouter\AuthRouterServiceProvider;

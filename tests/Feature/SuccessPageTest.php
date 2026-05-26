@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('feature');
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Contracts\User as SocialiteUser;

@@ -2,6 +2,8 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Tests\Feature\Services;
 
+pest()->group('feature');
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Lcobucci\JWT\Configuration;

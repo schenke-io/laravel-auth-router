@@ -2,6 +2,8 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Tests\Feature\Auth;
 
+pest()->group('feature');
+
 use Illuminate\Support\Facades\Log;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;

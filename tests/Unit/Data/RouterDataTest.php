@@ -2,6 +2,8 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Tests\Unit\Data;
 
+pest()->group('unit');
+
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 
 it('can be instantiated', function () {
@@ -41,7 +43,12 @@ it('can be restored via __set_state', function () {
         ->and($data->rememberMe)->toBe(false)
         ->and($data->prefix)->toBe('auth')
         ->and($data->routeName)->toBe('auth')
-        ->and($data->middleware)->toBe(['web']);
+        ->and($data->middleware)->toBe(['web'])
+        ->and($data->impersonateGate)->toBeNull();
+
+    $properties['impersonateGate'] = 'admin-gate';
+    $data = RouterData::__set_state($properties);
+    expect($data->impersonateGate)->toBe('admin-gate');
 });
 
 it('calculates route prefix correctly', function () {

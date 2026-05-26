@@ -30,5 +30,21 @@ WorkOS drivers require an `api_key`, `client_id`, and `organization_id`:
 'whatsapp' => [
     'api_key' => env('WHATSAPP_API_KEY'),
     'approved_emails' => env('WHATSAPP_APPROVED_EMAILS'),
+],
+
+'logto' => [
+    'endpoint' => env('LOGTO_ENDPOINT'),
+    'app_id' => env('LOGTO_APP_ID'),
+    'app_secret' => env('LOGTO_APP_SECRET'),
 ]
+```
+
+### Impersonation
+
+You can enable impersonation using the `canImpersonate()` method on the fluent builder. It accepts an optional gate name that must be passed for a user to start impersonating others.
+
+```php
+Route::authRouter(['google'])
+    ->canImpersonate('admin')
+    ->register();
 ```

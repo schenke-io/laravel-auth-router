@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('feature');
+
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;

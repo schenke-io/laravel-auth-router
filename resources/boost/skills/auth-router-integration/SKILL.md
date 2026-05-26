@@ -46,6 +46,7 @@ Route::authRouter(['google', 'microsoft'])
     ->canAddUsers(false)         // true = allow new user creation (default), false = existing users only
     ->prefix('auth')             // URL prefix, avoids collisions with application routes
     ->name('auth.')              // route name prefix
+    ->canImpersonate('admin')    // optional: enable impersonation gated by 'admin'
     ->register();                // always terminate the chain with register()
 ```
 
@@ -53,7 +54,7 @@ The `middleware()` method is an optional array or string of middleware to apply 
 
 ### Step 4 — Verify
 
-Run `php artisan route:list --name=auth` and confirm that login, callback, and logout routes are present for each configured provider.
+Run `php artisan route:list --name=auth` and confirm that login, callback, and logout routes are present for each configured provider. If impersonation is enabled, also verify `impersonate.start` and `impersonate.stop`.
 
 ### Step 5 — Smoke-test the UI
 
@@ -66,6 +67,7 @@ Visit `/auth/login` (or your chosen prefix). The package renders a built-in prov
 | Single provider passed | No selector UI — user is redirected directly to the OAuth flow |
 | Multiple providers | Built-in selector screen rendered automatically |
 | `canAddUsers(false)` | Login is restricted to users already present in the database |
+| `canImpersonate()` | Registers `/impersonate/start/{user}` and `/impersonate/stop` routes |
 | Missing `->register()` | Routes are **not** registered — this is the most common setup mistake |
 
 ## Related Skills

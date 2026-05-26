@@ -31,6 +31,7 @@ Route::authRouter(['google', 'microsoft'])
     ->middleware('throttle:60,1')
     ->emailConfirm($impl)        // optional EmailConfirmInterface for data-review flow
     ->showPayload(false)         // true = show user data page before finalising login
+    ->canImpersonate('admin')    // optional gate name to enable impersonation
     ->register();                // REQUIRED — routes are not registered without this
 ```
 
@@ -232,3 +233,25 @@ User → GET /auth/login/{provider}
 5. **Use `'stateless' => true`** for providers that suffer OAuth state mismatches (common in single-page or API-hybrid apps).
 6. **Read setup errors from the login page**, not from exception logs — configuration mistakes render there, not as 500 errors.
 7. **Translation keys are namespaced** as `auth-router::errors.*` and `auth-router::login.*`. Override them via `lang/vendor/auth-router/`.
+
+---
+
+## 9. Impersonation
+
+Enable impersonation by calling `->canImpersonate($gateName)` on the router builder. This registers routes to start and stop impersonating other users.
+
+```php
+Route::authRouter(['google'])
+    ->canImpersonate('admin-gate')
+    ->register();
+```
+
+| Method | URI | Route Name | Middleware |
+| :--- | :--- | :--- | :--- |
+| GET | `/impersonate/start/{user}` | `impersonate.start` | web, auth, can:admin-gate |
+| GET | `/impersonate/stop` | `impersonate.stop` | web, auth |
+
+**Behavior:**
+- `start`: Stores the current user ID in the session and logs in as the target user.
+- `stop`: Reverts to the original user and clears the impersonation session.
+- While impersonating, further social logins are ignored to protect the session.

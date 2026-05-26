@@ -7,6 +7,16 @@ use Logto\Sdk\Storage\Storage;
 use Logto\Sdk\Storage\StorageKey;
 use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 
+/**
+ * Class LogtoStorage
+ *
+ * Implements persistent storage for Logto SDK using Laravel's session.
+ *
+ * Main Responsibilities:
+ * - Persist: Stores Logto state and tokens in the session.
+ * - Retrieve: Fetches stored Logto data for authentication checks.
+ * - Delete: Removes Logto data from the session upon logout or expiration.
+ */
 class LogtoStorage implements Storage
 {
     public function get(StorageKey $key): ?string

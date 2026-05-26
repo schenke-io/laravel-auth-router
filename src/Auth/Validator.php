@@ -2,7 +2,7 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Auth;
 
-use Illuminate\Support\Facades\Validator as LaravelValidator;
+use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Validation\Rules\Password;
 
 /**
@@ -10,9 +10,11 @@ use Illuminate\Validation\Rules\Password;
  */
 class Validator
 {
-    public static function validatePassword(string $password): ?string
+    public function __construct(protected ValidationFactory $factory) {}
+
+    public function validatePassword(string $password): ?string
     {
-        $validator = LaravelValidator::make(
+        $validator = $this->factory->make(
             ['password' => $password],
             ['password' => [
                 'required',
@@ -32,8 +34,8 @@ class Validator
         return null;
     }
 
-    public static function isValidPassword(string $password): bool
+    public function isValidPassword(string $password): bool
     {
-        return self::validatePassword($password) === null;
+        return $this->validatePassword($password) === null;
     }
 }

@@ -9,6 +9,16 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use SchenkeIo\LaravelAuthRouter\Contracts\PasskeyMailerInterface;
 
+/**
+ * Class DefaultPasskeyMailer
+ *
+ * Default implementation of the PasskeyMailerInterface for sending login codes.
+ *
+ * Main Responsibilities:
+ * - Construct: Initializes the mailable with an optional code.
+ * - Envelope: Defines the email subject.
+ * - Content: Generates the HTML content of the email.
+ */
 class DefaultPasskeyMailer extends Mailable implements PasskeyMailerInterface
 {
     use Queueable, SerializesModels;

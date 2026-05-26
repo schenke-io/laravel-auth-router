@@ -1,6 +1,9 @@
 <?php
 
+pest()->group('feature');
+
 use Auth0\SDK\Auth0;
+use Auth0\SDK\Contract\Auth0Interface;
 use Auth0\SDK\Exception\NetworkException;
 use Auth0\SDK\Exception\StateException;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\Auth0Provider;
@@ -13,7 +16,7 @@ it('can redirect to login page without hint', function () {
     $routerData = getRouterData(true);
     config(['services.auth0.redirect' => $redirectUri]);
 
-    $mockAuth0 = $this->mock('alias:'.Auth0::class);
+    $mockAuth0 = $this->mock(Auth0Interface::class);
     $this->app->instance(Auth0::class, $mockAuth0);
     $mockAuth0->shouldReceive('login')->andReturn($redirectUri);
 
@@ -27,7 +30,7 @@ it('can redirect to login page with hint', function () {
     $routerData = getRouterData(true);
     config(['services.auth0.redirect' => $redirectUri]);
 
-    $mockAuth0 = $this->mock('alias:'.Auth0::class);
+    $mockAuth0 = $this->mock(Auth0Interface::class);
     $this->app->instance(Auth0::class, $mockAuth0);
     $mockAuth0->shouldReceive('login')->andReturn($redirectUriEnd);
 
@@ -59,7 +62,7 @@ it('can authenticate with auth0', function () {
         'other' => 123444,
     ];
 
-    $mockAuth0 = $this->mock('alias:'.Auth0::class);
+    $mockAuth0 = $this->mock(Auth0Interface::class);
     $this->app->instance(Auth0::class, $mockAuth0);
     $mockAuth0->shouldReceive('exchange')->once();
     $mockAuth0->shouldReceive('getUser')->once()->andReturn($auth0User);
@@ -72,7 +75,7 @@ it('handles the error code in callback', function () {
     request()->merge(['error' => 'something went wrong']);
     $routerData = getRouterData(true);
 
-    $mockAuth0 = $this->mock('alias:'.Auth0::class);
+    $mockAuth0 = $this->mock(Auth0Interface::class);
     $this->app->instance(Auth0::class, $mockAuth0);
 
     $response = (new Auth0Provider)->callback($routerData);
@@ -84,7 +87,7 @@ it('fails to authenticate', function () {
     request()->merge(['state' => 'state', 'code' => 'code']);
     $routerData = getRouterData(true);
 
-    $mockAuth0 = $this->mock('alias:'.Auth0::class);
+    $mockAuth0 = $this->mock(Auth0Interface::class);
     $this->app->instance(Auth0::class, $mockAuth0);
     $mockAuth0->shouldReceive('exchange')->once();
     $mockAuth0->shouldReceive('getUser')->once()->andReturn(null);
@@ -97,7 +100,7 @@ it('can handle a network exception', function () {
     request()->merge(['state' => 'state', 'code' => 'code']);
     $routerData = getRouterData(true);
 
-    $mockAuth0 = $this->mock('alias:'.Auth0::class);
+    $mockAuth0 = $this->mock(Auth0Interface::class);
     $this->app->instance(Auth0::class, $mockAuth0);
     $mockAuth0->shouldReceive('exchange')->andThrowExceptions([new NetworkException]);
 
@@ -109,7 +112,7 @@ it('can handle a state exception', function () {
     request()->merge(['state' => 'state', 'code' => 'code']);
     $routerData = getRouterData(true);
 
-    $mockAuth0 = $this->mock('alias:'.Auth0::class);
+    $mockAuth0 = $this->mock(Auth0Interface::class);
     $this->app->instance(Auth0::class, $mockAuth0);
     $mockAuth0->shouldReceive('exchange')->andThrowExceptions([new StateException]);
 
@@ -121,7 +124,7 @@ it('can handle an invalid request', function () {
     request()->merge(['wrong' => 'wrong']);
     $routerData = getRouterData(true);
 
-    $mockAuth0 = $this->mock('alias:'.Auth0::class);
+    $mockAuth0 = $this->mock(Auth0Interface::class);
     $this->app->instance(Auth0::class, $mockAuth0);
 
     $response = (new Auth0Provider)->callback($routerData);

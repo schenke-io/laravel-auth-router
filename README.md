@@ -29,6 +29,7 @@ Laravel Auth Router streamlines adding multiple social logins to your Laravel ap
 - __Pre-Built Provider Chooser:__ Get an immediate, customizable page on your domain for users to select their login method – no manual UI building required.
 - __Rapid Configuration:__ Minimal setup is needed due to a unified route helper and familiar service configuration.
 - __Flexible Fluent API:__ Customize behavior like success/error redirects, registration permission, and session persistence with a simple, readable chain.
+- __Integrated Impersonation:__ Easily enable a secure "log in as user" flow for administrators with a single configuration call.
 - __Developer Conveniences:__ Includes multi-language support (DE/EN), dark mode for the chooser, and session-based error messages for easy integration into your Blade views.
 
 It automatically handles routing, offers flexible customization for redirects and user registration, and prevents route conflicts, letting you focus on core features instead of auth boilerplate.
@@ -39,13 +40,14 @@ It automatically handles routing, offers flexible customization for redirects an
   * [Contents](#contents)
   * [Installation](#installation)
   * [Database Requirements](#database-requirements)
-  * [Basic concept](#basic-concept)
+  * [Basic Concept](#basic-concept)
   * [Login and Logout flow](#login-and-logout-flow)
   * [Name conflicts](#name-conflicts)
   * [Debugging](#debugging)
   * [Configuration](#configuration)
     * [Standard Socialite Drivers](#standard-socialite-drivers)
     * [WorkOS Drivers](#workos-drivers)
+    * [Impersonation](#impersonation)
   * [Errors](#errors)
     * [Setup errors](#setup-errors)
     * [Runtime errors](#runtime-errors)
@@ -53,6 +55,7 @@ It automatically handles routing, offers flexible customization for redirects an
   * [Example Google login](#example-google-login)
   * [Advanced Example](#advanced-example)
   * [Route Prefixing and Naming](#route-prefixing-and-naming)
+  * [Impersonation](#impersonation)
   * [Key Classes](#key-classes)
 * [Providers](#providers)
   * [WorkOS Configuration](#workos-configuration)
@@ -97,7 +100,7 @@ Schema::table('users', function (Blueprint $table) {
 });
 ```
 
-## <a name="basic-concept"></a>Basic concept
+## <a name="basic-concept"></a>Basic Concept
 
 In the `routes/web.php` file you use the `Route::authRouter()` macro to define which providers you want to use and your registration policy. This package handles the configuration through `config/services.php`.
 
@@ -120,7 +123,7 @@ Route::authRouter(['google', 'microsoft'])
 |------------------|-------------------------------------------------------------------------|---------------------------------------|
 | `success()`      | route after successful login                                            | 'dashboard'                           |
 | `error()`        | route after login failure, should be able to display errors as feedback | 'error'                               |
-| `home()`         | route to a non protected view (default: 'home')                         | 'home'                                |
+| `home()`         | route to a non-protected view (default: 'home')                         | 'home'                                |
 | `canAddUsers()`  | should unknown users be added or rejected (default: true)               | `true` or `false`                     |
 | `rememberMe()`   | stores the login even when session expires (default: false)             | `true` or `false`                     |
 | `useProviderId()` | use the provider ID for user lookup (default: false)                   | `true` or `false`                     |
@@ -132,12 +135,12 @@ Route::authRouter(['google', 'microsoft'])
 | `register()`     | **Mandatory** call to actually register the routes                      |                                       |
 
 Route names can be same. If the homepage can display errors `error()` and `home()` could be the same.
-When the service configuration is not complete not all routes will be created.
+When the service configuration is not complete, not all routes will be created.
 
 ## <a name="login-and-logout-flow"></a>Login and Logout flow
 
 In the app just link to the `login` route (or `auth.login` if using `.name('auth.')`).
-It either displays the selector page, configuration errors or redirect to a single login provider.
+It either displays the selector page, configuration errors or redirects to a single login provider.
 
 For logout just do an empty POST to the `logout` route. Only authenticated users can use the logout.
 
@@ -201,7 +204,23 @@ WorkOS drivers require an `api_key`, `client_id`, and `organization_id`:
 'whatsapp' => [
     'api_key' => env('WHATSAPP_API_KEY'),
     'approved_emails' => env('WHATSAPP_APPROVED_EMAILS'),
+],
+
+'logto' => [
+    'endpoint' => env('LOGTO_ENDPOINT'),
+    'app_id' => env('LOGTO_APP_ID'),
+    'app_secret' => env('LOGTO_APP_SECRET'),
 ]
+```
+
+### <a name="impersonation"></a>Impersonation
+
+You can enable impersonation using the `canImpersonate()` method on the fluent builder. It accepts an optional gate name that must be passed for a user to start impersonating others.
+
+```php
+Route::authRouter(['google'])
+    ->canImpersonate('admin')
+    ->register();
 ```
 
 ## <a name="errors"></a>Errors
@@ -321,6 +340,21 @@ Route::authRouter('google')
 
 This generates routes like `/auth/login`, `/auth/callback/google`, and route names like `auth.login`, `auth.login.google`.
 
+## <a name="impersonation"></a>Impersonation
+
+To enable the impersonation feature, use the `canImpersonate()` method. This will register routes to start and stop impersonating other users, protected by an optional gate:
+
+```php
+// routes/web.php
+Route::authRouter('google')
+    ->canImpersonate('admin-gate')
+    ->register();
+```
+
+This registers:
+- `impersonate.start`: `GET /impersonate/start/{user}`
+- `impersonate.stop`: `GET /impersonate/stop`
+
 ## <a name="key-classes"></a>Key Classes
 
 | Class      | Summary                                                                    |
@@ -347,6 +381,8 @@ The following providers are supported:
 - `workos_email`
 - `workos_google`
 - `workos_linkedin`
+- `logto`
+- `passkey`
  
 ## <a name="workos-configuration"></a>WorkOS Configuration
  
@@ -450,7 +486,7 @@ A collection of login providers passed to `Route::authRouter` must **NOT** conta
 | apple     | Social login with Apple.                | https://developer.apple.com/sign-in-with-apple/ |
 | custom    | A free programmable login provider.     | ??                                              |
 | workos    | Social login with WorkOS                | https://workos.com/docs/user-management         |
-| logto     |                                         | ??                                              |
+| logto     | Class LogtoProvider                     | ??                                              |
 | passkey   | Passkey login provider implementation.  | ??                                              |
 
 ## <a name="amazon-provider"></a>Amazon Provider
@@ -743,6 +779,15 @@ You do not need to configure the callback URL, it will be automatically added
 ## <a name="logto-provider"></a>Logto Provider
 
 First go to ??
+Handles authentication via Logto SDK.
+Main Responsibilities:
+- Login: Redirects users to Logto for authentication.
+- Callback: Processes the authentication response from Logto.
+- Logout: Handles session termination and redirection.
+Usage Example:
+```php
+Route::authRouter('logto')->register();
+```
 
 Edit the `.env` file in your Laravel project and add the credentials:
 

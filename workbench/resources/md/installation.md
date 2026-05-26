@@ -16,7 +16,7 @@ Schema::table('users', function (Blueprint $table) {
 });
 ```
 
-## Basic concept
+## Basic Concept
 
 In the `routes/web.php` file you use the `Route::authRouter()` macro to define which providers you want to use and your registration policy. This package handles the configuration through `config/services.php`.
 
@@ -39,7 +39,7 @@ Route::authRouter(['google', 'microsoft'])
 |------------------|-------------------------------------------------------------------------|---------------------------------------|
 | `success()`      | route after successful login                                            | 'dashboard'                           |
 | `error()`        | route after login failure, should be able to display errors as feedback | 'error'                               |
-| `home()`         | route to a non protected view (default: 'home')                         | 'home'                                |
+| `home()`         | route to a non-protected view (default: 'home')                         | 'home'                                |
 | `canAddUsers()`  | should unknown users be added or rejected (default: true)               | `true` or `false`                     |
 | `rememberMe()`   | stores the login even when session expires (default: false)             | `true` or `false`                     |
 | `useProviderId()` | use the provider ID for user lookup (default: false)                   | `true` or `false`                     |
@@ -51,12 +51,12 @@ Route::authRouter(['google', 'microsoft'])
 | `register()`     | **Mandatory** call to actually register the routes                      |                                       |
 
 Route names can be same. If the homepage can display errors `error()` and `home()` could be the same.
-When the service configuration is not complete not all routes will be created.
+When the service configuration is not complete, not all routes will be created.
 
 ## Login and Logout flow
 
 In the app just link to the `login` route (or `auth.login` if using `.name('auth.')`).
-It either displays the selector page, configuration errors or redirect to a single login provider.
+It either displays the selector page, configuration errors or redirects to a single login provider.
 
 For logout just do an empty POST to the `logout` route. Only authenticated users can use the logout.
 

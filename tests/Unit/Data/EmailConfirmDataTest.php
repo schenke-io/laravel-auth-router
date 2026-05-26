@@ -2,6 +2,8 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Tests\Unit\Data;
 
+pest()->group('unit');
+
 use Carbon\Carbon;
 use SchenkeIo\LaravelAuthRouter\Data\EmailConfirmData;
 

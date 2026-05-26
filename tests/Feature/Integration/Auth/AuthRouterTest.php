@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('feature');
+
 use Illuminate\Support\Facades\Route;
 use Logto\Sdk\LogtoClient;
 use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;

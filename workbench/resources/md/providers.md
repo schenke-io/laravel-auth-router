@@ -17,6 +17,8 @@ The following providers are supported:
 - `workos_email`
 - `workos_google`
 - `workos_linkedin`
+- `logto`
+- `passkey`
  
 ## WorkOS Configuration
  

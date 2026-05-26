@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('feature');
+
 use Workbench\App\Http\Controllers\SetLanguageController;
 
 it('can submit the workbench form and see results', function () {

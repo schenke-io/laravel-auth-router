@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('feature');
+
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
 use SchenkeIo\LaravelAuthRouter\Auth\Service;
 

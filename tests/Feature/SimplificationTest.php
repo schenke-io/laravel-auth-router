@@ -2,6 +2,8 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Tests\Feature;
 
+pest()->group('feature');
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Socialite\Facades\Socialite;
 use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;

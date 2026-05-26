@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('unit');
+
 use SchenkeIo\LaravelAuthRouter\Auth\Error;
 use SchenkeIo\LaravelAuthRouter\Auth\Service;
 

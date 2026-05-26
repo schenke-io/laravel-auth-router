@@ -8,15 +8,37 @@ use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 
 /**
- * Handles the registration of authentication routes and redirects.
+ * Class AuthRouter
+ *
+ * Handles the registration of authentication routes and redirects for various providers.
+ *
+ * Main Responsibilities:
+ * - Provider Management: Registers routes for individual or multiple authentication providers.
+ * - Login Handling: Sets up the main login route.
+ * - Logout Handling: Configures the logout route and its redirection logic.
+ * - Payload Management: Registers routes for handling user data payloads.
+ * - Impersonation: Sets up routes for user impersonation.
+ *
+ * Usage Example:
+ * ```php
+ * $authRouter = new AuthRouter();
+ * $authRouter->addProviders($providers, $routerData);
+ * $authRouter->addLogin($providers, $routerData);
+ * ```
  */
 class AuthRouter
 {
+    /**
+     * Register routes for a single authentication provider.
+     */
     public function addProvider(BaseProvider $provider, RouterData $routerData): void
     {
         (new RouteRegistrar)->registerProviderRoutes($provider, $routerData);
     }
 
+    /**
+     * Register routes for a collection of authentication providers.
+     */
     public function addProviders(ProviderCollection $providers, RouterData $routerData): void
     {
         foreach ($providers as $provider) {
@@ -24,6 +46,9 @@ class AuthRouter
         }
     }
 
+    /**
+     * Register the main login route.
+     */
     public function addLogin(ProviderCollection $providers, RouterData $routerData): void
     {
         (new RouteRegistrar)->registerLoginRoute($providers, $routerData);
@@ -38,8 +63,19 @@ class AuthRouter
         (new RouteRegistrar)->registerLogoutRoute($routerData);
     }
 
+    /**
+     * Register routes for handling user data payloads.
+     */
     public function addPayloadRoutes(RouterData $routerData): void
     {
         (new RouteRegistrar)->registerPayloadRoutes($routerData);
+    }
+
+    /**
+     * Register routes for user impersonation.
+     */
+    public function addImpersonationRoutes(RouterData $routerData): void
+    {
+        (new RouteRegistrar)->registerImpersonationRoutes($routerData);
     }
 }

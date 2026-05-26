@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Data;
 
+pest()->group('feature');
+
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;

@@ -13,6 +13,21 @@ use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
 use SchenkeIo\LaravelAuthRouter\Services\LogtoStorage;
 
+/**
+ * Class LogtoProvider
+ *
+ * Handles authentication via Logto SDK.
+ *
+ * Main Responsibilities:
+ * - Login: Redirects users to Logto for authentication.
+ * - Callback: Processes the authentication response from Logto.
+ * - Logout: Handles session termination and redirection.
+ *
+ * Usage Example:
+ * ```php
+ * Route::authRouter('logto')->register();
+ * ```
+ */
 class LogtoProvider extends BaseProvider implements UseExclusiveInterface
 {
     public function env(): array

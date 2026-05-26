@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('feature');
+
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
 

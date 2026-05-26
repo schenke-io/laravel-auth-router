@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('browser');
+
 use SchenkeIo\LaravelAuthRouter\Tests\TestCase;
 
 uses(TestCase::class);

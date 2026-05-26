@@ -58,3 +58,18 @@ Route::authRouter('google')
 ```
 
 This generates routes like `/auth/login`, `/auth/callback/google`, and route names like `auth.login`, `auth.login.google`.
+
+## Impersonation
+
+To enable the impersonation feature, use the `canImpersonate()` method. This will register routes to start and stop impersonating other users, protected by an optional gate:
+
+```php
+// routes/web.php
+Route::authRouter('google')
+    ->canImpersonate('admin-gate')
+    ->register();
+```
+
+This registers:
+- `impersonate.start`: `GET /impersonate/start/{user}`
+- `impersonate.stop`: `GET /impersonate/stop`

@@ -25,7 +25,8 @@ class RouterData extends Data
         public array $middleware = [],
         public bool $showPayload = false,
         public ?string $logChannel = null,
-        public bool $useProviderId = false
+        public bool $useProviderId = false,
+        public ?string $impersonateGate = null
     ) {}
 
     /**
@@ -45,7 +46,8 @@ class RouterData extends Data
             middleware: $properties['middleware'] ?? [],
             showPayload: $properties['showPayload'] ?? false,
             logChannel: $properties['logChannel'] ?? null,
-            useProviderId: $properties['useProviderId'] ?? false
+            useProviderId: $properties['useProviderId'] ?? false,
+            impersonateGate: $properties['impersonateGate'] ?? null
         );
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('feature');
+
 use SchenkeIo\LaravelAuthRouter\LoginProviders\UnknownBaseProvider;
 
 it('has no env data', function () {

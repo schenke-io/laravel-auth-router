@@ -2,6 +2,8 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Tests\Unit\Services;
 
+pest()->group('unit');
+
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Token\Parser;
 use SchenkeIo\LaravelAuthRouter\Services\AppleTokenGenerator;

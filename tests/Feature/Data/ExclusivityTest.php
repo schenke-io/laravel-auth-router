@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('feature');
+
 use SchenkeIo\LaravelAuthRouter\Auth\Service;
 use SchenkeIo\LaravelAuthRouter\Contracts\UseExclusiveInterface;
 use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;

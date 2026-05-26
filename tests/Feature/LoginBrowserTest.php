@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('feature');
+
 use Illuminate\Support\Facades\Route;
 
 it('renders the login page correctly with different session data', function (string $color, string $expectedClass, string $locale, string $expectedTitle) {

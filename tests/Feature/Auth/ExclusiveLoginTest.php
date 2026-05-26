@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('feature');
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
 use Workbench\App\Models\User;

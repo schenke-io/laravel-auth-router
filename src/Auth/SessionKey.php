@@ -23,6 +23,8 @@ class SessionKey
 
     public const PASSKEY_EMAIL = 'auth-router-passkey-email';
 
+    public const IMPERSONATOR_ID = 'auth-router-impersonator-id';
+
     /**
      * Externally relevant session keys.
      * These keys are defined by external systems or Laravel standards and must maintain their naming.

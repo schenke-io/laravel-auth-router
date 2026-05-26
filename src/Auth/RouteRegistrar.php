@@ -169,4 +169,32 @@ class RouteRegistrar
             ->name($routePrefix.'callback.finalize')
             ->middleware($middleware);
     }
+
+    /**
+     * Register routes for impersonation.
+     *
+     * @param  RouterData  $routerData  The configuration data for the router.
+     */
+    public function registerImpersonationRoutes(RouterData $routerData): void
+    {
+        if ($routerData->impersonateGate === null) {
+            return;
+        }
+
+        $routePrefix = $routerData->getRoutePrefix();
+        $uriPrefix = $routerData->getUriPrefix();
+        $middleware = array_merge(['web', 'auth'], $routerData->middleware);
+
+        Route::get($uriPrefix.'impersonate/start/{user}', function (Request $request, string $user) use ($routerData) {
+            return (new ImpersonationController)->start($request, $user, $routerData);
+        })
+            ->name($routePrefix.'impersonate.start')
+            ->middleware(array_merge($middleware, ["can:{$routerData->impersonateGate}"]));
+
+        Route::get($uriPrefix.'impersonate/stop', function (Request $request) use ($routerData) {
+            return (new ImpersonationController)->stop($request, $routerData);
+        })
+            ->name($routePrefix.'impersonate.stop')
+            ->middleware($middleware);
+    }
 }

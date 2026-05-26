@@ -1,5 +1,7 @@
 <?php
 
+pest()->group('feature');
+
 use Workbench\App\Models\User;
 
 beforeEach(function () {
