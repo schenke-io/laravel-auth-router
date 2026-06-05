@@ -76,9 +76,13 @@ trait HasUserAdapter
     protected function fillModel(Model $user, string $name, string $email, string $avatar, bool $isNew = false, ?string $providerId = null): void
     {
         if ($user instanceof AuthenticatableRouterUser) {
-            $user->setName($name);
-            $user->setEmail($email);
-            $user->setAvatar($avatar);
+            if ($name !== '') {            // don't overwrite with an empty provider name
+                $user->setName($name);
+            }
+            if ($email !== '') {
+                $user->setEmail($email);
+            }
+            $user->setAvatar($avatar);     // setAvatar already no-ops on non-https
             if ($providerId) {
                 $user->setProviderId($providerId);
             }
