@@ -6,11 +6,11 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
-use SchenkeIo\LaravelAuthRouter\Auth\Error;
 use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
+use SchenkeIo\LaravelAuthRouter\Enums\Error;
 
 /**
  * WhatsApp login provider implementation.

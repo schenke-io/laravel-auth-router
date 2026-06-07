@@ -1,10 +1,11 @@
 <?php
 
-namespace SchenkeIo\LaravelAuthRouter\Auth;
+namespace SchenkeIo\LaravelAuthRouter\Enums;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 
 /**
@@ -34,12 +35,18 @@ enum Error
      */
     public function redirect(RouterData $routerData, string $codeErrorMessage = '', array $errorParameter = []): RedirectResponse
     {
+        $reference = $this->generateReference();
+        $logData = [
+            'type' => $this->name,
+            'category' => $this->category()->value,
+            'reference' => $reference,
+            'info' => $this->trans($errorParameter),
+            'message' => $codeErrorMessage,
+        ];
         if ($routerData->logChannel) {
-            Log::channel($routerData->logChannel)->error('AuthRouter error', [
-                'type' => $this->name,
-                'info' => $this->trans($errorParameter),
-                'message' => $codeErrorMessage,
-            ]);
+            Log::channel($routerData->logChannel)->error('AuthRouter error', $logData);
+        } else {
+            Log::error('[AuthRouter] error', $logData);
         }
 
         $briefMessage = $codeErrorMessage;
@@ -53,7 +60,14 @@ enum Error
             ->withInput()
             ->with(SessionKey::ERROR_INFO, $this->trans($errorParameter))
             ->with(SessionKey::ERROR_MESSAGE, $briefMessage)
-            ->withHeaders(['X-Custom-Error-Type' => $this->name]);
+            ->with(SessionKey::ERROR_TYPE, $this->name)
+            ->with(SessionKey::ERROR_CATEGORY, $this->category()->value)
+            ->with(SessionKey::ERROR_REFERENCE, $reference)
+            ->withHeaders([
+                'X-Custom-Error-Type' => $this->name,
+                'X-Custom-Error-Category' => $this->category()->value,
+                'X-Custom-Error-Reference' => $reference,
+            ]);
     }
 
     /**
@@ -88,5 +102,41 @@ enum Error
             default => [],
         };
 
+    }
+
+    public function category(): ErrorCategory
+    {
+        return match ($this) {
+            self::UnknownService,
+            self::ServiceNotSet,
+            self::ConfigNotSet,
+            self::ExclusiveProvider => ErrorCategory::Configuration,
+            self::Network => ErrorCategory::Network,
+            self::UnableToAddNewUsers,
+            self::EmailMissing,
+            self::InvalidEmail,
+            self::LoginEmailError,
+            self::InvalidCredentials => ErrorCategory::Account,
+            self::LocalAuth,
+            self::State,
+            self::InvalidRequest,
+            self::MixedProviders,
+            self::InvalidToken => ErrorCategory::Session,
+            self::RemoteAuth => ErrorCategory::Provider,
+        };
+    }
+
+    private function generateReference(): string
+    {
+        $chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+        $ref = '';
+        for ($i = 0; $i < 8; $i++) {
+            if ($i === 4) {
+                $ref .= '-';
+            }
+            $ref .= $chars[random_int(0, strlen($chars) - 1)];
+        }
+
+        return $ref;
     }
 }

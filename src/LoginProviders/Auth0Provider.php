@@ -9,10 +9,10 @@ use Auth0\SDK\Exception\StateException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Config;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
-use SchenkeIo\LaravelAuthRouter\Auth\Error;
 use SchenkeIo\LaravelAuthRouter\Contracts\UseExclusiveInterface;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
+use SchenkeIo\LaravelAuthRouter\Enums\Error;
 
 /**
  * social login with Auth0

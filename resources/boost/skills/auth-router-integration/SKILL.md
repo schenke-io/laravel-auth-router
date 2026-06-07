@@ -7,70 +7,45 @@
 
 ## Purpose
 
-Register social authentication routes in a Laravel application using the `Route::authRouter()` macro. This replaces the manual boilerplate of defining login, callback, and logout routes for each provider individually.
+Integrate, configure, and troubleshoot social authentication in a Laravel application with `schenke-io/laravel-auth-router`. The package registers all login, callback, and logout routes for every provider through a single `Route::authRouter()` macro, identifies users by email across providers, and reports failures as a structured, localised error context.
 
 ## When to Use
 
-- Adding social login or multi-provider authentication to a Laravel application for the first time.
-- Customizing redirect behaviour for post-login success, authentication error, or home routes.
-- Namespacing authentication routes (e.g., isolating an admin authentication flow under a prefix).
+- Adding social login or multi-provider authentication to a Laravel app.
+- Configuring or rotating provider credentials in `config/services.php` / `.env`.
+- Diagnosing setup or runtime authentication errors and surfacing them to users.
+- Enabling user impersonation for admin/support workflows.
 
-## Prerequisites
+## Specialised References
 
-- `schenke-io/laravel-auth-router` is installed and the service provider is registered.
-- At least one provider is configured in `config/services.php` (see skill `auth-router-provider-management`).
+This skill is split into focused files. Read the one that matches the task — they assume the overview below.
 
-## Workflow
+| File | Use it for |
+| :--- | :--- |
+| [`integration.md`](integration.md) | Registering routes via the `Route::authRouter()` macro, redirect targets, prefixes/names, impersonation. |
+| [`providers.md`](providers.md) | Provider credentials and `config/services.php` entries (Socialite, WorkOS, Apple, Auth0, Logto). |
+| [`troubleshooting.md`](troubleshooting.md) | Setup vs. runtime errors, the `Error`/`ErrorCategory`/`ErrorContext` model, reference codes, logging. |
 
-### Step 1 — Identify providers
+## Overview
 
-Determine which providers the application will support. Valid keys are defined in `src/Auth/Service.php`. Common values:
-
-```
-google  microsoft  facebook  amazon  linkedin  paypal  stripe  auth0  apple
-```
-
-### Step 2 — Open the route file
-
-Edit `routes/web.php` (or whichever route file applies for the intended middleware group).
-
-### Step 3 — Call the macro
+### The macro — only entry point
 
 ```php
 use Illuminate\Support\Facades\Route;
 
 Route::authRouter(['google', 'microsoft'])
-    ->middleware(['web', 'throttle:60,1'])
-    ->success('dashboard')       // redirect here on successful login
-    ->error('login')             // redirect here on authentication failure
-    ->canAddUsers(false)         // true = allow new user creation (default), false = existing users only
-    ->prefix('auth')             // URL prefix, avoids collisions with application routes
-    ->name('auth.')              // route name prefix
-    ->canImpersonate('admin')    // optional: enable impersonation gated by 'admin'
-    ->register();                // always terminate the chain with register()
+    ->success('dashboard')   // redirect after successful login
+    ->error('login')         // redirect after failure (reads ErrorContext)
+    ->canAddUsers(false)     // false = existing users only (default true)
+    ->prefix('auth')         // URI + route-name segment
+    ->register();            // REQUIRED — nothing registers without it
 ```
 
-The `middleware()` method is an optional array or string of middleware to apply to the generated routes.
+### Key invariants
 
-### Step 4 — Verify
-
-Run `php artisan route:list --name=auth` and confirm that login, callback, and logout routes are present for each configured provider. If impersonation is enabled, also verify `impersonate.start` and `impersonate.stop`.
-
-### Step 5 — Smoke-test the UI
-
-Visit `/auth/login` (or your chosen prefix). The package renders a built-in provider-selector screen automatically when more than one provider is listed.
-
-## Key Behaviours
-
-| Scenario | Outcome |
-| :--- | :--- |
-| Single provider passed | No selector UI — user is redirected directly to the OAuth flow |
-| Multiple providers | Built-in selector screen rendered automatically |
-| `canAddUsers(false)` | Login is restricted to users already present in the database |
-| `canImpersonate()` | Registers `/impersonate/start/{user}` and `/impersonate/stop` routes |
-| Missing `->register()` | Routes are **not** registered — this is the most common setup mistake |
-
-## Related Skills
-
-- `auth-router-provider-management` — configure provider credentials before calling this skill.
-- `auth-router-troubleshooting` — diagnose setup and runtime errors after registration.
+- **Always terminate with `->register()`** — omitting it silently skips registration.
+- **Provider keys** come from `SchenkeIo\LaravelAuthRouter\Enums\Service` (case-insensitive, underscore-agnostic).
+- **The `User` model must implement** `AuthenticatableRouterUser` (use the `InteractsWithAuthRouter` trait). Users are matched/created by **email**, stored against a single unified `provider_id` column.
+- **Never put `redirect` in `config/services.php`** — the callback URL is injected per request from the named route.
+- **Do not mix WorkOS with non-WorkOS providers** in one call — it raises `MixedProviders`.
+- **Errors are structured.** Runtime failures redirect to the `->error()` route with a typed case, category, localised message, recommendation, and an 8-char reference code (see [`troubleshooting.md`](troubleshooting.md)).

@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
-use SchenkeIo\LaravelAuthRouter\Auth\Error;
 use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 use SchenkeIo\LaravelAuthRouter\Contracts\AuthenticatableRouterUser;
+use SchenkeIo\LaravelAuthRouter\Enums\Error;
 use Spatie\LaravelData\Data;
 
 /**

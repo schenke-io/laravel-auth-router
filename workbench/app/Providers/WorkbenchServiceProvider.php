@@ -4,7 +4,7 @@ namespace Workbench\App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Laravel\Socialite\Facades\Socialite;
-use SchenkeIo\LaravelAuthRouter\Auth\Service;
+use SchenkeIo\LaravelAuthRouter\Enums\Service;
 use Workbench\App\Services\FakeSocialiteDriver;
 use Workbench\App\Services\SignInService;
 

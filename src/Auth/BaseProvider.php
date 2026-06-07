@@ -14,6 +14,8 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\UnencryptedToken;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
+use SchenkeIo\LaravelAuthRouter\Enums\Error;
+use SchenkeIo\LaravelAuthRouter\Enums\Service;
 use SchenkeIo\LaravelAuthRouter\Events\BackChannelLogoutEvent;
 
 /**

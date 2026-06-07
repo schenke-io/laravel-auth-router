@@ -1,8 +1,9 @@
 <?php
 
-namespace SchenkeIo\LaravelAuthRouter\Auth;
+namespace SchenkeIo\LaravelAuthRouter\Enums;
 
 use ArchTech\Enums\From;
+use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
 
 /**
  * All supported authentication services.

@@ -17,5 +17,21 @@ return [
     'InvalidCredentials' => 'Die angegebenen Anmeldedaten sind falsch.',
     'InvalidToken' => 'Das angegebene Token ist ungültig.',
     'DatabaseError' => 'Ein Datenbankfehler ist aufgetreten',
-    'LoginEmailError' => 'Login Email Fehler',
+    'LoginEmailError' => 'Die Login-E-Mail konnte nicht gesendet werden. Bitte überprüfen Sie Ihre E-Mail-Adresse und versuchen Sie es erneut.',
+    'category' => [
+        'configuration' => 'Konfigurationsfehler',
+        'network' => 'Netzwerkfehler',
+        'account' => 'Kontofehler',
+        'session' => 'Sitzungsfehler',
+        'provider' => 'Anbieterfehler',
+        'unknown' => 'Unbekannter Fehler',
+    ],
+    'recommendation' => [
+        'configuration' => 'Kontaktieren Sie den Systemadministrator, um die Umgebungseinstellungen zu überprüfen.',
+        'network' => 'Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.',
+        'account' => 'Es gibt ein Problem mit Ihrem Konto. Bitte kontaktieren Sie den Support.',
+        'session' => 'Ihre Sitzung ist abgelaufen oder ungültig. Bitte melden Sie sich erneut an.',
+        'provider' => 'Beim Login-Anbieter ist ein Fehler aufgetreten. Bitte versuchen Sie eine andere Methode oder versuchen Sie es später erneut.',
+        'unknown' => 'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.',
+    ],
 ];

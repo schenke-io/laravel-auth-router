@@ -4,8 +4,8 @@ namespace SchenkeIo\LaravelAuthRouter\Data;
 
 use Illuminate\Support\Collection;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
-use SchenkeIo\LaravelAuthRouter\Auth\Error;
 use SchenkeIo\LaravelAuthRouter\Contracts\UseExclusiveInterface;
+use SchenkeIo\LaravelAuthRouter\Enums\Error;
 
 /**
  * A collection for login providers and factory to create them from text.

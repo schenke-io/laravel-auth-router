@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
+use SchenkeIo\LaravelAuthRouter\Enums\Error;
+use SchenkeIo\LaravelAuthRouter\Enums\Service;
 
 /**
  * Handles the registration of routes for authentication.

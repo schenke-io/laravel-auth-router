@@ -4,8 +4,8 @@ namespace Workbench\App\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use SchenkeIo\LaravelAuthRouter\Auth\Service;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
+use SchenkeIo\LaravelAuthRouter\Enums\Service;
 use SchenkeIo\PackagingTools\Badges\MakeBadge;
 use SchenkeIo\PackagingTools\Enums\BadgeStyle;
 use SchenkeIo\PackagingTools\Exceptions\PackagingToolException;

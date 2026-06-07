@@ -4,10 +4,10 @@ namespace SchenkeIo\LaravelAuthRouter\LoginProviders;
 
 use Illuminate\Http\RedirectResponse;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
-use SchenkeIo\LaravelAuthRouter\Auth\Error;
 use SchenkeIo\LaravelAuthRouter\Contracts\UseExclusiveInterface;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
+use SchenkeIo\LaravelAuthRouter\Enums\Error;
 use WorkOS\UserManagement;
 
 /**

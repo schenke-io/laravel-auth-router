@@ -5,8 +5,8 @@ pest()->group('feature');
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-use SchenkeIo\LaravelAuthRouter\Auth\Error;
 use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
+use SchenkeIo\LaravelAuthRouter\Enums\Error;
 
 it('redirect an error and has text stored in a session', function () {
     $this->app->config->set('services.google.client_id', 'google_client_id');

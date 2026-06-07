@@ -7,10 +7,10 @@ use Logto\Sdk\Constants\UserScope;
 use Logto\Sdk\LogtoClient;
 use Logto\Sdk\LogtoConfig;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
-use SchenkeIo\LaravelAuthRouter\Auth\Error;
 use SchenkeIo\LaravelAuthRouter\Contracts\UseExclusiveInterface;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
+use SchenkeIo\LaravelAuthRouter\Enums\Error;
 use SchenkeIo\LaravelAuthRouter\Services\LogtoStorage;
 
 /**

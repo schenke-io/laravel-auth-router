@@ -10,7 +10,7 @@
 
 - **Package:** `schenke-io/laravel-auth-router`
 - **Namespace:** `SchenkeIo\LaravelAuthRouter`
-- **Requires:** PHP ^8.3, Laravel ^12.0
+- **Requires:** PHP ^8.2 (8.2–8.4), Laravel ^12.0
 - **Purpose:** Register all social-auth routes (login, callback, logout) via a single fluent macro call. There is no separate package config file — all provider settings live in `config/services.php`.
 
 ---
@@ -44,7 +44,7 @@ Route::authRouter(['google', 'microsoft'])
 
 ## 2. Provider Keys
 
-Valid provider keys are defined in `SchenkeIo\LaravelAuthRouter\Auth\Service`. Matching is case-insensitive and underscore-agnostic (e.g., `workos_google` resolves to `workos`).
+Valid provider keys are defined in `SchenkeIo\LaravelAuthRouter\Enums\Service`. Matching is case-insensitive and underscore-agnostic (e.g., `workos_google` resolves to `workos`).
 
 | Key | Driver |
 | :--- | :--- |
@@ -58,6 +58,7 @@ Valid provider keys are defined in `SchenkeIo\LaravelAuthRouter\Auth\Service`. M
 | `apple` | Custom (JWT via lcobucci/jwt) |
 | `auth0` | Auth0 PHP SDK |
 | `workos` | WorkOS PHP SDK |
+| `logto` | Logto PHP SDK |
 | `passkey` | OTP via email |
 | `whatsapp` | Allowlist-based |
 | `custom` | Socialite generic |
@@ -66,70 +67,23 @@ Valid provider keys are defined in `SchenkeIo\LaravelAuthRouter\Auth\Service`. M
 
 ## 3. Provider Configuration (`config/services.php`)
 
-Each provider reads its config from `config('services.{provider_name}')`. The callback URL is handled automatically via named routes.
+Each provider reads `config('services.{provider}')`; the callback URL is injected automatically via named routes — **never** add `redirect` yourself. Standard Socialite providers need `client_id` + `client_secret` (+ optional `'stateless' => true`); WorkOS, Apple, Auth0, and Logto need extra keys.
 
 ```php
-// Standard Socialite provider (google, facebook, amazon, linkedin, paypal, stripe, custom)
 'google' => [
     'client_id'     => env('GOOGLE_CLIENT_ID'),
     'client_secret' => env('GOOGLE_CLIENT_SECRET'),
     'stateless'     => true,   // eliminates state-mismatch errors in stateless apps
 ],
-
-// Microsoft (socialite community driver)
-'microsoft' => [
-    'client_id'     => env('MICROSOFT_CLIENT_ID'),
-    'client_secret' => env('MICROSOFT_CLIENT_SECRET'),
-    'stateless'     => true,
-],
-
-// Apple
-'apple' => [
-    'client_id'   => env('APPLE_CLIENT_ID'),
-    'team_id'     => env('APPLE_TEAM_ID'),
-    'key_id'      => env('APPLE_KEY_ID'),
-    'private_key' => env('APPLE_PRIVATE_KEY'),
-],
-
-// Auth0
-'auth0' => [
-    'client_id'     => env('AUTH0_CLIENT_ID'),
-    'client_secret' => env('AUTH0_CLIENT_SECRET'),
-    'domain'        => env('AUTH0_DOMAIN'),
-    'cookie_secret' => env('AUTH0_COOKIE_SECRET'),
-],
-
-// WorkOS
-'workos' => [
-    'client_id'   => env('WORKOS_CLIENT_ID'),
-    'api_key'     => env('WORKOS_API_KEY'),
-    'client_secret' => env('WORKOS_CLIENT_SECRET'),
-],
 ```
 
-**Rules:**
-- Missing keys surface as "Setup Errors" on the login page, not as exceptions.
-- Do not mix WorkOS providers with non-WorkOS providers in the same `authRouter()` call.
+**Rules:** missing keys surface as "Setup Errors" on the login page, not exceptions; do not mix WorkOS with non-WorkOS providers in one call. For the full per-provider key reference, see the `auth-router-integration` skill (`providers.md`).
 
 ---
 
 ## 4. Routes Registered
 
-For a call with `->prefix('auth')` and providers `['google', 'microsoft']`:
-
-| Method | URI | Route Name | Middleware |
-| :--- | :--- | :--- | :--- |
-| GET\|POST | `/auth/login` | `auth.login` | web, guest |
-| POST | `/auth/logout` | `auth.logout` | web, auth |
-| GET\|POST | `/auth/login/google` | `auth.login.google` | web, guest |
-| GET | `/auth/callback/google` | `auth.callback.google` | web, guest |
-| GET\|POST | `/auth/login/microsoft` | `auth.login.microsoft` | web, guest |
-| GET | `/auth/callback/microsoft` | `auth.callback.microsoft` | web, guest |
-| GET | `/auth/callback/payload` | `auth.callback.payload` | web, guest (if showPayload) |
-| POST | `/auth/callback/finalize` | `auth.callback.finalize` | web, guest (if showPayload) |
-| POST | `/auth/apple/webhook` | — | (Apple only) |
-
-When a single provider is passed, the login page redirects directly to that provider — no selector UI is shown.
+The macro registers `login`, `logout`, and per-provider `login.{provider}` / `callback.{provider}` routes (plus `callback.payload` + `callback.finalize` when `showPayload` is on, and an Apple webhook for Apple). URIs use `prefix()`; names use `name()` (or `prefix()`). A single provider skips the selector UI and redirects straight to the OAuth flow. For the full route table, see the `auth-router-integration` skill (`integration.md`).
 
 ---
 
@@ -165,44 +119,22 @@ Required interface methods (provided by the trait or implemented manually):
 
 ## 6. Error Handling
 
-### Setup Errors (developer mistakes)
-Detected before any OAuth flow. Displayed in the "Setup Errors" panel on the `/login` page. Fix by correcting `config/services.php` or `.env`, then run `php artisan config:clear`.
+Two families: **setup errors** (developer mistakes) render in the "Setup Errors" panel on `/login` — fix `config/services.php`/`.env`, then `php artisan config:clear`. **Runtime errors** (OAuth / user-lifecycle) are logged (via `->logChannel()` if set, else `Log::error()` with an `[AuthRouter]` prefix) and redirected to `routeError` as a **structured context**.
 
-### Runtime Errors (OAuth / user-lifecycle)
-
-All runtime errors redirect to `routeError` and carry:
-
-| Mechanism | Key / Name | Content |
-| :--- | :--- | :--- |
-| Session | `authRouterErrorInfo` | Localised string safe to display to the user |
-| Session | `authRouterErrorMessage` | Raw technical message for logging |
-| Response header | `X-Custom-Error-Type` | `Error` enum case name |
-
-**Error case names (`X-Custom-Error-Type`):**
-
-| Name | Meaning |
-| :--- | :--- |
-| `UnknownService` | Provider key not in `Service` enum |
-| `ServiceNotSet` | No config array for provider in `services.php` |
-| `ConfigNotSet` | A required config key is empty |
-| `UnableToAddNewUsers` | `canAddUsers=false` and user does not exist |
-| `EmailMissing` | Provider returned no email |
-| `InvalidEmail` | Email fails PHP `FILTER_VALIDATE_EMAIL` |
-| `LocalAuth` | Socialite driver failed locally |
-| `RemoteAuth` | Provider returned an error response |
-| `State` | OAuth state parameter mismatch |
-| `Network` | Connection error to provider |
-| `InvalidRequest` | Malformed request |
-| `MixedProviders` | WorkOS mixed with non-WorkOS in same call |
-| `InvalidCredentials` | Credentials rejected |
-
-**Displaying errors in Blade:**
+Each runtime error carries a typed `Enums\Error` case, an `ErrorCategory`, a localised user-safe `info` message, a localised `recommendation()`, a masked/truncated technical `message`, and a unique 8-char reference code (`XXXX-XXXX`) shared between the log and the UI. All are stored under `Auth\SessionKey` constants and mirrored as `X-Custom-Error-Type` / `-Category` / `-Reference` headers for SPA/API clients. Read it in Blade via the `ErrorContext` DTO:
 
 ```blade
-@if (session('authRouterErrorInfo'))
-    <div class="alert alert-danger">{{ session('authRouterErrorInfo') }}</div>
+@use(SchenkeIo\LaravelAuthRouter\Auth\ErrorContext)
+@php($error = ErrorContext::fromSession())
+
+@if ($error)
+    <p>{{ $error->info }}</p>
+    <p>{{ $error->recommendation() }}</p>
+    <small>{{ $error->type }} · Reference: {{ $error->reference }}</small>
 @endif
 ```
+
+For the full case→category table, session keys, and design rationale, see the `auth-router-integration` skill (`troubleshooting.md`).
 
 ---
 
@@ -219,7 +151,7 @@ User → GET /auth/login/{provider}
            findByEmail() or create (if canAddUsers)
            Auth::guard('web')->login($user, $rememberMe)
            redirect to routeSuccess (or intended URL)
-     ← on error → Error::redirect() → session + header → routeError
+     ← on error → Enums\Error::redirect() → log + session + headers → routeError
 ```
 
 ---
@@ -238,20 +170,4 @@ User → GET /auth/login/{provider}
 
 ## 9. Impersonation
 
-Enable impersonation by calling `->canImpersonate($gateName)` on the router builder. This registers routes to start and stop impersonating other users.
-
-```php
-Route::authRouter(['google'])
-    ->canImpersonate('admin-gate')
-    ->register();
-```
-
-| Method | URI | Route Name | Middleware |
-| :--- | :--- | :--- | :--- |
-| GET | `/impersonate/start/{user}` | `impersonate.start` | web, auth, can:admin-gate |
-| GET | `/impersonate/stop` | `impersonate.stop` | web, auth |
-
-**Behavior:**
-- `start`: Stores the current user ID in the session and logs in as the target user.
-- `stop`: Reverts to the original user and clears the impersonation session.
-- While impersonating, further social logins are ignored to protect the session.
+`->canImpersonate($gate)` registers gate-protected `impersonate.start` / `impersonate.stop` routes. `start` logs in as the target user (storing the original ID in the session); `stop` reverts. While impersonating, further social logins are ignored to protect the session. See the `auth-router-integration` skill (`integration.md`) for routes and middleware.

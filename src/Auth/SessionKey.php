@@ -17,6 +17,12 @@ class SessionKey
 
     public const ERROR_MESSAGE = 'auth-router-error-message';
 
+    public const ERROR_TYPE = 'auth-router-error-type';
+
+    public const ERROR_CATEGORY = 'auth-router-error-category';
+
+    public const ERROR_REFERENCE = 'auth-router-error-reference';
+
     public const SUCCESS_MESSAGE = 'auth-router-success-message';
 
     public const PASSKEY_OTP = 'auth-router-passkey-otp';

@@ -3,7 +3,7 @@
 pest()->group('feature');
 
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
-use SchenkeIo\LaravelAuthRouter\Auth\Service;
+use SchenkeIo\LaravelAuthRouter\Enums\Service;
 
 it('returns the correct provider for each enum case', function () {
     foreach (Service::cases() as $case) {

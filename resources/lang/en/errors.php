@@ -17,5 +17,21 @@ return [
     'InvalidCredentials' => 'The provided credentials are incorrect.',
     'InvalidToken' => 'The provided token is invalid.',
     'DatabaseError' => 'A database error occurred',
-    'LoginEmailError' => 'Login Email Error',
+    'LoginEmailError' => 'The login email could not be sent. Please check your email address and try again.',
+    'category' => [
+        'configuration' => 'Configuration Error',
+        'network' => 'Network Error',
+        'account' => 'Account Error',
+        'session' => 'Session Error',
+        'provider' => 'Provider Error',
+        'unknown' => 'Unknown Error',
+    ],
+    'recommendation' => [
+        'configuration' => 'Contact the system administrator to check the environment settings.',
+        'network' => 'Please check your internet connection and try again.',
+        'account' => 'There is an issue with your account. Please contact support.',
+        'session' => 'Your session has expired or is invalid. Please log in again.',
+        'provider' => 'The login provider encountered an error. Please try a different method or try again later.',
+        'unknown' => 'An unexpected error occurred. Please try again later.',
+    ],
 ];

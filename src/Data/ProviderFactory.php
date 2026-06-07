@@ -3,8 +3,8 @@
 namespace SchenkeIo\LaravelAuthRouter\Data;
 
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
-use SchenkeIo\LaravelAuthRouter\Auth\Error;
-use SchenkeIo\LaravelAuthRouter\Auth\Service;
+use SchenkeIo\LaravelAuthRouter\Enums\Error;
+use SchenkeIo\LaravelAuthRouter\Enums\Service;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\UnknownBaseProvider;
 
 class ProviderFactory

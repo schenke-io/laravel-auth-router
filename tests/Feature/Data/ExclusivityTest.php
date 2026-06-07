@@ -2,9 +2,9 @@
 
 pest()->group('feature');
 
-use SchenkeIo\LaravelAuthRouter\Auth\Service;
 use SchenkeIo\LaravelAuthRouter\Contracts\UseExclusiveInterface;
 use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
+use SchenkeIo\LaravelAuthRouter\Enums\Service;
 
 it('prohibits any mix of exclusive and other social providers', function () {
     $exclusiveProviders = [];

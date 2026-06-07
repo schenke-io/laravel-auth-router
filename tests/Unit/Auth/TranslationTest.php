@@ -2,8 +2,8 @@
 
 pest()->group('unit');
 
-use SchenkeIo\LaravelAuthRouter\Auth\Error;
-use SchenkeIo\LaravelAuthRouter\Auth\Service;
+use SchenkeIo\LaravelAuthRouter\Enums\Error;
+use SchenkeIo\LaravelAuthRouter\Enums\Service;
 
 function getLanguages(): array
 {

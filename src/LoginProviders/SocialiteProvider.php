@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\Config;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\AbstractProvider;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
-use SchenkeIo\LaravelAuthRouter\Auth\Error;
 use SchenkeIo\LaravelAuthRouter\Contracts\UseExclusiveInterface;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
+use SchenkeIo\LaravelAuthRouter\Enums\Error;
 use Symfony\Component\HttpFoundation\RedirectResponse as SymRedirectResponse;
 
 /**
