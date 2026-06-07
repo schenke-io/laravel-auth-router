@@ -160,3 +160,12 @@ it('does not set provider_id if null in non-AuthenticatableRouterUser', function
 
     expect($user->getAttribute('provider_id'))->toBe('old-id');
 });
+
+it('keeps name empty for new non-AuthenticatableRouterUser if provided name is empty', function () {
+    $adapter = new TestHasUserAdapter;
+    $user = new MockSimpleUser;
+
+    $adapter->fillModel($user, '', 'email@example.com', 'https://avatar.com/img.png', true);
+
+    expect($user->getAttribute('name'))->toBe('');
+});

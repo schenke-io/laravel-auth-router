@@ -26,7 +26,8 @@ class RouterData extends Data
         public bool $showPayload = false,
         public ?string $logChannel = null,
         public bool $useProviderId = false,
-        public ?string $impersonateGate = null
+        public ?string $impersonateGate = null,
+        public string|\Closure|null $defaultName = null
     ) {}
 
     /**
@@ -47,7 +48,8 @@ class RouterData extends Data
             showPayload: $properties['showPayload'] ?? false,
             logChannel: $properties['logChannel'] ?? null,
             useProviderId: $properties['useProviderId'] ?? false,
-            impersonateGate: $properties['impersonateGate'] ?? null
+            impersonateGate: $properties['impersonateGate'] ?? null,
+            defaultName: $properties['defaultName'] ?? null
         );
     }
 

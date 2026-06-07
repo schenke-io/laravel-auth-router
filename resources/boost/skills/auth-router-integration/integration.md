@@ -8,6 +8,12 @@ Register social authentication routes with the `Route::authRouter()` macro. This
 - At least one provider is configured in `config/services.php` (see [`providers.md`](providers.md)).
 - The `User` model implements `AuthenticatableRouterUser` (use the `InteractsWithAuthRouter` trait).
 
+## User Model Integration
+
+### Nameless logins
+
+Identity providers may legitimately return no display name (email-only Logto/WorkOS accounts, some Apple relays, passkey, WhatsApp). The package never invents a name — on user creation the name is left unset. Ensure your `users.name` column is **nullable** or carries a **database default**. If you keep Laravel's default `NOT NULL` without a fallback, new nameless sign-ups will fail with a database constraint error.
+
 ## Workflow
 
 ### Step 1 — Identify providers
@@ -29,6 +35,7 @@ Route::authRouter(['google', 'microsoft'])
     ->error('login')                // redirect on failure (view reads ErrorContext)
     ->home('home')                  // named route for the UI home link
     ->canAddUsers(false)            // true (default) = create new users; false = existing only
+    ->defaultName('email-local')    // optional fallback: 'email-local' or a Closure
     ->rememberMe(false)             // true = persist the auth session
     ->prefix('auth')                // URI prefix → /auth/login, /auth/callback/…
     ->name('auth.')                 // route-name prefix → auth.login, auth.callback.google

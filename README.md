@@ -40,6 +40,7 @@ It automatically handles routing, offers flexible customization for redirects an
   * [Contents](#contents)
   * [Installation](#installation)
   * [Database Requirements](#database-requirements)
+    * [Nameless logins](#nameless-logins)
   * [Basic Concept](#basic-concept)
   * [Login and Logout flow](#login-and-logout-flow)
   * [Name conflicts](#name-conflicts)
@@ -102,6 +103,10 @@ Schema::table('users', function (Blueprint $table) {
     $table->string('provider_id')->nullable()->index()->after('email');
 });
 ```
+
+### <a name="nameless-logins"></a>Nameless logins
+
+Identity providers may legitimately return no display name (email-only Logto/WorkOS accounts, some Apple relays, passkey, WhatsApp). The package never invents a name — on user creation the name is left unset. Your `users.name` column **must be nullable or carry a DB default.** Laravel's default migration makes `name` `NOT NULL`; if you keep that, either make it nullable or configure a default-name fallback, otherwise new nameless sign-ups fail with a database constraint error.
 
 ## <a name="basic-concept"></a>Basic Concept
 

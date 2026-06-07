@@ -76,7 +76,7 @@ trait HasUserAdapter
     protected function fillModel(Model $user, string $name, string $email, string $avatar, bool $isNew = false, ?string $providerId = null): void
     {
         if ($user instanceof AuthenticatableRouterUser) {
-            if ($name !== '') {            // don't overwrite with an empty provider name
+            if ($name !== '' || $isNew) {            // don't overwrite with an empty provider name
                 $user->setName($name);
             }
             if ($email !== '') {

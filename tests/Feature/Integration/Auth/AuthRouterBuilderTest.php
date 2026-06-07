@@ -47,6 +47,22 @@ it('can log debug information', function () {
     $builder->debug('test-channel')->register();
 });
 
+it('logs defaultName in debug information', function () {
+    Log::shouldReceive('channel')
+        ->once()
+        ->with('test-channel')
+        ->andReturnSelf();
+
+    Log::shouldReceive('debug')
+        ->once()
+        ->with('AuthRouter registration', Mockery::on(function ($data) {
+            return $data['routerData']['defaultName'] === 'email-local';
+        }));
+
+    $builder = new AuthRouterBuilder(['google']);
+    $builder->debug('test-channel')->defaultName('email-local')->register();
+});
+
 it('can register routes explicitly', function () {
     $builder = new AuthRouterBuilder(['google']);
     $builder->register();

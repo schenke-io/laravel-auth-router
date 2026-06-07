@@ -4,6 +4,7 @@ namespace SchenkeIo\LaravelAuthRouter\Data;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -167,6 +168,13 @@ class UserData extends Data
             $this->fillModel($user, $this->name, $this->email, $this->avatar, false);
         } else {
             if ($routerData->canAddUsers) {
+                if ($this->name === '' && $routerData->defaultName) {
+                    if ($routerData->defaultName instanceof \Closure) {
+                        $this->name = ($routerData->defaultName)($this);
+                    } elseif ($routerData->defaultName === 'email-local') {
+                        $this->name = explode('@', $this->email)[0];
+                    }
+                }
                 $user = new $userModelClass;
                 $this->fillModel($user, $this->name, $this->email, $this->avatar, true, $this->providerId);
             } else {
@@ -176,6 +184,10 @@ class UserData extends Data
         try {
             $user->save();
         } catch (\Throwable $e) {
+            if (! $user->exists && $e instanceof QueryException) {
+                Log::error('User creation failed on a NOT NULL/constraint column — verify your users table accepts the fields the provider omitted (commonly `name`). See package guidelines: Nameless logins.');
+            }
+
             return Error::LocalAuth->redirect($routerData, $e->getMessage());
         }
 

@@ -16,6 +16,10 @@ Schema::table('users', function (Blueprint $table) {
 });
 ```
 
+### Nameless logins
+
+Identity providers may legitimately return no display name (email-only Logto/WorkOS accounts, some Apple relays, passkey, WhatsApp). The package never invents a name — on user creation the name is left unset. Your `users.name` column **must be nullable or carry a DB default.** Laravel's default migration makes `name` `NOT NULL`; if you keep that, either make it nullable or configure a default-name fallback, otherwise new nameless sign-ups fail with a database constraint error.
+
 ## Basic Concept
 
 In the `routes/web.php` file you use the `Route::authRouter()` macro to define which providers you want to use and your registration policy. This package handles the configuration through `config/services.php`.

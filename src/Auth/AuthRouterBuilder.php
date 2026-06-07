@@ -84,6 +84,11 @@ class AuthRouterBuilder
     protected ?string $impersonateGate = null;
 
     /**
+     * Fallback strategy for users with no name from the provider.
+     */
+    protected string|\Closure|null $defaultName = null;
+
+    /**
      * Tracks whether the routes have already been registered to avoid duplicates.
      */
     protected bool $isRegistered = false;
@@ -265,6 +270,23 @@ class AuthRouterBuilder
     }
 
     /**
+     * Define a fallback for when the provider returns no user name.
+     *
+     * Strategies:
+     * - 'email-local': uses the local part of the email (before @)
+     * - Closure: called with UserData, must return a string
+     *
+     * @param  string|\Closure  $fallback  The strategy or Closure.
+     * @return $this
+     */
+    public function defaultName(string|\Closure $fallback): self
+    {
+        $this->defaultName = $fallback;
+
+        return $this;
+    }
+
+    /**
      * Final method to register the configured routes.
      *
      * This method must be called to explicitly register the routes.
@@ -291,7 +313,8 @@ class AuthRouterBuilder
             $this->showPayload,
             $this->logChannel,
             $this->useProviderId,
-            $this->impersonateGate
+            $this->impersonateGate,
+            $this->defaultName
         );
 
         if ($this->logChannel) {
@@ -310,6 +333,7 @@ class AuthRouterBuilder
                     'showPayload' => $this->showPayload,
                     'useProviderId' => $this->useProviderId,
                     'impersonateGate' => $this->impersonateGate,
+                    'defaultName' => is_string($this->defaultName) ? $this->defaultName : 'Closure',
                 ],
             ]);
         }
