@@ -71,6 +71,8 @@ For `->prefix('auth')` with `['google', 'microsoft']`:
 | GET | `/auth/callback/payload` | `auth.callback.payload` | web, guest (if `showPayload`) |
 | POST | `/auth/callback/finalize` | `auth.callback.finalize` | web, guest (if `showPayload`) |
 | POST | `/auth/apple/webhook` | — | (Apple only) |
+| GET | `/auth/impersonate/start/{user}` | `auth.impersonate.start` | web, auth, can:admin |
+| POST | `/auth/impersonate/stop` | `auth.impersonate.stop` | web, auth |
 
 ## Key Behaviours
 
@@ -93,7 +95,7 @@ Route::authRouter(['google'])
 | Method | URI | Route Name | Middleware |
 | :--- | :--- | :--- | :--- |
 | GET | `/impersonate/start/{user}` | `impersonate.start` | web, auth, can:admin-gate |
-| GET | `/impersonate/stop` | `impersonate.stop` | web, auth |
+| POST | `/impersonate/stop` | `impersonate.stop` | web, auth |
 
 - `start` stores the current user ID in the session and logs in as the target user.
 - `stop` reverts to the original user and clears the impersonation session.

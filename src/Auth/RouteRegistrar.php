@@ -193,7 +193,7 @@ class RouteRegistrar
             ->name($routePrefix.'impersonate.start')
             ->middleware(array_merge($middleware, ["can:{$routerData->impersonateGate}"]));
 
-        Route::get($uriPrefix.'impersonate/stop', function (Request $request) use ($routerData) {
+        Route::post($uriPrefix.'impersonate/stop', function (Request $request) use ($routerData) {
             return (new ImpersonationController)->stop($request, $routerData);
         })
             ->name($routePrefix.'impersonate.stop')

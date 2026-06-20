@@ -394,7 +394,7 @@ Route::authRouter('google')
 
 This registers:
 - `impersonate.start`: `GET /impersonate/start/{user}`
-- `impersonate.stop`: `GET /impersonate/stop`
+- `impersonate.stop`: `POST /impersonate/stop`
 
 ## <a name="key-classes"></a>Key Classes
 
