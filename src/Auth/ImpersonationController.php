@@ -2,9 +2,11 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Auth;
 
+use Illuminate\Auth\SessionGuard;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 
 /**
@@ -26,6 +28,19 @@ class ImpersonationController
         $request->session()->put(SessionKey::IMPERSONATOR_ID, Auth::id());
 
         /*
+         * Neutralise the impersonator's "remember me" (recaller) cookie.
+         *
+         * Impersonation only swaps the *session* user. If the impersonator logged in
+         * with rememberMe, their recaller cookie outlives the swap, and Laravel's
+         * SessionGuard silently logs them back in from that cookie on any request
+         * where the session login id cannot be resolved (e.g. a session-regeneration
+         * race across the concurrent requests of a media-heavy page) — abruptly and
+         * invisibly ending the impersonation. Forgetting the cookie makes a session
+         * miss fail safe (logged out) instead of secretly reverting to the impersonator.
+         */
+        $this->forgetRecallerCookie($request);
+
+        /*
          * Log in as the target $user
          */
         Auth::loginUsingId($userId);
@@ -44,10 +59,11 @@ class ImpersonationController
         $impersonatorId = $request->session()->get(SessionKey::IMPERSONATOR_ID);
 
         /*
-         * Log in as the original user
+         * Log in as the original user, re-honouring the configured rememberMe setting
+         * (their recaller cookie was cleared when impersonation started).
          */
         if ($impersonatorId) {
-            Auth::loginUsingId($impersonatorId);
+            Auth::loginUsingId($impersonatorId, $routerData->rememberMe);
             /*
              * Clear SessionKey::IMPERSONATOR_ID from session
              */
@@ -58,5 +74,23 @@ class ImpersonationController
          * Redirect to home/success route
          */
         return redirect()->route($routerData->routeHome);
+    }
+
+    /**
+     * Queue the deletion of the active guard's "remember me" recaller cookie and
+     * drop it from the current request so it cannot be consulted again this cycle.
+     */
+    private function forgetRecallerCookie(Request $request): void
+    {
+        $guard = Auth::guard();
+
+        if (! $guard instanceof SessionGuard) {
+            return;
+        }
+
+        $recallerName = $guard->getRecallerName();
+
+        Cookie::queue(Cookie::forget($recallerName));
+        $request->cookies->remove($recallerName);
     }
 }

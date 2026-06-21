@@ -2,9 +2,14 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Tests\Feature\Auth;
 
+use Illuminate\Auth\SessionGuard;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
+use SchenkeIo\LaravelAuthRouter\Auth\ImpersonationController;
 use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
@@ -50,6 +55,31 @@ it('can start and stop impersonation', function () {
 
     expect(auth()->id())->toBe($admin->id)
         ->and(session()->has(SessionKey::IMPERSONATOR_ID))->toBeFalse();
+});
+
+it('forgets the impersonator remember-me cookie when starting impersonation', function () {
+    Route::authRouter(['google'])->canImpersonate('admin')->register();
+    Route::get('home', fn () => 'home')->name('home');
+    Gate::define('admin', fn ($user) => $user->email === 'admin@example.com');
+
+    $admin = User::factory()->create(['email' => 'admin@example.com']);
+    $user = User::factory()->create(['email' => 'user@example.com']);
+
+    $recallerName = 'remember_web_'.sha1(SessionGuard::class);
+
+    $response = $this->actingAs($admin)
+        ->get(route('impersonate.start', $user->id))
+        ->assertRedirect(route('home'));
+
+    // A deletion (past-expiry) cookie must be queued for the impersonator's recaller,
+    // so a later session miss cannot silently restore the admin and end impersonation.
+    $cookie = collect($response->headers->getCookies())
+        ->first(fn ($c) => $c->getName() === $recallerName);
+
+    expect($cookie)->not->toBeNull()
+        ->and($cookie->getExpiresTime())->toBeLessThan(time());
+
+    expect(auth()->id())->toBe($user->id);
 });
 
 it('enforces security on impersonation routes', function () {
@@ -106,4 +136,33 @@ it('protects impersonation from being overwritten by new login', function () {
     // Should redirect to success route without logging in as "Another User"
     expect($response->getTargetUrl())->toBe(route('home'));
     expect(auth()->id())->toBe($user->id); // Still impersonated user
+});
+
+it('skips forgetting recaller cookie if guard is not a SessionGuard', function () {
+    $routerData = new RouterData(
+        routeSuccess: 'home',
+        routeError: 'login',
+        routeHome: 'home',
+        impersonateGate: 'admin'
+    );
+
+    $admin = User::factory()->create();
+    $user = User::factory()->create();
+
+    $this->actingAs($admin);
+    Route::get('home', fn () => 'home')->name('home');
+
+    $request = Request::create('/impersonate/'.$user->id, 'GET');
+    $request->setLaravelSession(app('session.store'));
+
+    $mockGuard = mock(Guard::class)->shouldIgnoreMissing();
+    Auth::shouldReceive('guard')->andReturn($mockGuard);
+    Auth::shouldReceive('id')->andReturn($admin->id);
+    Auth::shouldReceive('loginUsingId')->once()->with((string) $user->id)->andReturn(true);
+    Auth::makePartial();
+
+    $controller = new ImpersonationController;
+    $response = $controller->start($request, (string) $user->id, $routerData);
+
+    expect($response->getTargetUrl())->toBe(route('home'));
 });
