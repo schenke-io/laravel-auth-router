@@ -58,7 +58,7 @@ class AppleProvider extends SocialiteProvider
     }
 
     /**
-     * @param  array<int, string>  $middleware
+     * @param  string[]  $middleware
      */
     public function registerRoutes(RouterData $routerData, array $middleware): void
     {
@@ -118,7 +118,7 @@ class AppleProvider extends SocialiteProvider
             $this->beforeRequest();
             /** @var AbstractProvider $driver */
             $driver = Socialite::driver($this->name);
-            $driver->redirectUrl($this->getRedirectUrl());
+            $driver->redirectUrl($this->getRedirectUrl($routerData));
 
             if ($this->isStateless) {
                 /** @var User $socialUser */

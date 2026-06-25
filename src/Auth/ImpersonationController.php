@@ -20,8 +20,12 @@ use SchenkeIo\LaravelAuthRouter\Data\RouterData;
  */
 class ImpersonationController
 {
-    public function start(Request $request, string $userId, RouterData $routerData): RedirectResponse
+    public function start(Request $request, ?string $userId = null, ?RouterData $routerData = null): RedirectResponse
     {
+        $userId = $userId ?? $request->route('user');
+        /** @var RouterData $routerData */
+        $routerData = $routerData ?? $request->route('routerData');
+
         /*
          * Store current user ID in SessionKey::IMPERSONATOR_ID
          */
@@ -51,8 +55,11 @@ class ImpersonationController
         return redirect()->route($routerData->routeSuccess);
     }
 
-    public function stop(Request $request, RouterData $routerData): RedirectResponse
+    public function stop(Request $request, ?RouterData $routerData = null): RedirectResponse
     {
+        /** @var RouterData $routerData */
+        $routerData = $routerData ?? $request->route('routerData');
+
         /*
          * Retrieve original user ID from SessionKey::IMPERSONATOR_ID
          */

@@ -5,6 +5,7 @@ namespace SchenkeIo\LaravelAuthRouter\Enums;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 
@@ -29,6 +30,8 @@ enum Error
     case ExclusiveProvider;
     case InvalidCredentials;
     case InvalidToken;
+    case ClosureNotCacheable;
+    case EmailConfirmNotCacheable;
 
     /**
      * @param  array<string,string>  $errorParameter
@@ -56,8 +59,13 @@ enum Error
             $briefMessage = substr($briefMessage, 0, 97).'...';
         }
 
-        return Redirect::route($routerData->routeError)
-            ->withInput()
+        if ($routerData->routeError && Route::has($routerData->routeError)) {
+            $redirect = Redirect::route($routerData->routeError);
+        } else {
+            $redirect = redirect('/');
+        }
+
+        return $redirect->withInput()
             ->with(SessionKey::ERROR_INFO, $this->trans($errorParameter))
             ->with(SessionKey::ERROR_MESSAGE, $briefMessage)
             ->with(SessionKey::ERROR_TYPE, $this->name)
@@ -110,6 +118,8 @@ enum Error
             self::UnknownService,
             self::ServiceNotSet,
             self::ConfigNotSet,
+            self::ClosureNotCacheable,
+            self::EmailConfirmNotCacheable,
             self::ExclusiveProvider => ErrorCategory::Configuration,
             self::Network => ErrorCategory::Network,
             self::UnableToAddNewUsers,

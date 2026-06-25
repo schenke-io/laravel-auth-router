@@ -53,4 +53,5 @@ CLAUDE.md
 .CLAUDE.md
 .GEMINI.md
 AGENTS.md
-
+/.claude
+.mcp.json

@@ -30,6 +30,32 @@ class ProviderCollection extends Collection
         return ProviderFactory::fromTextArray($data);
     }
 
+    /**
+     * The names of every provider in the collection.
+     *
+     * @return array<int, string>
+     */
+    public function names(): array
+    {
+        return $this->map(fn (BaseProvider $p) => $p->name)->values()->toArray();
+    }
+
+    /**
+     * Add each of the given error messages to every provider in the collection.
+     *
+     * @param  string[]  $errors
+     */
+    public function applyErrors(array $errors): self
+    {
+        foreach ($this as $provider) {
+            foreach ($errors as $error) {
+                $provider->addError($error);
+            }
+        }
+
+        return $this;
+    }
+
     public function handleExclusivity(): self
     {
         $exclusive = $this->first(fn (BaseProvider $p) => $p instanceof UseExclusiveInterface);

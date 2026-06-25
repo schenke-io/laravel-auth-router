@@ -23,10 +23,10 @@ it('registers prefixed routes', function () {
     // google is now valid due to config
     $providers = ['google'];
 
-    Route::authRouter($providers)->success('home')->error('home')->prefix('auth');
+    Route::authRouter($providers)->success('home')->error('home')->prefix('auth')->register();
 
-    app('router')->getRoutes()->refreshNameLookups();
     $routes = routeNames();
+    expect($routes)->toContain('auth.login.google');
 
     // Check main login route
     expect($routes)->toContain('auth.login')
@@ -45,9 +45,8 @@ it('registers prefixed routes', function () {
 });
 
 it('works with nested prefixes', function () {
-    Route::authRouter(['facebook'])->success('home')->error('home')->prefix('v1/social');
+    Route::authRouter(['facebook'])->success('home')->error('home')->prefix('v1/social')->register();
 
-    app('router')->getRoutes()->refreshNameLookups();
     $routes = routeNames();
 
     expect($routes)->toContain('v1.social.login')

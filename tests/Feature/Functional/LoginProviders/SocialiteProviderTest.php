@@ -4,11 +4,16 @@ pest()->group('feature');
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\LoginProviders\AmazonProvider;
 
 it('returns error redirect when callback has denied or error in request', function (string $key) {
     request()->merge([$key => 'some error']);
+
+    // Error::redirect() falls back to '/' unless the error route exists.
+    Route::get('error-test', fn () => 'error')->name('error-test');
+    app('router')->getRoutes()->refreshNameLookups();
 
     $provider = new AmazonProvider;
     $routerData = new RouterData('dashboard', 'error-test', 'home', true);

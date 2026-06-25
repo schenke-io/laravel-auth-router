@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use SchenkeIo\LaravelAuthRouter\Contracts\EmailConfirmInterface;
 use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
+use SchenkeIo\LaravelAuthRouter\Enums\Error;
 
 /**
  * Fluent builder for authentication routes.
@@ -54,7 +55,7 @@ class AuthRouterBuilder
     /**
      * An optional email confirmation service.
      */
-    protected ?EmailConfirmInterface $emailConfirm = null;
+    protected EmailConfirmInterface|string|null $emailConfirm = null;
 
     /**
      * Middleware to apply to all registered authentication routes.
@@ -194,10 +195,10 @@ class AuthRouterBuilder
     /**
      * Provide an optional email confirmation interface for the authentication flow.
      *
-     * @param  EmailConfirmInterface  $emailConfirm  The email confirmation handler.
+     * @param  EmailConfirmInterface|string  $emailConfirm  The email confirmation handler.
      * @return $this
      */
-    public function emailConfirm(EmailConfirmInterface $emailConfirm): self
+    public function emailConfirm(EmailConfirmInterface|string $emailConfirm): self
     {
         $this->emailConfirm = $emailConfirm;
 
@@ -212,7 +213,8 @@ class AuthRouterBuilder
      */
     public function middleware(string|array $middleware): self
     {
-        $this->middleware = (array) $middleware;
+        $middleware = (array) $middleware;
+        $this->middleware = array_unique(array_merge($this->middleware, $middleware));
 
         return $this;
     }
@@ -300,26 +302,34 @@ class AuthRouterBuilder
         $this->isRegistered = true;
 
         $providers = ProviderCollection::fromTextArray($this->providerKeys);
+        $errors = $this->getCacheSafetyErrors();
+        $providers->applyErrors($errors);
+
+        $emailConfirmClass = is_string($this->emailConfirm)
+            ? $this->emailConfirm
+            : ($this->emailConfirm ? $this->emailConfirm::class : null);
+
         $routerData = new RouterData(
-            $this->routeSuccess,
-            $this->routeError,
-            $this->routeHome,
-            $this->canAddUsers,
-            $this->rememberMe,
-            $this->prefix,
-            $this->routeName,
-            $this->emailConfirm,
-            $this->middleware,
-            $this->showPayload,
-            $this->logChannel,
-            $this->useProviderId,
-            $this->impersonateGate,
-            $this->defaultName
+            routeSuccess: $this->routeSuccess,
+            routeError: $this->routeError,
+            routeHome: $this->routeHome,
+            canAddUsers: $this->canAddUsers,
+            rememberMe: $this->rememberMe,
+            prefix: $this->prefix,
+            routeName: $this->routeName,
+            emailConfirmClass: $emailConfirmClass,
+            middleware: $this->middleware,
+            showPayload: $this->showPayload,
+            logChannel: $this->logChannel,
+            useProviderId: $this->useProviderId,
+            impersonateGate: $this->impersonateGate,
+            defaultName: $this->defaultName,
+            errors: $errors
         );
 
         if ($this->logChannel) {
             Log::channel($this->logChannel)->debug('AuthRouter registration', [
-                'providers' => $providers->map(fn ($p) => $p->name)->toArray(),
+                'providers' => $providers->names(),
                 'routerData' => [
                     'routeSuccess' => $this->routeSuccess,
                     'routeError' => $this->routeError,
@@ -328,7 +338,7 @@ class AuthRouterBuilder
                     'rememberMe' => $this->rememberMe,
                     'prefix' => $this->prefix,
                     'routeName' => $this->routeName,
-                    'emailConfirm' => $this->emailConfirm ? $this->emailConfirm::class : null,
+                    'emailConfirm' => $emailConfirmClass,
                     'middleware' => $this->middleware,
                     'showPayload' => $this->showPayload,
                     'useProviderId' => $this->useProviderId,
@@ -365,5 +375,18 @@ class AuthRouterBuilder
         if (! $this->isRegistered) {
             $this->register();
         }
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function getCacheSafetyErrors(): array
+    {
+        $errors = [];
+        if ($this->defaultName instanceof \Closure) {
+            $errors[] = Error::ClosureNotCacheable->trans();
+        }
+
+        return $errors;
     }
 }

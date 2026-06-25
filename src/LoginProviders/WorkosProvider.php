@@ -39,7 +39,7 @@ class WorkosProvider extends BaseProvider implements UseExclusiveInterface
         $this->log($routerData, 'AuthRouter login start');
         $request = request();
         $clientId = config('services.workos.client_id');
-        $redirectUri = $this->getRedirectUrl();
+        $redirectUri = $this->getRedirectUrl($routerData);
 
         $authorizationUrl = app(UserManagement::class)->getAuthorizationUrl(
             $redirectUri,

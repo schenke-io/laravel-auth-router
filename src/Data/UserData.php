@@ -8,10 +8,12 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use SchenkeIo\LaravelAuthRouter\Auth\SessionKey;
 use SchenkeIo\LaravelAuthRouter\Contracts\AuthenticatableRouterUser;
+use SchenkeIo\LaravelAuthRouter\Contracts\EmailConfirmInterface;
 use SchenkeIo\LaravelAuthRouter\Enums\Error;
 use Spatie\LaravelData\Data;
 
@@ -97,7 +99,7 @@ class UserData extends Data
     public function authAndRedirect(RouterData $routerData): RedirectResponse
     {
         if ($routerData->impersonateGate !== null && Session::has(SessionKey::IMPERSONATOR_ID)) {
-            return redirect()->intended(route($routerData->routeSuccess));
+            return $this->intendedToRouteOrRoot($routerData->routeSuccess);
         }
 
         // without any email we redirect
@@ -175,6 +177,14 @@ class UserData extends Data
                         $this->name = explode('@', $this->email)[0];
                     }
                 }
+
+                if ($routerData->emailConfirmClass) {
+                    /** @var EmailConfirmInterface $emailConfirm */
+                    $emailConfirm = app($routerData->emailConfirmClass, ['userData' => $this]);
+
+                    return redirect()->to(route($routerData->getRoutePrefix().'callback.payload'));
+                }
+
                 $user = new $userModelClass;
                 $this->fillModel($user, $this->name, $this->email, $this->avatar, true, $this->providerId);
             } else {
@@ -203,6 +213,18 @@ class UserData extends Data
 
         Session::put(SessionKey::PROVIDER, $this->provider);
 
-        return redirect()->intended(route($routerData->routeSuccess));
+        return $this->intendedToRouteOrRoot($routerData->routeSuccess);
+    }
+
+    /**
+     * Redirect to the intended URL, falling back to the named route or root.
+     */
+    private function intendedToRouteOrRoot(string $routeName): RedirectResponse
+    {
+        if (Route::has($routeName)) {
+            return redirect()->intended(route($routeName));
+        }
+
+        return redirect()->intended('/');
     }
 }

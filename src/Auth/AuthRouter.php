@@ -41,9 +41,8 @@ class AuthRouter
      */
     public function addProviders(ProviderCollection $providers, RouterData $routerData): void
     {
-        foreach ($providers as $provider) {
-            $this->addProvider($provider, $routerData);
-        }
+        $registrar = new RouteRegistrar;
+        $registrar->registerWildcardRoutes($providers, $routerData);
     }
 
     /**

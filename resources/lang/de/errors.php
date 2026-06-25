@@ -16,6 +16,8 @@ return [
     'ExclusiveProvider' => 'Der Provider :name ist exklusiv und kann nicht mit anderen sozialen Providern verwendet werden',
     'InvalidCredentials' => 'Die angegebenen Anmeldedaten sind falsch.',
     'InvalidToken' => 'Das angegebene Token ist ungültig.',
+    'ClosureNotCacheable' => 'In RouterData wurde eine Closure verwendet, die nicht cachebar ist. Verwenden Sie stattdessen einen String.',
+    'EmailConfirmNotCacheable' => 'Der Email-Bestätigungs-Handler ist nicht cachebar. Er muss __set_state() implementieren.',
     'DatabaseError' => 'Ein Datenbankfehler ist aufgetreten',
     'LoginEmailError' => 'Die Login-E-Mail konnte nicht gesendet werden. Bitte überprüfen Sie Ihre E-Mail-Adresse und versuchen Sie es erneut.',
     'category' => [

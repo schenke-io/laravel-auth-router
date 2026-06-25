@@ -27,5 +27,5 @@ it('can pass multiple middleware to authRouter macro', function () {
     $builder->register();
 
     $route = Route::getRoutes()->getByName('login.google');
-    expect($route->middleware())->toContain('web', 'auth');
+    expect($route->middleware())->toContain('web')->toContain('auth');
 });

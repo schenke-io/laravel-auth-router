@@ -16,6 +16,8 @@ return [
     'ExclusiveProvider' => 'The provider :name is exclusive and cannot be used with other social providers',
     'InvalidCredentials' => 'The provided credentials are incorrect.',
     'InvalidToken' => 'The provided token is invalid.',
+    'ClosureNotCacheable' => 'A Closure was used in RouterData, which is not cacheable. Use a string instead.',
+    'EmailConfirmNotCacheable' => 'The email confirmation handler is not cacheable. It must implement __set_state().',
     'DatabaseError' => 'A database error occurred',
     'LoginEmailError' => 'The login email could not be sent. Please check your email address and try again.',
     'category' => [

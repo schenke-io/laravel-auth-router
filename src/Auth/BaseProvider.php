@@ -61,10 +61,10 @@ abstract class BaseProvider
         $this->service = Service::get($givenName);
         $this->name = $this->service->name ?? 'unknown';
         $this->loginUri = 'login/'.$this->name;
-        $this->loginRoute = 'login.'.$this->name;
         $this->callbackUri = 'callback/'.$this->name;
-        $this->callbackRoute = 'callback.'.$this->name;
         $this->backChannelLogoutUri = 'logout/'.$this->name.'/back-channel';
+        $this->loginRoute = 'login.'.$this->name;
+        $this->callbackRoute = 'callback.'.$this->name;
         $this->backChannelLogoutRoute = 'logout.'.$this->name.'.back-channel';
         if ($this->service) {
             $longKey = 'services.'.$this->name;
@@ -204,45 +204,45 @@ abstract class BaseProvider
     }
 
     /**
-     * @param  array<int, string>  $middleware
+     * @param  string[]  $middleware
      */
     public function registerRoutes(RouterData $routerData, array $middleware): void
     {
         $uriPrefix = $routerData->getUriPrefix();
-        $routePrefix = $routerData->getRoutePrefix();
 
-        $this->loginRoute = $routePrefix.$this->loginRoute;
-        $this->callbackRoute = $routePrefix.$this->callbackRoute;
-        $this->backChannelLogoutRoute = $routePrefix.$this->backChannelLogoutRoute;
-
-        Config::set('services.'.$this->name.'.redirect', $this->getRedirectUrl());
-
-        Route::get($uriPrefix.$this->loginUri, fn (Request $request) => app()->call([$this, 'login'], ['routerData' => $routerData]))
+        Route::match(['get', 'post'], $uriPrefix.$this->loginUri, [AuthFlowController::class, 'login'])
             ->name($this->loginRoute)
             ->defaults('routerData', $routerData)
+            ->defaults('provider', $this->name)
             ->middleware($middleware);
 
-        Route::post($uriPrefix.$this->loginUri, fn (Request $request) => app()->call([$this, 'login'], ['routerData' => $routerData]))
-            ->defaults('routerData', $routerData)
-            ->middleware($middleware);
-
-        Route::get($uriPrefix.$this->callbackUri, fn (Request $request) => app()->call([$this, 'callback'], ['routerData' => $routerData]))
+        Route::get($uriPrefix.$this->callbackUri, [AuthFlowController::class, 'callback'])
             ->name($this->callbackRoute)
             ->defaults('routerData', $routerData)
+            ->defaults('provider', $this->name)
             ->middleware($middleware);
 
-        Route::post($uriPrefix.$this->backChannelLogoutUri, fn (Request $request) => app()->call([$this, 'backChannelLogout'], ['routerData' => $routerData]))
+        Route::post($uriPrefix.$this->backChannelLogoutUri, [AuthFlowController::class, 'backChannelLogout'])
             ->name($this->backChannelLogoutRoute)
-            ->defaults('routerData', $routerData);
+            ->defaults('routerData', $routerData)
+            ->defaults('provider', $this->name)
+            ->middleware($routerData->middleware);
     }
 
-    public function getRedirectUrl(): string
+    public function prepare(RouterData $routerData): void
     {
-        if (Route::has($this->callbackRoute)) {
-            return route($this->callbackRoute);
-        }
+        $routePrefix = $routerData->getRoutePrefix();
 
-        return url($this->callbackUri);
+        $this->loginRoute = $routePrefix.'login.'.$this->name;
+        $this->callbackRoute = $routePrefix.'callback.'.$this->name;
+        $this->backChannelLogoutRoute = $routePrefix.'logout.'.$this->name.'.back-channel';
+
+        Config::set('services.'.$this->name.'.redirect', $this->getRedirectUrl($routerData));
+    }
+
+    public function getRedirectUrl(RouterData $routerData): string
+    {
+        return url($routerData->getUriPrefix().$this->callbackUri);
     }
 
     /*

@@ -45,7 +45,8 @@
         "larastan/larastan": "^3.0",
         "pestphp/pest": "^3.8",
         "laravel/pint": "^1.22",
-        "orchestra/testbench": "^10.9 || ^11.0"
+        "orchestra/testbench": "^10.9 || ^11.0",
+        "schenke-io/test-output-formatter": "^0.0.4"
     },
     "replace": {
         "http-interop/http-factory": "*"

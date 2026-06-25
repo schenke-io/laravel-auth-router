@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "340848bfc49fece723ba8ab34e0552c8",
+    "content-hash": "6daf7b66ad01e563caf6b2d35707c997",
     "packages": [
         {
             "name": "archtechx/enums",
@@ -12415,6 +12415,64 @@
                 "source": "https://github.com/bobthecow/psysh/tree/v0.12.23"
             },
             "time": "2026-05-23T13:41:31+00:00"
+        },
+        {
+            "name": "schenke-io/test-output-formatter",
+            "version": "v0.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/schenke-io/test-output-formatter.git",
+                "reference": "97bd06dbf1e393a8ca808ffaa7d1b1988e03fc74"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/schenke-io/test-output-formatter/zipball/97bd06dbf1e393a8ca808ffaa7d1b1988e03fc74",
+                "reference": "97bd06dbf1e393a8ca808ffaa7d1b1988e03fc74",
+                "shasum": ""
+            },
+            "require": {
+                "pestphp/pest": "^3.0|^4.0",
+                "php": "^8.3"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.29",
+                "mockery/mockery": "^1.6",
+                "phpstan/phpstan": "^2.2",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "schenke-io/packaging-tools": "*",
+                "symfony/process": "^7.0"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "pest": {
+                    "plugins": [
+                        "SchenkeIo\\TestOutputFormatter\\Plugin"
+                    ]
+                },
+                "phpstan": {
+                    "includes": [
+                        "extension.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/Autoload.php"
+                ],
+                "psr-4": {
+                    "SchenkeIo\\TestOutputFormatter\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Isolates failing test files and under-coverage classes for rapid triage.",
+            "support": {
+                "issues": "https://github.com/schenke-io/test-output-formatter/issues",
+                "source": "https://github.com/schenke-io/test-output-formatter/tree/v0.0.4"
+            },
+            "time": "2026-06-10T11:19:12+00:00"
         },
         {
             "name": "sebastian/cli-parser",

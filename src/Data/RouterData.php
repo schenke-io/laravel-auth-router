@@ -2,7 +2,6 @@
 
 namespace SchenkeIo\LaravelAuthRouter\Data;
 
-use SchenkeIo\LaravelAuthRouter\Contracts\EmailConfirmInterface;
 use Spatie\LaravelData\Data;
 
 /**
@@ -12,6 +11,7 @@ class RouterData extends Data
 {
     /**
      * @param  string[]  $middleware
+     * @param  string[]  $errors
      */
     public function __construct(
         public string $routeSuccess,
@@ -21,13 +21,14 @@ class RouterData extends Data
         public bool $rememberMe = false,
         public string $prefix = '',
         public ?string $routeName = null,
-        public ?EmailConfirmInterface $emailConfirm = null,
+        public ?string $emailConfirmClass = null,
         public array $middleware = [],
         public bool $showPayload = false,
         public ?string $logChannel = null,
         public bool $useProviderId = false,
         public ?string $impersonateGate = null,
-        public string|\Closure|null $defaultName = null
+        public string|\Closure|null $defaultName = null,
+        public array $errors = []
     ) {}
 
     /**
@@ -43,13 +44,14 @@ class RouterData extends Data
             rememberMe: $properties['rememberMe'] ?? false,
             prefix: $properties['prefix'] ?? '',
             routeName: $properties['routeName'] ?? null,
-            emailConfirm: $properties['emailConfirm'] ?? null,
+            emailConfirmClass: $properties['emailConfirmClass'] ?? null,
             middleware: $properties['middleware'] ?? [],
             showPayload: $properties['showPayload'] ?? false,
             logChannel: $properties['logChannel'] ?? null,
             useProviderId: $properties['useProviderId'] ?? false,
             impersonateGate: $properties['impersonateGate'] ?? null,
-            defaultName: $properties['defaultName'] ?? null
+            defaultName: $properties['defaultName'] ?? null,
+            errors: $properties['errors'] ?? []
         );
     }
 
@@ -63,5 +65,25 @@ class RouterData extends Data
     public function getUriPrefix(): string
     {
         return $this->prefix ? trim($this->prefix, '/').'/' : '';
+    }
+
+    /**
+     * Middleware for guest-facing auth routes (login, callback, payload).
+     *
+     * @return string[]
+     */
+    public function guestMiddleware(): array
+    {
+        return array_merge(['web', 'guest'], $this->middleware);
+    }
+
+    /**
+     * Middleware for authenticated auth routes (logout, impersonation).
+     *
+     * @return string[]
+     */
+    public function authMiddleware(): array
+    {
+        return array_merge(['web', 'auth'], $this->middleware);
     }
 }

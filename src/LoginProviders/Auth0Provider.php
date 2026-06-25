@@ -54,7 +54,7 @@ class Auth0Provider extends BaseProvider implements UseExclusiveInterface
         $this->log($routerData, 'AuthRouter login start');
         $auth0 = app(Auth0::class);
         $request = request();
-        $redirectUri = $this->getRedirectUrl();
+        $redirectUri = $this->getRedirectUrl($routerData);
 
         return redirect($auth0->login($redirectUri, ['login_hint' => $request->get('hint')]));
     }
