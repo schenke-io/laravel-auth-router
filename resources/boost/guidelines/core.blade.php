@@ -32,12 +32,14 @@ Route::authRouter(['google', 'microsoft'])
     ->emailConfirm($impl)        // optional EmailConfirmInterface for data-review flow
     ->showPayload(false)         // true = show user data page before finalising login
     ->canImpersonate('admin')    // optional gate name to enable impersonation
+    ->defaultName('email-local') // optional fallback for missing user name
     ->register();                // REQUIRED — routes are not registered without this
 ```
 
 **Invariants:**
 - `->register()` must always terminate the chain. Omitting it silently skips route registration.
 - `prefix()` controls URI segments; `name()` (or `prefix()` when `name()` is absent) controls route name segments.
+- `->defaultName()` only accepts a `Closure` if you do not use route caching; use `'email-local'` or a string for cache safety.
 - The `middleware` parameter is additive — `web` and `guest`/`auth` are always applied automatically.
 
 ---
@@ -165,6 +167,7 @@ User → GET /auth/login/{provider}
 5. **Use `'stateless' => true`** for providers that suffer OAuth state mismatches (common in single-page or API-hybrid apps).
 6. **Read setup errors from the login page**, not from exception logs — configuration mistakes render there, not as 500 errors.
 7. **Translation keys are namespaced** as `auth-router::errors.*` and `auth-router::login.*`. Override them via `lang/vendor/auth-router/`.
+8. **Avoid Closures in `defaultName()` when using route caching**. Laravel cannot serialize Closures in cached routes. Use a string strategy like `'email-local'` instead.
 
 ---
 

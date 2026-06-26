@@ -49,6 +49,7 @@ It automatically handles routing, offers flexible customization for redirects an
     * [Standard Socialite Drivers](#standard-socialite-drivers)
     * [WorkOS Drivers](#workos-drivers)
     * [Impersonation](#impersonation)
+    * [Fallback for missing user names](#fallback-for-missing-user-names)
   * [Errors](#errors)
     * [Setup errors](#setup-errors)
     * [Runtime errors](#runtime-errors)
@@ -231,6 +232,22 @@ Route::authRouter(['google'])
     ->register();
 ```
 
+### <a name="fallback-for-missing-user-names"></a>Fallback for missing user names
+
+If a provider returns no user name, you can define a fallback strategy using `defaultName()`.
+
+```php
+Route::authRouter(['google'])
+    ->defaultName('email-local')
+    ->register();
+```
+
+The following strategies are available:
+
+- `'email-local'`: Uses the local part of the email address (before the `@`).
+- A custom string: Uses this string as the name.
+- A `Closure`: Receives a `UserData` object and must return a string. **Note:** Using a Closure will prevent Laravel's route caching.
+
 ## <a name="errors"></a>Errors
 
 The package handles two types of errors differently:
@@ -319,6 +336,8 @@ The following error names are used in the `X-Custom-Error-Type` header and defin
 | `InvalidRequest`        | The login or callback request was invalid.              |
 | `MixedProviders`        | Mixing WorkOS and non-WorkOS providers is not allowed.  |
 | `InvalidCredentials`    | The provided credentials (email/password) are incorrect. |
+| `ClosureNotCacheable`   | Using a Closure in `defaultName()` prevents route caching. |
+| `EmailConfirmNotCacheable` | The email confirmation handler must be cacheable.       |
 
 ## <a name="example-google-login"></a>Example Google login
 

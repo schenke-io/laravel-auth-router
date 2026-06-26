@@ -48,6 +48,8 @@ Route::authRouter(['google', 'microsoft'])
 
 `prefix()` controls URI segments; `name()` (or `prefix()` when `name()` is absent) controls route-name segments.
 
+**Note:** If you use route caching (`php artisan route:cache`), avoid using a `Closure` in `->defaultName()`. Use a string strategy like `'email-local'` instead.
+
 ### Step 3 — Verify
 
 Run `php artisan route:list --name=auth` and confirm login, callback, and logout routes exist for each provider. If impersonation is enabled, also confirm `impersonate.start` and `impersonate.stop`.

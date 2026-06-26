@@ -86,3 +86,5 @@ The following error names are used in the `X-Custom-Error-Type` header and defin
 | `InvalidRequest`        | The login or callback request was invalid.              |
 | `MixedProviders`        | Mixing WorkOS and non-WorkOS providers is not allowed.  |
 | `InvalidCredentials`    | The provided credentials (email/password) are incorrect. |
+| `ClosureNotCacheable`   | Using a Closure in `defaultName()` prevents route caching. |
+| `EmailConfirmNotCacheable` | The email confirmation handler must be cacheable.       |

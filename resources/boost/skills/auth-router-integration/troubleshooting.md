@@ -90,6 +90,8 @@ Cases are `SchenkeIo\LaravelAuthRouter\Enums\Error`; categories are `ErrorCatego
 | `InvalidRequest` | Session | Malformed request | Retry the flow from `/login` |
 | `MixedProviders` | Session | WorkOS mixed with non-WorkOS | Split into separate `authRouter()` calls |
 | `InvalidToken` | Session | Provided token is invalid | Restart the login flow |
+| `ClosureNotCacheable` | Configuration | Closure in `defaultName()` | Use a string strategy for `defaultName()` |
+| `EmailConfirmNotCacheable` | Configuration | Handler not serialisable | Implement `__set_state()` in the handler |
 | `RemoteAuth` | Provider | Provider returned an error response | Check the provider dashboard / status |
 
 ### Step 4 — Programmatic branching (optional)

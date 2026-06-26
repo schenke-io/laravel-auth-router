@@ -48,3 +48,19 @@ Route::authRouter(['google'])
     ->canImpersonate('admin')
     ->register();
 ```
+
+### Fallback for missing user names
+
+If a provider returns no user name, you can define a fallback strategy using `defaultName()`.
+
+```php
+Route::authRouter(['google'])
+    ->defaultName('email-local')
+    ->register();
+```
+
+The following strategies are available:
+
+- `'email-local'`: Uses the local part of the email address (before the `@`).
+- A custom string: Uses this string as the name.
+- A `Closure`: Receives a `UserData` object and must return a string. **Note:** Using a Closure will prevent Laravel's route caching.
