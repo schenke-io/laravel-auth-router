@@ -1,9 +1,10 @@
-# Skill: `auth-router-integration`
-
-| Field    | Value                             |
-| :------- | :-------------------------------- |
-| Category | project                           |
-| Priority | high                              |
+---
+name: auth-router
+description: Integrate, configure, and troubleshoot social authentication.
+category: project
+priority: high
+---
+# Skill: `auth-router`
 
 ## Purpose
 
@@ -16,15 +17,15 @@ Integrate, configure, and troubleshoot social authentication in a Laravel applic
 - Diagnosing setup or runtime authentication errors and surfacing them to users.
 - Enabling user impersonation for admin/support workflows.
 
-## Specialised References
+## Sub-skills
 
 This skill is split into focused files. Read the one that matches the task — they assume the overview below.
 
 | File | Use it for |
 | :--- | :--- |
-| [`integration.md`](integration.md) | Registering routes via the `Route::authRouter()` macro, redirect targets, prefixes/names, impersonation. |
-| [`providers.md`](providers.md) | Provider credentials and `config/services.php` entries (Socialite, WorkOS, Apple, Auth0, Logto). |
-| [`troubleshooting.md`](troubleshooting.md) | Setup vs. runtime errors, the `Error`/`ErrorCategory`/`ErrorContext` model, reference codes, logging. |
+| [`auth-router-integration.md`](sub-skills/auth-router-integration.md) | Registering routes via the `Route::authRouter()` macro, redirect targets, prefixes/names, impersonation. |
+| [`auth-router-providers.md`](sub-skills/auth-router-providers.md) | Provider credentials and `config/services.php` entries (Socialite, WorkOS, Apple, Auth0, Logto). |
+| [`auth-router-troubleshooting.md`](sub-skills/auth-router-troubleshooting.md) | Setup vs. runtime errors, the `Error`/`ErrorCategory`/`ErrorContext` model, reference codes, logging. |
 
 ## Overview
 
@@ -48,4 +49,4 @@ Route::authRouter(['google', 'microsoft'])
 - **The `User` model must implement** `AuthenticatableRouterUser` (use the `InteractsWithAuthRouter` trait). Users are matched/created by **email**, stored against a single unified `provider_id` column.
 - **Never put `redirect` in `config/services.php`** — the callback URL is injected per request from the named route.
 - **Do not mix WorkOS with non-WorkOS providers** in one call — it raises `MixedProviders`.
-- **Errors are structured.** Runtime failures redirect to the `->error()` route with a typed case, category, localised message, recommendation, and an 8-char reference code (see [`troubleshooting.md`](troubleshooting.md)).
+- **Errors are structured.** Runtime failures redirect to the `->error()` route with a typed case, category, localised message, recommendation, and an 8-char reference code (see [`auth-router-troubleshooting.md`](sub-skills/auth-router-troubleshooting.md)).

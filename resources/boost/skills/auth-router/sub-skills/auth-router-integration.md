@@ -1,3 +1,7 @@
+---
+name: auth-router-integration
+description: Register social authentication routes via the macro.
+---
 # Reference: Route Integration
 
 Register social authentication routes with the `Route::authRouter()` macro. This replaces the manual boilerplate of defining login, callback, and logout routes per provider.
@@ -5,7 +9,7 @@ Register social authentication routes with the `Route::authRouter()` macro. This
 ## Prerequisites
 
 - `schenke-io/laravel-auth-router` is installed and its service provider is registered.
-- At least one provider is configured in `config/services.php` (see [`providers.md`](providers.md)).
+- At least one provider is configured in `config/services.php` (see [`auth-router-providers.md`](auth-router-providers.md)).
 - The `User` model implements `AuthenticatableRouterUser` (use the `InteractsWithAuthRouter` trait).
 
 ## User Model Integration
@@ -105,5 +109,5 @@ Route::authRouter(['google'])
 
 ## Related
 
-- [`providers.md`](providers.md) — configure credentials before registering.
-- [`troubleshooting.md`](troubleshooting.md) — diagnose setup and runtime errors.
+- [`auth-router-providers.md`](auth-router-providers.md) — configure credentials before registering.
+- [`auth-router-troubleshooting.md`](auth-router-troubleshooting.md) — diagnose setup and runtime errors.

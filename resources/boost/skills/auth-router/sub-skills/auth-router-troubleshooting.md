@@ -1,3 +1,7 @@
+---
+name: auth-router-troubleshooting
+description: Diagnose and resolve setup and runtime errors.
+---
 # Reference: Troubleshooting & Errors
 
 Diagnose and resolve errors in the `laravel-auth-router` authentication flow. The package splits errors into two families and reports runtime errors as a **structured context**: a typed case, a category, a localised message, a recommendation, and a unique reference code.
@@ -19,7 +23,7 @@ Detected **before** the OAuth flow and displayed directly on the login-selector 
 
 | Error | Cause | Fix |
 | :--- | :--- | :--- |
-| Missing `client_id` | Key absent from `config/services.php` | Add the key (see [`providers.md`](providers.md)) |
+| Missing `client_id` | Key absent from `config/services.php` | Add the key (see [`auth-router-providers.md`](auth-router-providers.md)) |
 | Missing `client_secret` | Key absent or `.env` variable unset | Set the `.env` variable and re-cache config |
 | Unknown provider key | Typo in the provider array | Check valid keys in `SchenkeIo\LaravelAuthRouter\Enums\Service` |
 | Missing `->register()` | Macro chain not terminated | Append `->register()` in `routes/web.php` |
@@ -135,6 +139,6 @@ The result: every auth failure becomes something a user can act on and a team ca
 
 ## Related
 
-- [`SKILL.md`](SKILL.md) — overview and invariants.
-- [`integration.md`](integration.md) — fix route registration issues.
-- [`providers.md`](providers.md) — fix missing/incorrect provider configuration.
+- [`../SKILL.md`](../SKILL.md) — overview and invariants.
+- [`auth-router-integration.md`](auth-router-integration.md) — fix route registration issues.
+- [`auth-router-providers.md`](auth-router-providers.md) — fix missing/incorrect provider configuration.

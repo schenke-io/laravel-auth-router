@@ -1,3 +1,7 @@
+---
+name: auth-router-providers
+description: Configure provider credentials and services.php.
+---
 # Reference: Provider Management
 
 Configure authentication provider credentials in `config/services.php` and `.env` so the package can resolve and validate them at runtime. There is **no separate package config file** — every provider reads `config('services.{provider}')`.
@@ -114,5 +118,5 @@ Visit `/login` (or your prefix). Missing or misconfigured keys appear immediatel
 
 ## Related
 
-- [`integration.md`](integration.md) — register routes after providers are configured.
-- [`troubleshooting.md`](troubleshooting.md) — resolve errors reported on the setup screen.
+- [`auth-router-integration.md`](auth-router-integration.md) — register routes after providers are configured.
+- [`auth-router-troubleshooting.md`](auth-router-troubleshooting.md) — resolve errors reported on the setup screen.
