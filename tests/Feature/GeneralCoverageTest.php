@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Route;
 use SchenkeIo\LaravelAuthRouter\Auth\AuthFlowController;
 use SchenkeIo\LaravelAuthRouter\Auth\AuthRouter;
 use SchenkeIo\LaravelAuthRouter\Auth\AuthRouterBuilder;
-use SchenkeIo\LaravelAuthRouter\Auth\RouteRegistrar;
 use SchenkeIo\LaravelAuthRouter\Contracts\EmailConfirmInterface;
 use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
@@ -93,12 +92,12 @@ it('covers AuthRouterBuilder gap lines', function () {
     expect(true)->toBeTrue();
 });
 
-it('covers RouteRegistrar gap lines', function () {
-    $registrar = new RouteRegistrar;
+it('covers AuthRouter gap lines', function () {
+    $authRouter = new AuthRouter;
     $routerData = getRouterData(true);
 
-    // Line 25: empty providers
-    $registrar->registerWildcardRoutes(new ProviderCollection([]), $routerData);
+    // empty providers
+    $authRouter->addProviders(new ProviderCollection([]), $routerData);
 
     expect(true)->toBeTrue();
 });

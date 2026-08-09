@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use SchenkeIo\LaravelAuthRouter\Data\ProviderCollection;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
+use SchenkeIo\LaravelAuthRouter\Data\UserData;
 use SchenkeIo\LaravelAuthRouter\Enums\Service;
 
 class AuthFlowController
@@ -44,7 +45,7 @@ class AuthFlowController
         $routerData = $this->routerData($request);
 
         $provider = $this->resolveProvider($request->route('provider'), $routerData);
-        if (! $provider) {
+        if (! $provider || ! method_exists($provider, 'backChannelLogout')) {
             return response('Unknown provider', 400);
         }
 
@@ -124,10 +125,7 @@ class AuthFlowController
     {
         $routerData = $this->routerData($request);
 
-        if (! $routerData->showPayload && request('code') !== 'fake_code') {
-            return redirect()->route($routerData->routeError);
-        }
-        $userData = session(SessionKey::PAYLOAD);
+        $userData = $this->resolvePayloadUserData($request, $routerData);
         if (! $userData) {
             return redirect()->route($routerData->routeError);
         }
@@ -143,13 +141,12 @@ class AuthFlowController
     {
         $routerData = $this->routerData($request);
 
-        if (! $routerData->showPayload && request('code') !== 'fake_code') {
-            return redirect()->route($routerData->routeError);
-        }
-        $userData = session()->pull(SessionKey::PAYLOAD);
+        $userData = $this->resolvePayloadUserData($request, $routerData);
         if (! $userData) {
             return redirect()->route($routerData->routeError);
         }
+
+        session()->forget(SessionKey::PAYLOAD);
 
         // disable showPayload to avoid infinite loop
         $routerData->showPayload = false;
@@ -186,5 +183,14 @@ class AuthFlowController
         $provider->prepare($routerData);
 
         return $provider;
+    }
+
+    private function resolvePayloadUserData(Request $request, RouterData $routerData): ?UserData
+    {
+        if (! $routerData->showPayload && $request->get('code') !== 'fake_code') {
+            return null;
+        }
+
+        return session(SessionKey::PAYLOAD);
     }
 }

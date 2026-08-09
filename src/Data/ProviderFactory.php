@@ -29,16 +29,18 @@ class ProviderFactory
         if ($item instanceof BaseProvider) {
             return $item;
         }
+
         if (class_exists($item) && is_subclass_of($item, BaseProvider::class)) {
             return new $item;
         }
-        $service = Service::get($item);
-        if ($service) {
-            return $service->provider();
-        }
-        // error
+
+        return Service::get($item)?->provider() ?? self::unknownProvider($item);
+    }
+
+    private static function unknownProvider(string $name): BaseProvider
+    {
         $provider = new UnknownBaseProvider;
-        $provider->addError(Error::UnknownService->trans(['name' => $item]));
+        $provider->addError(Error::UnknownService->trans(['name' => $name]));
 
         return $provider;
     }

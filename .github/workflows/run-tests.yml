@@ -14,17 +14,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php: [8.3, 8.4]
-        laravel: [12.*, 13.*]
+        php: [8.4]
+        laravel: [13.*]
         stability: [prefer-lowest, prefer-stable]
         include:
-          - laravel: 12.*
-            testbench: 10.*
           - laravel: 13.*
             testbench: 11.*
-        exclude:
-          - laravel: 12.*
-            php: 8.4
 
 
 

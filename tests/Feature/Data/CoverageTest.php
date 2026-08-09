@@ -21,7 +21,7 @@ beforeEach(function () {
     config(['auth.providers.users.model' => SimpleUser::class]);
 });
 
-it('covers HasUserAdapter fallback methods for non-AuthenticatableRouterUser', function () {
+it('covers UserData adapter fallback methods for non-AuthenticatableRouterUser', function () {
     $email = 'simple@example.com';
     $name = 'Simple User';
     $avatar = 'https://avatar.com/simple.png';

@@ -9,6 +9,7 @@ use Auth0\SDK\Exception\StateException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Config;
 use SchenkeIo\LaravelAuthRouter\Auth\BaseProvider;
+use SchenkeIo\LaravelAuthRouter\Auth\HandlesBackChannelLogout;
 use SchenkeIo\LaravelAuthRouter\Contracts\UseExclusiveInterface;
 use SchenkeIo\LaravelAuthRouter\Data\RouterData;
 use SchenkeIo\LaravelAuthRouter\Data\UserData;
@@ -23,6 +24,8 @@ use SchenkeIo\LaravelAuthRouter\Enums\Error;
  */
 class Auth0Provider extends BaseProvider implements UseExclusiveInterface
 {
+    use HandlesBackChannelLogout;
+
     /**
      * key: expected key in config(system), value: suggested name ov ENV key,
      * used in testing and in documentation
