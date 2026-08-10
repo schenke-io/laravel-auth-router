@@ -70,7 +70,15 @@ class LogtoProvider extends BaseProvider implements UseExclusiveInterface
         $this->log($routerData, 'AuthRouter login start');
         $client = $this->getClient();
 
-        return redirect($client->signIn($this->getRedirectUrl($routerData)));
+        $extraParams = config('services.logto.extra_params', []);
+        if ($prompt = config('services.logto.prompt')) {
+            $extraParams['prompt'] = $prompt;
+        }
+
+        return redirect($extraParams
+            ? $client->signIn($this->getRedirectUrl($routerData), extraParams: $extraParams)
+            : $client->signIn($this->getRedirectUrl($routerData))
+        );
     }
 
     public function callback(RouterData $routerData): mixed

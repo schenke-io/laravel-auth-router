@@ -84,6 +84,20 @@ AUTH0_COOKIE_SECRET=…
     'domain'        => env('AUTH0_DOMAIN'),
     'cookie_secret' => env('AUTH0_COOKIE_SECRET'),
 ],
+
+'logto' => [
+    'endpoint'   => env('LOGTO_ENDPOINT'),
+    'app_id'     => env('LOGTO_APP_ID'),
+    'app_secret' => env('LOGTO_APP_SECRET'),
+],
+```
+
+**Passkey:**
+
+Passkey authentication sends OTP codes via email and requires binding an implementation of `SchenkeIo\LaravelAuthRouter\Contracts\PasskeyMailerInterface` in your container:
+
+```php
+$this->app->bind(PasskeyMailerInterface::class, YourPasskeyMailer::class);
 ```
 
 ### Step 4 — Verify
@@ -111,8 +125,8 @@ Visit `/login` (or your prefix). Missing or misconfigured keys appear immediatel
 | `auth0`     | `client_id`, `client_secret`, `domain`, `cookie_secret` | Auth0 PHP SDK     |
 | `apple`     | `client_id`, `team_id`, `key_id`, `private_key`      | Custom (JWT)         |
 | `workos`    | `client_id`, `api_key`, `client_secret`              | WorkOS PHP SDK       |
-| `logto`     | per Logto SDK                                        | Logto PHP SDK        |
-| `passkey`   | —                                                    | OTP via email        |
+| `logto`     | `endpoint`, `app_id`, `app_secret`                   | Logto PHP SDK        |
+| `passkey`   | requires `PasskeyMailerInterface` binding            | OTP via email        |
 | `whatsapp`  | allowlist                                            | Allowlist-based      |
 | `custom`    | `client_id`, `client_secret`                         | Socialite generic    |
 

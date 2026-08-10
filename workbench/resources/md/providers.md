@@ -13,10 +13,7 @@ The following providers are supported:
 - `apple`
 - `whatsapp`
 - `custom`
-- `workos_apple`
-- `workos_email`
-- `workos_google`
-- `workos_linkedin`
+- `workos`
 - `logto`
 - `passkey`
  
@@ -26,7 +23,7 @@ To use WorkOS providers, you must set the following environment variables:
  
 - `WORKOS_API_KEY` (stored in `services.workos.api_key`)
 - `WORKOS_CLIENT_ID` (stored in `services.workos.client_id`)
-- `WORKOS_ORGANIZATION_ID` (stored in `services.workos.organization_id`)
+- `WORKOS_CLIENT_SECRET` (stored in `services.workos.client_secret`)
 
 ## WhatsApp Configuration
 
@@ -38,7 +35,7 @@ To use WhatsApp login, you must set the following environment variables:
 WhatsApp login requires an approved email to be provided first. The flow includes a button to start the login and a waiting page for the user to confirm via their WhatsApp device.
 
 ### Email and Password Flow
-The `workos_email` provider supports both magic link flows (GET) and direct email/password authentication (POST). The login view includes fields for both, allowing users to choose their preferred method.
+The `workos` provider supports both magic link flows (GET) and direct email/password authentication (POST). The login view includes fields for both, allowing users to choose their preferred method.
 
 ## Apple Configuration
 

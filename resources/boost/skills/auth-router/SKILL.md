@@ -39,12 +39,12 @@ Route::authRouter(['google', 'microsoft'])
     ->error('login')         // redirect after failure (reads ErrorContext)
     ->canAddUsers(false)     // false = existing users only (default true)
     ->prefix('auth')         // URI + route-name segment
-    ->register();            // REQUIRED — nothing registers without it
+    ->register();            // RECOMMENDED — always terminate the chain
 ```
 
 ### Key invariants
 
-- **Always terminate with `->register()`** — omitting it silently skips registration.
+- **Always terminate with `->register()`** — explicit call is recommended, though `__destruct()` acts as an automatic fallback.
 - **Provider keys** come from `SchenkeIo\LaravelAuthRouter\Enums\Service` (case-insensitive, underscore-agnostic).
 - **The `User` model must implement** `AuthenticatableRouterUser` (use the `InteractsWithAuthRouter` trait). Users are matched/created by **email**, stored against a single unified `provider_id` column.
 - **Never put `redirect` in `config/services.php`** — the callback URL is injected per request from the named route.

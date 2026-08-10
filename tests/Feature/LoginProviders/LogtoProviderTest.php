@@ -38,6 +38,26 @@ it('can redirect to logto', function () {
     expect($response->getTargetUrl())->toBe('https://logto.example.com/oidc/auth?test=1');
 });
 
+it('passes extra params to logto signIn', function () {
+    $this->app->config->set('services.logto.endpoint', 'https://logto.example.com');
+    $this->app->config->set('services.logto.app_id', 'app_id');
+    $this->app->config->set('services.logto.app_secret', 'app_secret');
+    $this->app->config->set('services.logto.prompt', 'select_account');
+
+    $clientMock = Mockery::mock(LogtoClient::class);
+    $clientMock->shouldReceive('signIn')
+        ->with('http://localhost/callback/logto', null, null, null, null, ['prompt' => 'select_account'])
+        ->andReturn('https://logto.example.com/oidc/auth?test=1');
+
+    $provider = new TestLogtoProvider('logto');
+    $provider->clientMock = $clientMock;
+
+    $routerData = new RouterData('dashboard', 'error', 'home', true);
+    $response = $provider->login($routerData);
+
+    expect($response->getTargetUrl())->toBe('https://logto.example.com/oidc/auth?test=1');
+});
+
 it('handles callback from logto', function () {
     $this->app->config->set('services.logto.endpoint', 'https://logto.example.com');
     $this->app->config->set('services.logto.app_id', 'app_id');

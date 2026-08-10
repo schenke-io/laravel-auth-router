@@ -45,9 +45,9 @@ Route::authRouter(['google', 'microsoft'])
     ->name('auth.')                 // route-name prefix → auth.login, auth.callback.google
     ->emailConfirm($impl)           // optional EmailConfirmInterface data-review flow
     ->showPayload(false)            // true = show user-data page before finalising login
-    ->logChannel('auth')            // optional log channel for success/error/debug entries
+    ->debug('auth')                 // optional log channel for success/error/debug entries
     ->canImpersonate('admin')       // optional gate name to enable impersonation
-    ->register();                   // REQUIRED — always terminate the chain
+    ->register();                   // RECOMMENDED — explicit call is recommended
 ```
 
 `prefix()` controls URI segments; `name()` (or `prefix()` when `name()` is absent) controls route-name segments.
@@ -88,7 +88,7 @@ For `->prefix('auth')` with `['google', 'microsoft']`:
 | Multiple providers | Built-in selector screen rendered automatically |
 | `canAddUsers(false)` | Login restricted to users already in the database |
 | `canImpersonate($gate)` | Registers `/impersonate/start/{user}` and `/impersonate/stop` routes |
-| Missing `->register()` | Routes are **not** registered — the most common setup mistake |
+| Missing `->register()` | Routes register via `__destruct()` fallback, but explicit `->register()` is recommended |
 
 ## Impersonation
 

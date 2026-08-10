@@ -76,15 +76,18 @@ The following error names are used in the `X-Custom-Error-Type` header and defin
 | `UnknownService`        | The requested login provider is unknown.                |
 | `ServiceNotSet`         | The provider service is not defined in config.          |
 | `ConfigNotSet`          | A specific config value (e.g., client_id) is missing.   |
+| `ExclusiveProvider`     | An exclusive provider was mixed with others.            |
 | `UnableToAddNewUsers`   | New user registration is disabled in the macro call.    |
 | `EmailMissing`          | The provider did not return an email address.           |
 | `InvalidEmail`          | The returned email address is invalid.                  |
+| `LoginEmailError`       | Login or verification email could not be sent.          |
 | `LocalAuth`             | Local authentication process failed.                    |
 | `RemoteAuth`            | The third-party provider returned an error.             |
 | `State`                 | OAuth state mismatch (potential CSRF).                  |
 | `Network`               | A network error occurred during the callback.           |
 | `InvalidRequest`        | The login or callback request was invalid.              |
 | `MixedProviders`        | Mixing WorkOS and non-WorkOS providers is not allowed.  |
+| `InvalidToken`          | The provided authentication token is invalid.           |
 | `InvalidCredentials`    | The provided credentials (email/password) are incorrect. |
 | `ClosureNotCacheable`   | Using a Closure in `defaultName()` prevents route caching. |
 | `EmailConfirmNotCacheable` | The email confirmation handler must be cacheable.       |

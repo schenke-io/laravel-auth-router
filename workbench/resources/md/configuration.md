@@ -17,14 +17,14 @@ To make a standard Socialite driver stateless, add a `stateless` key in its `con
 
 ### WorkOS Drivers
 
-WorkOS drivers require an `api_key`, `client_id`, and `organization_id`:
+WorkOS drivers require an `api_key`, `client_id`, and `client_secret`:
 
 ```php
 // config/services.php
-'workos_google' => [
+'workos' => [
     'api_key' => env('WORKOS_API_KEY'),
     'client_id' => env('WORKOS_CLIENT_ID'),
-    'organization_id' => env('WORKOS_ORGANIZATION_ID'),
+    'client_secret' => env('WORKOS_CLIENT_SECRET'),
 ],
 
 'whatsapp' => [

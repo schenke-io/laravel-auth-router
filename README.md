@@ -134,14 +134,17 @@ Route::authRouter(['google', 'microsoft'])
 | `error()`        | route after login failure, should be able to display errors as feedback | 'error'                               |
 | `home()`         | route to a non-protected view (default: 'home')                         | 'home'                                |
 | `canAddUsers()`  | should unknown users be added or rejected (default: true)               | `true` or `false`                     |
+| `defaultName()`  | fallback strategy for users without a display name                      | 'email-local'                         |
 | `rememberMe()`   | stores the login even when session expires (default: false)             | `true` or `false`                     |
 | `useProviderId()` | use the provider ID for user lookup (default: false)                   | `true` or `false`                     |
 | `prefix()`       | prefix for the URIs                                                     | 'auth'                                |
 | `name()`         | prefix for the route names                                              | 'auth.'                               |
 | `middleware()`   | additional middleware for the routes                                    | 'web' or `['web', 'throttle']`        |
 | `emailConfirm()` | implementation of `EmailConfirmInterface` to handle email verification  | `$myEmailConfirm`                     |
+| `showPayload()`  | show user data review page before finalising login                      | `true` or `false`                     |
 | `debug()`        | log channel for debug information (registration and communication)      | 'stack'                               |
-| `register()`     | **Mandatory** call to actually register the routes                      |                                       |
+| `canImpersonate()`| gate name to enable user impersonation                                 | 'admin'                               |
+| `register()`     | route registration method (falls back to `__destruct()` if omitted)     |                                       |
 
 Route names can be same. If the homepage can display errors `error()` and `home()` could be the same.
 When the service configuration is not complete, not all routes will be created.
@@ -200,14 +203,14 @@ To make a standard Socialite driver stateless, add a `stateless` key in its `con
 
 ### <a name="workos-drivers"></a>WorkOS Drivers
 
-WorkOS drivers require an `api_key`, `client_id`, and `organization_id`:
+WorkOS drivers require an `api_key`, `client_id`, and `client_secret`:
 
 ```php
 // config/services.php
-'workos_google' => [
+'workos' => [
     'api_key' => env('WORKOS_API_KEY'),
     'client_id' => env('WORKOS_CLIENT_ID'),
-    'organization_id' => env('WORKOS_ORGANIZATION_ID'),
+    'client_secret' => env('WORKOS_CLIENT_SECRET'),
 ],
 
 'whatsapp' => [
@@ -326,15 +329,18 @@ The following error names are used in the `X-Custom-Error-Type` header and defin
 | `UnknownService`        | The requested login provider is unknown.                |
 | `ServiceNotSet`         | The provider service is not defined in config.          |
 | `ConfigNotSet`          | A specific config value (e.g., client_id) is missing.   |
+| `ExclusiveProvider`     | An exclusive provider was mixed with others.            |
 | `UnableToAddNewUsers`   | New user registration is disabled in the macro call.    |
 | `EmailMissing`          | The provider did not return an email address.           |
 | `InvalidEmail`          | The returned email address is invalid.                  |
+| `LoginEmailError`       | Login or verification email could not be sent.          |
 | `LocalAuth`             | Local authentication process failed.                    |
 | `RemoteAuth`            | The third-party provider returned an error.             |
 | `State`                 | OAuth state mismatch (potential CSRF).                  |
 | `Network`               | A network error occurred during the callback.           |
 | `InvalidRequest`        | The login or callback request was invalid.              |
 | `MixedProviders`        | Mixing WorkOS and non-WorkOS providers is not allowed.  |
+| `InvalidToken`          | The provided authentication token is invalid.           |
 | `InvalidCredentials`    | The provided credentials (email/password) are incorrect. |
 | `ClosureNotCacheable`   | Using a Closure in `defaultName()` prevents route caching. |
 | `EmailConfirmNotCacheable` | The email confirmation handler must be cacheable.       |
@@ -437,10 +443,7 @@ The following providers are supported:
 - `apple`
 - `whatsapp`
 - `custom`
-- `workos_apple`
-- `workos_email`
-- `workos_google`
-- `workos_linkedin`
+- `workos`
 - `logto`
 - `passkey`
  
@@ -450,7 +453,7 @@ To use WorkOS providers, you must set the following environment variables:
  
 - `WORKOS_API_KEY` (stored in `services.workos.api_key`)
 - `WORKOS_CLIENT_ID` (stored in `services.workos.client_id`)
-- `WORKOS_ORGANIZATION_ID` (stored in `services.workos.organization_id`)
+- `WORKOS_CLIENT_SECRET` (stored in `services.workos.client_secret`)
 
 ## <a name="whatsapp-configuration"></a>WhatsApp Configuration
 
@@ -462,7 +465,7 @@ To use WhatsApp login, you must set the following environment variables:
 WhatsApp login requires an approved email to be provided first. The flow includes a button to start the login and a waiting page for the user to confirm via their WhatsApp device.
 
 ### <a name="email-and-password-flow"></a>Email and Password Flow
-The `workos_email` provider supports both magic link flows (GET) and direct email/password authentication (POST). The login view includes fields for both, allowing users to choose their preferred method.
+The `workos` provider supports both magic link flows (GET) and direct email/password authentication (POST). The login view includes fields for both, allowing users to choose their preferred method.
 
 ## <a name="apple-configuration"></a>Apple Configuration
 

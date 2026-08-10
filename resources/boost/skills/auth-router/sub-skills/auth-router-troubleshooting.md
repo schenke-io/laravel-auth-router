@@ -26,7 +26,7 @@ Detected **before** the OAuth flow and displayed directly on the login-selector 
 | Missing `client_id` | Key absent from `config/services.php` | Add the key (see [`auth-router-providers.md`](auth-router-providers.md)) |
 | Missing `client_secret` | Key absent or `.env` variable unset | Set the `.env` variable and re-cache config |
 | Unknown provider key | Typo in the provider array | Check valid keys in `SchenkeIo\LaravelAuthRouter\Enums\Service` |
-| Missing `->register()` | Macro chain not terminated | Append `->register()` in `routes/web.php` |
+| Missing `->register()` | Macro chain not explicitly terminated | Append `->register()` in `routes/web.php` (falls back to `__destruct()`) |
 
 **Resolution flow:** read the label → cross-reference `config/services.php` and `.env` → apply the fix → run `php artisan config:clear` if `.env` changed → reload `/login` (errors clear immediately).
 
@@ -34,7 +34,7 @@ Detected **before** the OAuth flow and displayed directly on the login-selector 
 
 ## Category B — Runtime Errors (OAuth / user-lifecycle)
 
-Occur during or after the provider callback. The user is redirected to the `->error()` route. Every runtime error is **logged first** (via the `->logChannel()` channel if configured, otherwise `Log::error()` with an `[AuthRouter]` prefix) and then redirected.
+Occur during or after the provider callback. The user is redirected to the `->error()` route. Every runtime error is **logged first** (via the `->debug()` channel if configured, otherwise `Log::error()` with an `[AuthRouter]` prefix) and then redirected.
 
 ### Step 1 — Read the error context
 
@@ -133,7 +133,7 @@ Authentication fails in many ways, and each audience needs something different f
 - **Technical detail is contained.** The raw `message` is kept apart from the user-facing `info`; `SQLSTATE` is masked to a generic `DatabaseError` and any long message is truncated to 100 chars — diagnostics stay in the logs, not the browser.
 - **Correlation by reference code.** The same 8-char `XXXX-XXXX` code is written to the log and shown to the user, so support can find the exact log entry from what the user reports.
 - **Dual transport.** State travels by both session (Blade views) and `X-Custom-Error-*` headers (SPA/API clients), so neither has to parse the other's format.
-- **Configurable logging.** Errors log to the `->logChannel()` channel if set, else `Log::error()` with an `[AuthRouter]` prefix; success and registration events share that channel for one coherent audit trail.
+- **Configurable logging.** Errors log to the `->debug()` channel if set, else `Log::error()` with an `[AuthRouter]` prefix; success and registration events share that channel for one coherent audit trail.
 
 The result: every auth failure becomes something a user can act on and a team can debug, without the application writing any error-handling plumbing of its own.
 

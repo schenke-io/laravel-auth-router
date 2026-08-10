@@ -45,14 +45,17 @@ Route::authRouter(['google', 'microsoft'])
 | `error()`        | route after login failure, should be able to display errors as feedback | 'error'                               |
 | `home()`         | route to a non-protected view (default: 'home')                         | 'home'                                |
 | `canAddUsers()`  | should unknown users be added or rejected (default: true)               | `true` or `false`                     |
+| `defaultName()`  | fallback strategy for users without a display name                      | 'email-local'                         |
 | `rememberMe()`   | stores the login even when session expires (default: false)             | `true` or `false`                     |
 | `useProviderId()` | use the provider ID for user lookup (default: false)                   | `true` or `false`                     |
 | `prefix()`       | prefix for the URIs                                                     | 'auth'                                |
 | `name()`         | prefix for the route names                                              | 'auth.'                               |
 | `middleware()`   | additional middleware for the routes                                    | 'web' or `['web', 'throttle']`        |
 | `emailConfirm()` | implementation of `EmailConfirmInterface` to handle email verification  | `$myEmailConfirm`                     |
+| `showPayload()`  | show user data review page before finalising login                      | `true` or `false`                     |
 | `debug()`        | log channel for debug information (registration and communication)      | 'stack'                               |
-| `register()`     | **Mandatory** call to actually register the routes                      |                                       |
+| `canImpersonate()`| gate name to enable user impersonation                                 | 'admin'                               |
+| `register()`     | route registration method (falls back to `__destruct()` if omitted)     |                                       |
 
 Route names can be same. If the homepage can display errors `error()` and `home()` could be the same.
 When the service configuration is not complete, not all routes will be created.
